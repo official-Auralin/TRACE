@@ -1,0 +1,39 @@
+# Ignore everything by default. Add only files that should be versioned.
+*
+
+# Allow traversal into directories so nested allow rules can match.
+!*/
+
+# GitHub Pages entrypoint
+!.nojekyll
+!index.html
+
+# TRACE playable HTML and docs
+!TRACE_play.html
+!TRACE_mockup.html
+!TRACE_game_design.md
+!TRACE_implementation_spec.md
+!TRACE_validation_plan.md
+
+# Verification source, fixtures, and checked result artifacts
+!Verification/GateA/*.py
+!Verification/GateA/*.md
+!Verification/GateA/external/*.json
+!Verification/GateA/external/*.jsonl
+!Verification/GateA/external/*.hoa
+!Verification/GateA/fixtures/*.hoa
+!Verification/GateA/results/*.json
+!Verification/GateA/results/*.md
+!Verification/GateB/*.py
+!Verification/GateB/*.md
+!Verification/GateB/player_template.html
+!Verification/GateB/results/*.json
+!Verification/GateB/results/*.md
+
+# Paper sources and published PDFs
+!tex_files/*.tex
+!tex_files/*.bib
+!tex_files/*.pdf
+
+# Keep this file versioned.
+!.gitignore
