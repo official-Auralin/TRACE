@@ -1,4 +1,4 @@
-# TRACE / GLOWBOX — Implementation Specification for Scalable Builds
+# TRACE — Implementation Specification for Scalable Builds
 
 *Consolidates every mechanic, interaction law, grading policy, and verification requirement settled during the 12-iteration demo process (see `TRACE_game_design.md` §20). This spec is authoritative for the production builds: human game (white-box and black-box), agent harness, and shared grader. Source of truth for semantics: `tex_files/mainTB.tex` (cited by section throughout).*
 
@@ -99,7 +99,7 @@ Human board state and agent JSON are the same object:
 
 ---
 
-## 5. Human game build (GLOWBOX)
+## 5. Human game build (TRACE)
 
 ### 5.1 Board ontology (final, iteration 9–12; no other object kinds permitted)
 | Object | Visual | Interaction | Meaning |

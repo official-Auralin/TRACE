@@ -1,4 +1,4 @@
-"""Builds glowbox_play.html — a playable review build of HOA-derived puzzles.
+"""Builds TRACE_play.html — a playable review build of HOA-derived puzzles.
 
 Levels: the five mainTB worked puzzles (HOA fixtures), the real TempoBench sample
 artifact, and freshly generated instances from the B2 generator. For each level:
@@ -157,7 +157,7 @@ def main(seed=23, n_generated=6):
         got += 1
     tpl = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "player_template.html")).read()
     html = tpl.replace("/*__LEVELS__*/", json.dumps(levels))
-    out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "glowbox_play.html")
+    out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "TRACE_play.html")
     open(out_path, "w").write(html)
     print(f"built {out_path}: {len(levels)} levels, all render==HOA verified")
 

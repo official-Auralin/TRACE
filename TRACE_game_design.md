@@ -1,4 +1,4 @@
-# GLOWBOX — A Visual Puzzle Game Design for TRACE
+# TRACE — A Visual Puzzle Game Design
 
 *A minimalist, all-ages rendering of the TRACE benchmark (Temporal Reasoning And Causal Explanation), faithful to `tex_files/mainTB.tex` and its companion framework papers (`main.tex`, `main2.tex`).*
 
@@ -8,7 +8,7 @@
 
 The repository specifies TRACE: a one-player benchmark in which a frozen, synthesized finite-state controller is presented as a sealed reactive device; the player sees an observed run (switch settings over time, lights that flashed), one highlighted target flash (light *o* at step *k*), and must answer one of three precise causal questions — **Prevent** (which single switch flip, alone, stops the flash; count-only necessity), **Credit** (which switches actually decided the flash, allowing contingencies; Halpern–Pearl actual causation — the core object), and **Pin** (the fewest switches to lock so the flash is forced no matter what; determining-set sufficiency). Experimentation happens through a budgeted **run/probe** button that deterministically replays the device.
 
-**GLOWBOX** is the player-facing rendering of exactly this system. The player sees a small machine: a grid of levers (rows = switches, columns = moments in time), a lamp strip beneath, one star-ringed flash as the target, and a curtain dimming everything after the target moment. They flip levers, turn the crank (each turn costs one *spark*), watch the lamps recompute, and finally answer the mode's question by placing **stop-scissors**, **gold stars**, or **locks** directly on lever cells. Nothing technical is visible; every rule, mode, budget, scoring granularity, and difficulty knob is taken verbatim from the source specification. The paper itself prescribes this abstraction family ("a marble-and-switch device in the mechanical spirit of *Turing Tumble*", §"Running synthesis backwards into a board") — GLOWBOX is that prescription made concrete, screen-ready, and child-readable.
+**TRACE** is the player-facing rendering of exactly this system. The player sees a small machine: a grid of levers (rows = switches, columns = moments in time), a lamp strip beneath, one star-ringed flash as the target, and a curtain dimming everything after the target moment. They flip levers, turn the crank (each turn costs one *spark*), watch the lamps recompute, and finally answer the mode's question by placing **stop-scissors**, **gold stars**, or **locks** directly on lever cells. Nothing technical is visible; every rule, mode, budget, scoring granularity, and difficulty knob is taken verbatim from the source specification. The paper itself prescribes this abstraction family ("a marble-and-switch device in the mechanical spirit of *Turing Tumble*", §"Running synthesis backwards into a board") — TRACE is that prescription made concrete, screen-ready, and child-readable.
 
 Core loop: **look → flip → crank → watch → mark → submit**.
 
@@ -34,7 +34,7 @@ All references are to `tex_files/mainTB.tex` (line numbers from the source file)
 | E12 | mainTB §"try button", ll. 1088–1122 | Probe: set any in-window cells, run replays deterministically, returns lights + target status + change count; budget β_max; β=0 = pure deduction; large β = trial-and-error | The crank, sparks, and flip counter | action / resource | Crank button; spark meter; counter | probe budget β_max is a knob | confirmed | budget pressure must feel fair — show sparks up front |
 | E13 | mainTB §scoring, ll. 1124–1175 | Native predicate grading; Witness / All-causes / Per-cell-union variants; non-minimal superset scores 0; TS and AP granularities; few attempts, solved if any attempt is fully correct | Any correct minimal answer wins; spam fails; limited tries | scoring rule | Hearts (attempts); submission checked by hidden grader; full-win chime only on exact predicate satisfaction | — | confirmed | partial credit (AP) is for leaderboards, not the toy — keep player score binary per attempt |
 | E14 | mainTB §difficulty, ll. 1177–1206 | Knob table: effect depth k; # automaton states; transition count; \|Γ*\|; trace diversity; trace length n; probe budget β_max; mode; closeness order. Trivial-instance filter (unconditional target, same-column cause) | The complete, source-defined difficulty model | difficulty factors | See §4 below — progression uses ONLY these | this IS the difficulty model | confirmed | inventing other difficulty axes is forbidden |
-| E15 | mainTB worked puzzles 1–5, ll. 1208–1385 | Five canonical instances with checker-verified answers in all three modes | Tutorial through delayed overdetermination | examples | Directly reused as GLOWBOX levels 1–6 | puzzles 3–5 show mode divergence | confirmed | none — they are the gold standard |
+| E15 | mainTB worked puzzles 1–5, ll. 1208–1385 | Five canonical instances with checker-verified answers in all three modes | Tutorial through delayed overdetermination | examples | Directly reused as TRACE levels 1–6 | puzzles 3–5 show mode divergence | confirmed | none — they are the gold standard |
 | E16 | mainTB §agent, ll. 1387–1460 | White-box track (device shown as trellis/table) vs black-box track (device hidden; identifiability requirement); JSON protocol mirrors board 1:1 | Two information settings; black-box adds system identification | observation / difficulty | Lid open (lane map visible) vs lid sealed | black-box is harder by design | confirmed | black-box must only ship identifiable instances (roadmap V5) — generator concern, not UI |
 | E17 | mainTB fig. anatomy, ll. 981–1019 | Trellis: states as lanes, columns as steps, lit path = observed run, goal node q* flashes target, dashed = untaken routes | The white-box depiction | entity / observation | The "lane map" under the lever grid: a marble path through lanes | # states / transition count knobs are *visible* here | confirmed | lanes must not look interactable — only levers are |
 | E18 | mainTB ll. 1093–1095, 1106–1110 | One press evaluates ONE scenario; Pin's ∀ and Credit's ∃ are the grader's | The player generalizes from finitely many experiments | rule | Crank result card says "this time"; submission says "always/decided" | — | confirmed | risk: players conflate one good run with proof — wording + iconography fix |
@@ -94,7 +94,7 @@ All references are to `tex_files/mainTB.tex` (line numbers from the source file)
 
 ## 5. Abstraction candidates
 
-### Frame A — "Glowbox" (sealed lamp machine; the paper's own family)
+### Frame A — "TRACE" (sealed lamp machine; the paper's own family)
 - **Premise:** a wind-up box of levers and lamps replays one recorded evening; explain the starred flash.
 - **Verb:** flip & crank. **Visual language:** instrument panel — lever grid, lamp strip, brass crank, curtain.
 - **Sees:** lever grid (rows×moments), lamp strip, star ring, spark meter, hearts, mode tab. **Manipulates:** levers, marks.
@@ -115,7 +115,7 @@ All references are to `tex_files/mainTB.tex` (line numbers from the source file)
 
 ### Scoring (rubric weights from the brief)
 
-| Criterion (weight) | A Glowbox | B Signal Yard | C Night Garden |
+| Criterion (weight) | A TRACE | B Signal Yard | C Night Garden |
 |---|---|---|---|
 | Faithfulness (40) | 39 | 34 | 24 |
 | Source difficulty preserved (15) | 14 | 13 | 9 |
@@ -128,7 +128,7 @@ All references are to `tex_files/mainTB.tex` (line numbers from the source file)
 
 ## 6. Selected abstraction
 
-**Frame A (Glowbox), with Frame B's lane map embedded as the white-box view.** This is not a compromise — it is the source's own architecture: the spec says the black-box track shows only switch and light panels while the white-box track shows the trellis beside them (E16, E17). Glowbox = panels; the lane map = trellis; the sealed lid = black-box. Frame B alone fails black-box; Frame C fails determinism. Frame A also makes the probe mechanic natural (cranking a music box re-plays it identically — determinism is *felt*), and the curtain makes the causal window physical.
+**Frame A (TRACE), with Frame B's lane map embedded as the white-box view.** This is not a compromise — it is the source's own architecture: the spec says the black-box track shows only switch and light panels while the white-box track shows the trellis beside them (E16, E17). TRACE = panels; the lane map = trellis; the sealed lid = black-box. Frame B alone fails black-box; Frame C fails determinism. Frame A also makes the probe mechanic natural (cranking a music box re-plays it identically — determinism is *felt*), and the curtain makes the causal window physical.
 
 ---
 
@@ -250,7 +250,7 @@ The player just *demonstrated* counterfactual dependence with one flip — the P
 All eight instances below move ONLY along source knobs (E14/E16). Devices for 1–6 are the paper's worked Puzzles 1–5 verbatim; 7–8 extend along declared knobs.
 
 **Knob trajectory:** `k: 1→2→2→0*→1→2→3→4 · rows: 1→2→2→2→2→2→2→2 · states: 2→3→3→2→2→3→4→4 · β: 8→8→6→6→6→6→4→4 · mode: ✂→✂→✂→🔒→✂+★→★→🔒→★ · track: open…open→sealed`
-(*Instance 4 uses the paper's Puzzle 4, which the spec keeps only as a teaching isolate of the necessity/sufficiency split; the spec's trivial-instance filter would exclude it from a graded corpus, so GLOWBOX uses it as an untimed lesson level, not a scored one.)
+(*Instance 4 uses the paper's Puzzle 4, which the spec keeps only as a teaching isolate of the necessity/sufficiency split; the spec's trivial-instance filter would exclude it from a graded corpus, so TRACE uses it as an untimed lesson level, not a scored one.)
 
 ### I1 — "One Lever" (Tutorial; Prevent) — Puzzle 1
 k=1, 1 lever, 2 states, β=8, ✂.
@@ -569,7 +569,7 @@ Trade-off, recorded honestly: in Credit, contingency experiments and the final c
 
 ### 20.4 The frame is a skin
 
-The cut gesture is theme-agnostic, as the playtest noted: bomb wire to snip, vine to prune, rail switch to throw, circuit trace to break — all the same geometry (roads, junctions, one starred terminal, a budget of test runs). The shipped game can offer skins freely because §7's meaning map binds mechanics to *structure* (strands, dots, cuts, marbles), not to any one fiction. GLOWBOX remains the neutral reference skin.
+The cut gesture is theme-agnostic, as the playtest noted: bomb wire to snip, vine to prune, rail switch to throw, circuit trace to break — all the same geometry (roads, junctions, one starred terminal, a budget of test runs). The shipped game can offer skins freely because §7's meaning map binds mechanics to *structure* (strands, dots, cuts, marbles), not to any one fiction. TRACE remains the neutral reference skin.
 
 ### 20.5 Verification
 
