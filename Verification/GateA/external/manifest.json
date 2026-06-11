@@ -1,0 +1,8 @@
+{
+ "tb_sample_arbiter.hoa": {
+  "inputs": [
+   "r"
+  ],
+  "note": "controllable-AP 0 = 'g' is controllable (system output); 'r' is environment input"
+ }
+}

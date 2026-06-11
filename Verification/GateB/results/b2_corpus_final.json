@@ -1,0 +1,361 @@
+{
+ "status": "PASS",
+ "seed": "7+stratum",
+ "strata": [
+  [
+   2,
+   1,
+   2
+  ],
+  [
+   2,
+   2,
+   2
+  ],
+  [
+   3,
+   2,
+   2
+  ],
+  [
+   3,
+   1,
+   4
+  ],
+  [
+   3,
+   2,
+   3
+  ],
+  [
+   4,
+   2,
+   3
+  ]
+ ],
+ "counts": {
+  "generated": 139,
+  "retain": 107,
+  "discard:input-unconditional": 4,
+  "discard:same-column-single-literal": 28
+ },
+ "discard_rate": 0.2302158273381295,
+ "no_pivotal_cell": {
+  "overdetermined": 11,
+  "input_unconditional_discarded": 4
+ },
+ "credit_vs_pin_per_cell_divergences": {
+  "count": 0,
+  "examples": []
+ },
+ "original_vs_modified_divergence_count": 63,
+ "retained_audit_failures": 0,
+ "minimal_cause_size_cap": null,
+ "totals_consistent": true,
+ "retained_sample": [
+  {
+   "stratum": [
+    2,
+    1,
+    2
+   ],
+   "verdict": "retain",
+   "pivots": 1,
+   "no_piv": false,
+   "has_causes": true,
+   "n_min_causes": 1,
+   "causal_cells": [
+    [
+     0,
+     1
+    ]
+   ],
+   "pin_cells": [
+    [
+     0,
+     1
+    ]
+   ],
+   "credit_pin_div": false,
+   "variant_div": false,
+   "audit_ok": true,
+   "transitions": 4
+  },
+  {
+   "stratum": [
+    2,
+    1,
+    2
+   ],
+   "verdict": "retain",
+   "pivots": 2,
+   "no_piv": false,
+   "has_causes": true,
+   "n_min_causes": 2,
+   "causal_cells": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "pin_cells": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "credit_pin_div": false,
+   "variant_div": false,
+   "audit_ok": true,
+   "transitions": 4
+  },
+  {
+   "stratum": [
+    2,
+    1,
+    2
+   ],
+   "verdict": "retain",
+   "pivots": 3,
+   "no_piv": false,
+   "has_causes": true,
+   "n_min_causes": 3,
+   "causal_cells": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "pin_cells": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "credit_pin_div": false,
+   "variant_div": false,
+   "audit_ok": true,
+   "transitions": 4
+  },
+  {
+   "stratum": [
+    2,
+    1,
+    2
+   ],
+   "verdict": "retain",
+   "pivots": 3,
+   "no_piv": false,
+   "has_causes": true,
+   "n_min_causes": 3,
+   "causal_cells": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "pin_cells": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "credit_pin_div": false,
+   "variant_div": false,
+   "audit_ok": true,
+   "transitions": 4
+  },
+  {
+   "stratum": [
+    2,
+    1,
+    2
+   ],
+   "verdict": "retain",
+   "pivots": 1,
+   "no_piv": false,
+   "has_causes": true,
+   "n_min_causes": 1,
+   "causal_cells": [
+    [
+     0,
+     1
+    ]
+   ],
+   "pin_cells": [
+    [
+     0,
+     1
+    ]
+   ],
+   "credit_pin_div": false,
+   "variant_div": false,
+   "audit_ok": true,
+   "transitions": 4
+  },
+  {
+   "stratum": [
+    2,
+    1,
+    2
+   ],
+   "verdict": "retain",
+   "pivots": 2,
+   "no_piv": false,
+   "has_causes": true,
+   "n_min_causes": 2,
+   "causal_cells": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "pin_cells": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "credit_pin_div": false,
+   "variant_div": false,
+   "audit_ok": true,
+   "transitions": 4
+  },
+  {
+   "stratum": [
+    2,
+    1,
+    2
+   ],
+   "verdict": "retain",
+   "pivots": 1,
+   "no_piv": false,
+   "has_causes": true,
+   "n_min_causes": 3,
+   "causal_cells": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "pin_cells": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "credit_pin_div": false,
+   "variant_div": true,
+   "audit_ok": true,
+   "transitions": 4
+  },
+  {
+   "stratum": [
+    2,
+    1,
+    2
+   ],
+   "verdict": "retain",
+   "pivots": 3,
+   "no_piv": false,
+   "has_causes": true,
+   "n_min_causes": 3,
+   "causal_cells": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "pin_cells": [
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     2
+    ]
+   ],
+   "credit_pin_div": false,
+   "variant_div": false,
+   "audit_ok": true,
+   "transitions": 4
+  }
+ ]
+}

@@ -1,0 +1,22 @@
+{
+ "status": "PASS",
+ "scope": {
+  "device_family": "all Mealy transducers with <= family-states states (exhaustive)",
+  "one_sided_guarantee": "inadmissible under full-budget info => inadmissible for all smaller budgets; admissible verdicts are relative to the declared family"
+ },
+ "results": {
+  "control_identifiable_P1": {
+   "identifiable": true,
+   "consistent_devices": 4
+  },
+  "control_underdetermined_obs_only": {
+   "identifiable": false,
+   "consistent_devices": 17
+  },
+  "admission_rate_2state_1input_k1_3probes": {
+   "admitted": 0,
+   "of": 10,
+   "rate": 0.0
+  }
+ }
+}

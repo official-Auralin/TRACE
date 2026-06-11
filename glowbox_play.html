@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GLOWBOX — verified HOA puzzles</title>
+<style>
+  :root{--bg:#16151a;--panel:#221f28;--cell:#2e2a36;--edge:#454051;--ink:#efeae0;
+        --dim:#8a8496;--gold:#f4c84a;--blue:#6aa8ff;--bad:#e0705f;--good:#7fd08a;
+        --w0:#5fd3c4;--w1:#f0915f}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Avenir Next",system-ui,sans-serif;
+       display:flex;flex-direction:column;align-items:center;min-height:100vh}
+  h1{font-size:20px;letter-spacing:6px;margin:16px 0 4px;color:var(--gold)}
+  .prov{font-size:11px;color:var(--dim);margin:0 0 10px;text-align:center}
+  .tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;justify-content:center;max-width:760px}
+  .tab{background:var(--panel);border:1px solid var(--edge);color:var(--dim);border-radius:16px;
+       padding:6px 12px;font-size:12px;cursor:pointer}
+  .tab.active{color:var(--gold);border-color:var(--gold)}
+  .tab.done::after{content:" ✔";color:var(--good)}
+  #machine{background:var(--panel);border-radius:18px;padding:14px 16px 12px;
+           box-shadow:0 8px 30px #0008;max-width:860px;width:min(96vw,860px)}
+  .prompt{font-size:14px;margin:2px 0 8px;display:none;gap:8px}
+  .prompt.show{display:flex}
+  #svgwrap{overflow-x:auto}
+  svg{display:block;margin:0 auto}
+  .trk{fill:none;stroke:#8d86a0;stroke-width:2.2;pointer-events:none}
+  .trk.idle{stroke:#4a4556;opacity:.45}
+  .trk.live{stroke:var(--gold);stroke-width:3;stroke-dasharray:7 5;animation:flow 1s linear infinite;
+            filter:drop-shadow(0 0 3px #f4c84a66)}
+  @keyframes flow{to{stroke-dashoffset:-12}}
+  .trkhit{fill:none;stroke:#fff;stroke-width:14;opacity:0;cursor:pointer}
+  .jx{fill:var(--cell);stroke:#6a6378;stroke-width:1.8;cursor:pointer}
+  .jx.c0{stroke:var(--w0)} .jx.c1{stroke:var(--w1)}
+  .jx:hover{stroke-width:3}
+  .jxring{fill:none;stroke:var(--blue);stroke-width:1.6;opacity:.85}
+  .jxhit{fill:#fff;opacity:0;cursor:pointer}
+  .bulb.lit{fill:#3a3220;stroke:var(--gold);filter:drop-shadow(0 0 10px var(--gold))}
+  .bulb.dark{fill:#1c1a22;stroke:#4a4556}
+  .blab.lit{fill:var(--gold)} .blab.dark{fill:#4a4556}
+  .blab{font-size:14px;text-anchor:middle;pointer-events:none}
+  .gnd{stroke:#4a4556;stroke-width:1.6}
+  .collab{fill:var(--dim);font-size:10px;text-anchor:middle}
+  .collab.k{fill:var(--gold)}
+  .answer{display:flex;gap:8px;flex-wrap:wrap;min-height:26px;margin:6px 2px;font-size:12px;color:var(--dim);align-items:center}
+  .chip{background:var(--cell);border:1px solid var(--blue);border-radius:12px;padding:3px 10px;color:var(--ink)}
+  .meters{display:flex;justify-content:space-between;margin:4px 2px 8px;font-size:14px}
+  .delta{font-size:11px;color:var(--dim)}
+  button{font-family:inherit;border:none;border-radius:12px;padding:9px 15px;font-size:13px;cursor:pointer}
+  #reset{background:var(--cell);color:var(--ink)}
+  #submit{background:var(--blue);color:#0b1830;font-weight:700}
+  .btnrow{display:flex;gap:8px;justify-content:center}
+  #card{margin-top:10px;border-radius:12px;padding:9px 14px;font-size:13px;display:none;
+        border:1px solid var(--edge)}
+  #card.show{display:block}
+  #overlay{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;
+           flex-direction:column;gap:10px;z-index:9}
+  #overlay.show{display:flex}
+  #overlay .big{font-size:46px}
+  #overlay button{background:var(--gold);color:#241d05;font-weight:700}
+  .foot{font-size:10px;color:#565060;margin:12px 0 20px;text-align:center;max-width:680px;line-height:1.5;padding:0 12px}
+</style>
+</head>
+<body>
+<h1>GLOWBOX</h1>
+<div class="prov" id="prov"></div>
+<div class="tabs" id="tabs"></div>
+<div id="machine">
+  <div class="prompt" id="prompt">★ <span>Throw what truly decided the light, and leave it thrown — the smallest true cause wins.</span></div>
+  <div id="svgwrap"></div>
+  <div class="answer" id="answer"></div>
+  <div class="meters"><div class="delta" id="delta"></div><div id="hearts"></div></div>
+  <div class="btnrow"><button id="reset">↺</button><button id="submit">SUBMIT</button></div>
+  <div id="card"></div>
+</div>
+<div class="foot">Every board on this page was generated from an HOA automaton artifact and
+machine-verified at build time: walking the drawn graph equals simulating the automaton on
+every possible switch setting, and the accepted answers are the certified keys of the verified
+oracle (minimal causes under either Halpern–Pearl reading). When one switch is read at several
+junctions they share a color and throw together. Built by Verification/GateB/build_player.py.</div>
+<div id="overlay"><div class="big" id="obig">✔</div><div id="omsg" style="color:var(--gold)"></div><button onclick="nextLevel()">▸</button></div>
+<script>
+const LEVELS=[{"name": "P1", "prov": "mainTB worked puzzle (HOA fixture)", "k": 1, "inputs": ["btn"], "obs": [[1, 0]], "nodes": [{"kind": "bulb", "x": 2, "y": 0}, {"kind": "gnd", "x": 2, "y": 1.8}, {"kind": "pass", "col": 1, "next": 0, "x": 1, "y": 0}, {"kind": "pass", "col": 1, "next": 1, "x": 1, "y": 1.8}, {"kind": "test", "cell": [0, 0], "out1": 2, "out0": 3, "col": 0, "state": 0, "x": 0.0, "y": 0.0}], "start": 4, "accepted": [[[0, 0]]], "verified": true}, {"name": "P2", "prov": "mainTB worked puzzle (HOA fixture)", "k": 2, "inputs": ["a", "b"], "obs": [[1, 0, 0], [0, 1, 0]], "nodes": [{"kind": "bulb", "x": 3, "y": 0}, {"kind": "gnd", "x": 3, "y": 1.8}, {"kind": "pass", "col": 2, "next": 0, "x": 2, "y": 0}, {"kind": "pass", "col": 2, "next": 2, "x": 2, "y": 0}, {"kind": "pass", "col": 1, "next": 3, "x": 1, "y": 0}, {"kind": "pass", "col": 2, "next": 1, "x": 2, "y": 1.8}, {"kind": "pass", "col": 2, "next": 5, "x": 2, "y": 1.8}, {"kind": "pass", "col": 1, "next": 6, "x": 1, "y": 1.8}, {"kind": "test", "cell": [0, 0], "out1": 4, "out0": 7, "col": 0, "state": 0, "x": 0.0, "y": 0.0}], "start": 8, "accepted": [[[0, 0]]], "verified": true}, {"name": "P3", "prov": "mainTB worked puzzle (HOA fixture)", "k": 1, "inputs": ["a", "b"], "obs": [[1, 0], [1, 0]], "nodes": [{"kind": "bulb", "x": 2, "y": 0}, {"kind": "gnd", "x": 2, "y": 1.8}, {"kind": "pass", "col": 1, "next": 0, "x": 1, "y": 0}, {"kind": "pass", "col": 1, "next": 1, "x": 1, "y": 1.8}, {"kind": "test", "cell": [1, 0], "out1": 2, "out0": 3, "col": 0, "state": 0, "x": 0.45, "y": 0.4}, {"kind": "test", "cell": [0, 0], "out1": 2, "out0": 4, "col": 0, "state": 0, "x": 0.0, "y": 0.0}], "start": 5, "accepted": [[[0, 0]], [[0, 0], [1, 0]], [[1, 0]]], "verified": true}, {"name": "P4", "prov": "mainTB worked puzzle (HOA fixture)", "k": 0, "inputs": ["req", "cancel"], "obs": [[1], [0]], "nodes": [{"kind": "bulb", "x": 1, "y": 0}, {"kind": "gnd", "x": 1, "y": 1.8}, {"kind": "test", "cell": [1, 0], "out1": 1, "out0": 0, "col": 0, "state": 0, "x": 0.45, "y": 0.4}, {"kind": "test", "cell": [0, 0], "out1": 2, "out0": 1, "col": 0, "state": 0, "x": 0.0, "y": 0.0}], "start": 3, "accepted": [[[0, 0]], [[1, 0]]], "verified": true}, {"name": "P5", "prov": "mainTB worked puzzle (HOA fixture)", "k": 2, "inputs": ["a", "b"], "obs": [[1, 0, 0], [0, 1, 0]], "nodes": [{"kind": "bulb", "x": 3, "y": 0}, {"kind": "gnd", "x": 3, "y": 1.8}, {"kind": "pass", "col": 2, "next": 0, "x": 2, "y": 0}, {"kind": "pass", "col": 2, "next": 2, "x": 2, "y": 0}, {"kind": "pass", "col": 1, "next": 3, "x": 1, "y": 0}, {"kind": "pass", "col": 2, "next": 1, "x": 2, "y": 1.8}, {"kind": "test", "cell": [1, 1], "out1": 2, "out0": 5, "col": 1, "state": 1, "x": 1.45, "y": 0.4}, {"kind": "test", "cell": [0, 0], "out1": 4, "out0": 6, "col": 0, "state": 0, "x": 0.0, "y": 0.0}], "start": 7, "accepted": [[[0, 0]], [[0, 0], [1, 1]], [[1, 1]]], "verified": true}, {"name": "TB", "prov": "real TempoBench artifact (6-state arbiter)", "k": 3, "inputs": ["r"], "obs": [[0, 1, 0, 1]], "nodes": [{"kind": "bulb", "x": 4, "y": 0}, {"kind": "gnd", "x": 4, "y": 1.8}, {"kind": "test", "cell": [0, 3], "out1": 0, "out0": 1, "col": 3, "state": 3, "x": 3.0, "y": 0.0}, {"kind": "pass", "col": 2, "next": 2, "x": 2, "y": 0.0}, {"kind": "pass", "col": 3, "next": 3, "x": 3, "y": 0.0}, {"kind": "pass", "col": 2, "next": 4, "x": 2, "y": 0.0}, {"kind": "pass", "col": 1, "next": 5, "x": 1, "y": 0.0}, {"kind": "pass", "col": 3, "next": 6, "x": 3, "y": 0.0}, {"kind": "pass", "col": 2, "next": 7, "x": 2, "y": 0.0}, {"kind": "pass", "col": 1, "next": 8, "x": 1, "y": 0.0}, {"kind": "pass", "col": 0, "next": 9, "x": 0, "y": 0.0}], "start": 10, "accepted": [[[0, 3]]], "verified": true}, {"name": "G1", "prov": "generated: 2 states, |I|=1, k=2 (seed 23)", "k": 2, "inputs": ["i0"], "obs": [[0, 0, 0]], "nodes": [{"kind": "bulb", "x": 3, "y": 0}, {"kind": "gnd", "x": 3, "y": 1.95}, {"kind": "test", "cell": [0, 2], "out1": 0, "out0": 1, "col": 2, "state": 0, "x": 2.0, "y": 0.0}, {"kind": "test", "cell": [0, 2], "out1": 1, "out0": 0, "col": 2, "state": 1, "x": 2.0, "y": 1.15}, {"kind": "test", "cell": [0, 1], "out1": 2, "out0": 3, "col": 1, "state": 0, "x": 1.0, "y": 0.0}, {"kind": "pass", "col": 1, "next": 3, "x": 1, "y": 1.15}, {"kind": "test", "cell": [0, 0], "out1": 4, "out0": 5, "col": 0, "state": 0, "x": 0.0, "y": 0.0}], "start": 6, "accepted": [[[0, 0]], [[0, 0], [0, 1]], [[0, 1]], [[0, 2]]], "verified": true}, {"name": "G2", "prov": "generated: 2 states, |I|=2, k=2 (seed 23)", "k": 2, "inputs": ["i0", "i1"], "obs": [[1, 0, 1], [1, 0, 0]], "nodes": [{"kind": "bulb", "x": 3, "y": 0}, {"kind": "gnd", "x": 3, "y": 2.3499999999999996}, {"kind": "test", "cell": [1, 2], "out1": 1, "out0": 0, "col": 2, "state": 0, "x": 2.45, "y": 0.4}, {"kind": "test", "cell": [1, 2], "out1": 0, "out0": 1, "col": 2, "state": 1, "x": 2.45, "y": 1.5499999999999998}, {"kind": "test", "cell": [0, 2], "out1": 2, "out0": 3, "col": 2, "state": 1, "x": 2.0, "y": 0.0}, {"kind": "test", "cell": [0, 1], "out1": 2, "out0": 4, "col": 1, "state": 0, "x": 1.0, "y": 0.0}, {"kind": "test", "cell": [1, 1], "out1": 4, "out0": 2, "col": 1, "state": 1, "x": 1.45, "y": 0.4}, {"kind": "test", "cell": [0, 1], "out1": 6, "out0": 4, "col": 1, "state": 1, "x": 1.0, "y": 1.15}, {"kind": "test", "cell": [0, 0], "out1": 5, "out0": 7, "col": 0, "state": 0, "x": 0.0, "y": 0.0}], "start": 8, "accepted": [[[0, 2]], [[1, 2]]], "verified": true}, {"name": "G3", "prov": "generated: 3 states, |I|=2, k=2 (seed 23)", "k": 2, "inputs": ["i0", "i1"], "obs": [[0, 0, 1], [0, 1, 0]], "nodes": [{"kind": "bulb", "x": 3, "y": 0}, {"kind": "gnd", "x": 3, "y": 3.5}, {"kind": "test", "cell": [1, 2], "out1": 1, "out0": 0, "col": 2, "state": 0, "x": 2.45, "y": 0.4}, {"kind": "test", "cell": [0, 2], "out1": 1, "out0": 2, "col": 2, "state": 0, "x": 2.0, "y": 0.0}, {"kind": "test", "cell": [1, 1], "out1": 3, "out0": 2, "col": 1, "state": 0, "x": 1.45, "y": 0.4}, {"kind": "test", "cell": [1, 1], "out1": 2, "out0": 3, "col": 1, "state": 0, "x": 1.45, "y": 1.5499999999999998}, {"kind": "test", "cell": [0, 1], "out1": 4, "out0": 5, "col": 1, "state": 0, "x": 1.0, "y": 0.0}, {"kind": "test", "cell": [1, 2], "out1": 0, "out0": 1, "col": 2, "state": 1, "x": 2.45, "y": 1.5499999999999998}, {"kind": "test", "cell": [0, 2], "out1": 0, "out0": 7, "col": 2, "state": 1, "x": 2.0, "y": 1.15}, {"kind": "test", "cell": [1, 1], "out1": 8, "out0": 3, "col": 1, "state": 2, "x": 1.45, "y": 2.6999999999999997}, {"kind": "test", "cell": [0, 1], "out1": 8, "out0": 9, "col": 1, "state": 2, "x": 1.0, "y": 1.15}, {"kind": "test", "cell": [1, 0], "out1": 6, "out0": 10, "col": 0, "state": 0, "x": 0.45, "y": 0.4}, {"kind": "test", "cell": [1, 0], "out1": 10, "out0": 6, "col": 0, "state": 0, "x": 0.45, "y": 1.5499999999999998}, {"kind": "test", "cell": [0, 0], "out1": 11, "out0": 12, "col": 0, "state": 0, "x": 0.0, "y": 0.0}], "start": 13, "accepted": [[[0, 0]], [[0, 0], [0, 2]], [[0, 1]], [[0, 2]], [[0, 2], [1, 0]], [[1, 0]], [[1, 1]], [[1, 2]]], "verified": true}, {"name": "G4", "prov": "generated: 3 states, |I|=1, k=3 (seed 23)", "k": 3, "inputs": ["i0"], "obs": [[0, 0, 0, 1]], "nodes": [{"kind": "bulb", "x": 4, "y": 0}, {"kind": "gnd", "x": 4, "y": 1.95}, {"kind": "test", "cell": [0, 3], "out1": 0, "out0": 1, "col": 3, "state": 1, "x": 3.0, "y": 0.0}, {"kind": "pass", "col": 3, "next": 1, "x": 3, "y": 1.95}, {"kind": "test", "cell": [0, 2], "out1": 2, "out0": 3, "col": 2, "state": 0, "x": 2.0, "y": 0.0}, {"kind": "test", "cell": [0, 2], "out1": 3, "out0": 2, "col": 2, "state": 1, "x": 2.0, "y": 1.15}, {"kind": "test", "cell": [0, 1], "out1": 4, "out0": 5, "col": 1, "state": 1, "x": 1.0, "y": 0.0}, {"kind": "pass", "col": 0, "next": 6, "x": 0, "y": 0.0}], "start": 7, "accepted": [[[0, 1]], [[0, 2]], [[0, 3]]], "verified": true}, {"name": "G5", "prov": "generated: 3 states, |I|=2, k=3 (seed 23)", "k": 3, "inputs": ["i0", "i1"], "obs": [[0, 1, 1, 0], [0, 0, 1, 0]], "nodes": [{"kind": "bulb", "x": 4, "y": 0}, {"kind": "gnd", "x": 4, "y": 3.5}, {"kind": "test", "cell": [1, 3], "out1": 0, "out0": 1, "col": 3, "state": 0, "x": 3.45, "y": 0.4}, {"kind": "test", "cell": [0, 3], "out1": 1, "out0": 2, "col": 3, "state": 0, "x": 3.0, "y": 0.0}, {"kind": "test", "cell": [0, 3], "out1": 1, "out0": 0, "col": 3, "state": 1, "x": 3.0, "y": 1.15}, {"kind": "test", "cell": [1, 2], "out1": 3, "out0": 4, "col": 2, "state": 0, "x": 2.45, "y": 0.4}, {"kind": "pass", "col": 3, "next": 1, "x": 3, "y": 3.5}, {"kind": "test", "cell": [1, 2], "out1": 4, "out0": 6, "col": 2, "state": 0, "x": 2.45, "y": 1.5499999999999998}, {"kind": "test", "cell": [0, 2], "out1": 5, "out0": 7, "col": 2, "state": 0, "x": 2.0, "y": 0.0}, {"kind": "test", "cell": [1, 2], "out1": 4, "out0": 3, "col": 2, "state": 1, "x": 2.45, "y": 2.6999999999999997}, {"kind": "test", "cell": [0, 2], "out1": 5, "out0": 9, "col": 2, "state": 1, "x": 2.0, "y": 1.15}, {"kind": "test", "cell": [1, 1], "out1": 8, "out0": 10, "col": 1, "state": 0, "x": 1.45, "y": 0.4}, {"kind": "test", "cell": [0, 2], "out1": 7, "out0": 9, "col": 2, "state": 2, "x": 2.0, "y": 2.3}, {"kind": "test", "cell": [1, 1], "out1": 10, "out0": 12, "col": 1, "state": 0, "x": 1.45, "y": 1.5499999999999998}, {"kind": "test", "cell": [0, 1], "out1": 11, "out0": 13, "col": 1, "state": 0, "x": 1.0, "y": 0.0}, {"kind": "test", "cell": [1, 1], "out1": 10, "out0": 8, "col": 1, "state": 1, "x": 1.45, "y": 2.6999999999999997}, {"kind": "test", "cell": [0, 1], "out1": 11, "out0": 15, "col": 1, "state": 1, "x": 1.0, "y": 1.15}, {"kind": "test", "cell": [1, 0], "out1": 14, "out0": 16, "col": 0, "state": 0, "x": 0.45, "y": 0.4}, {"kind": "test", "cell": [0, 1], "out1": 13, "out0": 15, "col": 1, "state": 2, "x": 1.0, "y": 2.3}, {"kind": "test", "cell": [1, 0], "out1": 16, "out0": 18, "col": 0, "state": 0, "x": 0.45, "y": 1.5499999999999998}, {"kind": "test", "cell": [0, 0], "out1": 17, "out0": 19, "col": 0, "state": 0, "x": 0.0, "y": 0.0}], "start": 20, "accepted": [[[0, 0]], [[0, 1]], [[0, 3]], [[1, 0]], [[1, 1]], [[1, 2]]], "verified": true}, {"name": "G6", "prov": "generated: 4 states, |I|=2, k=3 (seed 23)", "k": 3, "inputs": ["i0", "i1"], "obs": [[1, 1, 1, 1], [0, 1, 0, 1]], "nodes": [{"kind": "bulb", "x": 4, "y": 0}, {"kind": "gnd", "x": 4, "y": 5.8}, {"kind": "test", "cell": [1, 3], "out1": 1, "out0": 0, "col": 3, "state": 0, "x": 3.45, "y": 0.4}, {"kind": "test", "cell": [0, 3], "out1": 2, "out0": 0, "col": 3, "state": 0, "x": 3.0, "y": 0.0}, {"kind": "test", "cell": [1, 3], "out1": 0, "out0": 1, "col": 3, "state": 3, "x": 3.45, "y": 1.5499999999999998}, {"kind": "test", "cell": [0, 3], "out1": 4, "out0": 0, "col": 3, "state": 3, "x": 3.0, "y": 1.15}, {"kind": "test", "cell": [1, 2], "out1": 3, "out0": 5, "col": 2, "state": 2, "x": 2.45, "y": 0.4}, {"kind": "test", "cell": [0, 3], "out1": 1, "out0": 0, "col": 3, "state": 2, "x": 3.0, "y": 2.3}, {"kind": "test", "cell": [1, 2], "out1": 7, "out0": 5, "col": 2, "state": 2, "x": 2.45, "y": 1.5499999999999998}, {"kind": "test", "cell": [0, 2], "out1": 6, "out0": 8, "col": 2, "state": 2, "x": 2.0, "y": 0.0}, {"kind": "test", "cell": [1, 2], "out1": 5, "out0": 3, "col": 2, "state": 3, "x": 2.45, "y": 2.6999999999999997}, {"kind": "test", "cell": [0, 2], "out1": 8, "out0": 10, "col": 2, "state": 3, "x": 2.0, "y": 1.15}, {"kind": "test", "cell": [1, 1], "out1": 9, "out0": 11, "col": 1, "state": 3, "x": 1.45, "y": 0.4}, {"kind": "test", "cell": [1, 2], "out1": 3, "out0": 7, "col": 2, "state": 0, "x": 2.45, "y": 3.8499999999999996}, {"kind": "test", "cell": [0, 2], "out1": 5, "out0": 13, "col": 2, "state": 0, "x": 2.0, "y": 2.3}, {"kind": "test", "cell": [1, 1], "out1": 11, "out0": 14, "col": 1, "state": 3, "x": 1.45, "y": 1.5499999999999998}, {"kind": "test", "cell": [0, 1], "out1": 12, "out0": 15, "col": 1, "state": 3, "x": 1.0, "y": 0.0}, {"kind": "test", "cell": [1, 2], "out1": 5, "out0": 7, "col": 2, "state": 1, "x": 2.45, "y": 5.0}, {"kind": "test", "cell": [0, 2], "out1": 17, "out0": 7, "col": 2, "state": 1, "x": 2.0, "y": 3.4499999999999997}, {"kind": "test", "cell": [1, 1], "out1": 14, "out0": 18, "col": 1, "state": 0, "x": 1.45, "y": 2.6999999999999997}, {"kind": "test", "cell": [0, 1], "out1": 11, "out0": 19, "col": 1, "state": 0, "x": 1.0, "y": 1.15}, {"kind": "test", "cell": [1, 1], "out1": 11, "out0": 18, "col": 1, "state": 1, "x": 1.45, "y": 3.8499999999999996}, {"kind": "test", "cell": [0, 1], "out1": 21, "out0": 18, "col": 1, "state": 1, "x": 1.0, "y": 2.3}, {"kind": "test", "cell": [1, 0], "out1": 20, "out0": 22, "col": 0, "state": 0, "x": 0.45, "y": 0.4}, {"kind": "test", "cell": [0, 0], "out1": 16, "out0": 23, "col": 0, "state": 0, "x": 0.0, "y": 0.0}], "start": 24, "accepted": [[[0, 0]], [[0, 0], [0, 1]], [[0, 0], [0, 2]], [[0, 0], [1, 1]], [[0, 1]], [[0, 1], [0, 2]], [[0, 2]], [[0, 2], [1, 1]], [[1, 1]], [[1, 2]], [[1, 3]]], "verified": true}];
+let li=0,L,grid,hearts,solved=[];
+const CW=170,X0=80,NY0=44,LH=64,JR=9;
+const px=x=>X0+x*CW, py=y=>NY0+y*LH;
+const clone=g=>g.map(r=>r.slice());
+function walk(g){
+  const seq=[L.start];let cur=L.start;
+  for(let i=0;i<200;i++){
+    const n=L.nodes[cur];
+    if(n.kind==="pass"){cur=n.next;seq.push(cur);continue;}
+    if(n.kind!=="test")break;
+    cur=g[n.cell[0]][n.cell[1]]?n.out1:n.out0;seq.push(cur);
+  }
+  return seq;
+}
+const lit=g=>L.nodes[walk(g).at(-1)].kind==="bulb";
+const diff=()=>{const d=[];for(let r=0;r<L.inputs.length;r++)for(let t=0;t<=L.k;t++)
+  if(grid[r][t]!==L.obs[r][t])d.push([r,t]);return d;};
+function cellColor(cell){ // shared tint iff tested at >1 junction
+  const n=L.nodes.filter(n=>n.kind==="test"&&n.cell[0]===cell[0]&&n.cell[1]===cell[1]).length;
+  return n>1?` c${cell[0]}`:"";
+}
+function render(){
+  const seq=walk(grid),isLit=L.nodes[seq.at(-1)].kind==="bulb";
+  const onRoute=new Set();for(let i=0;i+1<seq.length;i++)onRoute.add(seq[i]+">"+seq[i+1]);
+  const xs=L.nodes.filter(n=>n.x!==undefined).map(n=>n.x), ys=L.nodes.filter(n=>n.y!==undefined).map(n=>n.y);
+  const W=px(Math.max(...xs))+60, H=py(Math.max(...ys))+40;
+  let s=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">`;
+  for(let t=0;t<=L.k;t++)s+=`<text class="collab ${t===L.k?'k':''}" x="${px(t)}" y="16">${t===L.k?"▼ ":""}${t}</text>`;
+  s+=`<path class="trk live" d="M${px(L.nodes[L.start].x)-44},${py(L.nodes[L.start].y)} L${px(L.nodes[L.start].x)-JR-2},${py(L.nodes[L.start].y)}"/>`;
+  function ends(n,to){          // anchor tracks exactly on node boundaries
+    const r1=n.kind==="pass"?4:JR+1;
+    const r2=to.kind==="test"?JR+1:(to.kind==="pass"?4:18);
+    const x1=px(n.x),y1=py(n.y),x2=px(to.x),y2=py(to.y);
+    const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1;
+    return [x1+dx/len*r1, y1+dy/len*r1, x2-dx/len*r2, y2-dy/len*r2, dx/len, dy/len];
+  }
+  L.nodes.forEach((n,i)=>{
+    if(n.kind==="pass"){
+      const to=L.nodes[n.next];
+      const [x1,y1,x2,y2]=ends(n,to);
+      const live=onRoute.has(i+">"+n.next);
+      s+=`<path class="trk ${live?'live':''}" d="M${x1},${y1} L${x2},${y2}"/>`;
+      return;
+    }
+    if(n.kind!=="test")return;
+    const v=grid[n.cell[0]][n.cell[1]];
+    [["out1",1],["out0",0]].forEach(([f,val])=>{
+      const to=L.nodes[n[f]];
+      const [x1,y1,x2,y2,ux,uy]=ends(n,to);
+      const aligned=v===val, liveSeg=aligned&&onRoute.has(i+">"+n[f]);
+      const gx=aligned?x1:x1+ux*12, gy=aligned?y1:y1+uy*12;   // gap along the track's own direction
+      const mx=(gx+x2)/2,my=(gy+y2)/2-Math.min(14,Math.abs(x2-gx)*.06);
+      const d=`M${gx},${gy} Q${mx},${my} ${x2},${y2}`;
+      s+=`<path class="trk ${aligned?(liveSeg?'live':''):'idle'}" d="${d}"/>`;
+      s+=`<path class="trkhit" data-r="${n.cell[0]}" data-t="${n.cell[1]}" data-v="${val}" d="${d}"/>`;
+    });
+  });
+  L.nodes.forEach((n,i)=>{
+    if(n.x===undefined)return;
+    const x=px(n.x),y=py(n.y);
+    if(n.kind==="bulb"){
+      s+=`<circle class="bulb ${isLit?'lit':'dark'}" cx="${x}" cy="${y}" r="16" stroke-width="2"/>
+          <text class="blab ${isLit?'lit':'dark'}" x="${x}" y="${y+5}">⊛</text>`;
+    }else if(n.kind==="gnd"){
+      s+=`<line class="gnd" x1="${x-9}" y1="${y}" x2="${x+9}" y2="${y}"/>
+          <line class="gnd" x1="${x-5}" y1="${y+4.5}" x2="${x+5}" y2="${y+4.5}"/>
+          <line class="gnd" x1="${x-2}" y1="${y+9}" x2="${x+2}" y2="${y+9}"/>`;
+    }else if(n.kind==="pass"){
+      s+=`<circle cx="${x}" cy="${y}" r="3.5" fill="#56505f"/>`;
+    }else{
+      const thrown=grid[n.cell[0]][n.cell[1]]!==L.obs[n.cell[0]][n.cell[1]];
+      if(thrown)s+=`<circle class="jxring" cx="${x}" cy="${y}" r="${JR+5}"/>`;
+      s+=`<circle class="jx${cellColor(n.cell)}" data-r="${n.cell[0]}" data-t="${n.cell[1]}" cx="${x}" cy="${y}" r="${JR}"/>
+          <circle class="jxhit" data-r="${n.cell[0]}" data-t="${n.cell[1]}" cx="${x}" cy="${y}" r="${JR+7}"/>`;
+    }
+  });
+  s+="</svg>";
+  document.getElementById("svgwrap").innerHTML=s;
+  document.querySelectorAll(".jxhit").forEach(h=>h.onclick=()=>{grid[+h.dataset.r][+h.dataset.t]^=1;render();});
+  document.querySelectorAll(".trkhit").forEach(h=>h.onclick=()=>{grid[+h.dataset.r][+h.dataset.t]=+h.dataset.v;render();});
+  const d=diff();
+  document.getElementById("answer").innerHTML=(d.length?"<span>thrown:</span>":"")+
+    d.map(([r,t])=>`<span class="chip">${L.inputs[r]} · ${t}</span>`).join("");
+  document.getElementById("delta").textContent=`Δ${d.length}`;
+  document.getElementById("hearts").textContent="♥".repeat(hearts)+"♡".repeat(2-hearts);
+}
+function card(msg,col){const c=document.getElementById("card");c.className="show";
+  c.style.borderColor=col||"var(--edge)";c.innerHTML=msg;}
+document.getElementById("reset").onclick=()=>{grid=clone(L.obs);render();document.getElementById("card").className="";};
+document.getElementById("submit").onclick=()=>{
+  const d=diff().map(c=>c.join(",")).sort().join("|");
+  if(!d){card("Throw what decided the light and leave it thrown.","var(--bad)");return;}
+  const ok=L.accepted.some(m=>m.map(c=>c.join(",")).sort().join("|")===d);
+  if(ok){solved[li]=true;document.getElementById("omsg").textContent=L.prov;
+         document.getElementById("overlay").classList.add("show");}
+  else{hearts--;render();
+    if(hearts<=0){card("Out of tries — tap the level tab to retry.","var(--bad)");hearts=2;}
+    else card("Not quite.","var(--bad)");}
+};
+function tabs(){document.getElementById("tabs").innerHTML=LEVELS.map((l,i)=>
+  `<div class="tab ${i===li?'active':''} ${solved[i]?'done':''}" onclick="load(${i})">${l.name}</div>`).join("");}
+function load(i){li=i;L=LEVELS[i];grid=clone(L.obs);hearts=2;
+  document.getElementById("prov").textContent=L.prov;
+  document.getElementById("prompt").className="prompt"+(i===0?" show":"");
+  document.getElementById("card").className="";tabs();render();}
+function nextLevel(){document.getElementById("overlay").classList.remove("show");
+  load(Math.min(li+1,LEVELS.length-1));}
+load(0);
+</script>
+</body>
+</html>

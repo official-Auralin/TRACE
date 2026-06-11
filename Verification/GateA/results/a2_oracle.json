@@ -1,0 +1,353 @@
+{
+ "status": "PASS",
+ "n_puzzles": 5,
+ "all_match_published_answers": true,
+ "results": [
+  {
+   "puzzle": "P1 one pivotal switch (tutorial)",
+   "k": 1,
+   "inputs": [
+    "btn"
+   ],
+   "observed_run_inputs": [
+    [
+     1,
+     0
+    ]
+   ],
+   "oracle_output": {
+    "pivots": [
+     [
+      0,
+      0
+     ]
+    ],
+    "no_pivotal_cell": false,
+    "credit_original_minimal_causes": [
+     [
+      [
+       0,
+       0
+      ]
+     ]
+    ],
+    "credit_union": [
+     [
+      0,
+      0
+     ]
+    ],
+    "credit_modified_minimal_causes": [
+     [
+      [
+       0,
+       0
+      ]
+     ]
+    ],
+    "pin_determining_sets": [
+     [
+      [
+       0,
+       0
+      ]
+     ]
+    ]
+   },
+   "matches_paper": true,
+   "diffs": {}
+  },
+  {
+   "puzzle": "P2 delayed cause with distractor",
+   "k": 2,
+   "inputs": [
+    "a",
+    "b"
+   ],
+   "observed_run_inputs": [
+    [
+     1,
+     0,
+     0
+    ],
+    [
+     0,
+     1,
+     0
+    ]
+   ],
+   "oracle_output": {
+    "pivots": [
+     [
+      0,
+      0
+     ]
+    ],
+    "no_pivotal_cell": false,
+    "credit_original_minimal_causes": [
+     [
+      [
+       0,
+       0
+      ]
+     ]
+    ],
+    "credit_union": [
+     [
+      0,
+      0
+     ]
+    ],
+    "credit_modified_minimal_causes": [
+     [
+      [
+       0,
+       0
+      ]
+     ]
+    ],
+    "pin_determining_sets": [
+     [
+      [
+       0,
+       0
+      ]
+     ]
+    ]
+   },
+   "matches_paper": true,
+   "diffs": {}
+  },
+  {
+   "puzzle": "P3 overdetermination",
+   "k": 1,
+   "inputs": [
+    "a",
+    "b"
+   ],
+   "observed_run_inputs": [
+    [
+     1,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "oracle_output": {
+    "pivots": [],
+    "no_pivotal_cell": true,
+    "credit_original_minimal_causes": [
+     [
+      [
+       0,
+       0
+      ]
+     ],
+     [
+      [
+       1,
+       0
+      ]
+     ]
+    ],
+    "credit_union": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ]
+    ],
+    "credit_modified_minimal_causes": [
+     [
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ]
+     ]
+    ],
+    "pin_determining_sets": [
+     [
+      [
+       0,
+       0
+      ]
+     ],
+     [
+      [
+       1,
+       0
+      ]
+     ]
+    ]
+   },
+   "matches_paper": true,
+   "diffs": {}
+  },
+  {
+   "puzzle": "P4 guard (request/cancel)",
+   "k": 0,
+   "inputs": [
+    "req",
+    "cancel"
+   ],
+   "observed_run_inputs": [
+    [
+     1
+    ],
+    [
+     0
+    ]
+   ],
+   "oracle_output": {
+    "pivots": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ]
+    ],
+    "no_pivotal_cell": false,
+    "credit_original_minimal_causes": [
+     [
+      [
+       0,
+       0
+      ]
+     ],
+     [
+      [
+       1,
+       0
+      ]
+     ]
+    ],
+    "credit_union": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ]
+    ],
+    "credit_modified_minimal_causes": [
+     [
+      [
+       0,
+       0
+      ]
+     ],
+     [
+      [
+       1,
+       0
+      ]
+     ]
+    ],
+    "pin_determining_sets": [
+     [
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ]
+     ]
+    ]
+   },
+   "matches_paper": true,
+   "diffs": {}
+  },
+  {
+   "puzzle": "P5 delayed overdetermination",
+   "k": 2,
+   "inputs": [
+    "a",
+    "b"
+   ],
+   "observed_run_inputs": [
+    [
+     1,
+     0,
+     0
+    ],
+    [
+     0,
+     1,
+     0
+    ]
+   ],
+   "oracle_output": {
+    "pivots": [],
+    "no_pivotal_cell": true,
+    "credit_original_minimal_causes": [
+     [
+      [
+       0,
+       0
+      ]
+     ],
+     [
+      [
+       1,
+       1
+      ]
+     ]
+    ],
+    "credit_union": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      1
+     ]
+    ],
+    "credit_modified_minimal_causes": [
+     [
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       1
+      ]
+     ]
+    ],
+    "pin_determining_sets": [
+     [
+      [
+       0,
+       0
+      ]
+     ],
+     [
+      [
+       1,
+       1
+      ]
+     ]
+    ]
+   },
+   "matches_paper": true,
+   "diffs": {}
+  }
+ ]
+}

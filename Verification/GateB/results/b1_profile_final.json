@@ -1,0 +1,235 @@
+{
+ "status": "PASS",
+ "grid": [
+  {
+   "I": 1,
+   "k": 1,
+   "cells": 2,
+   "n": 1,
+   "median_seconds": {
+    "prevent": 0.0,
+    "credit_original": 0.0001,
+    "credit_modified": 0.0,
+    "pin": 0.0001
+   }
+  },
+  {
+   "I": 1,
+   "k": 2,
+   "cells": 3,
+   "n": 2,
+   "median_seconds": {
+    "prevent": 0.0001,
+    "credit_original": 0.0007,
+    "credit_modified": 0.0001,
+    "pin": 0.0003
+   }
+  },
+  {
+   "I": 1,
+   "k": 3,
+   "cells": 4,
+   "n": 2,
+   "median_seconds": {
+    "prevent": 0.0001,
+    "credit_original": 0.0013,
+    "credit_modified": 0.0001,
+    "pin": 0.0006
+   }
+  },
+  {
+   "I": 1,
+   "k": 4,
+   "cells": 5,
+   "n": 2,
+   "median_seconds": {
+    "prevent": 0.0001,
+    "credit_original": 0.0045,
+    "credit_modified": 0.0004,
+    "pin": 0.001
+   }
+  },
+  {
+   "I": 1,
+   "k": 5,
+   "cells": 6,
+   "n": 2,
+   "median_seconds": {
+    "prevent": 0.0002,
+    "credit_original": 0.0132,
+    "credit_modified": 0.0007,
+    "pin": 0.0019
+   }
+  },
+  {
+   "I": 2,
+   "k": 1,
+   "cells": 4,
+   "n": 2,
+   "median_seconds": {
+    "prevent": 0.0003,
+    "credit_original": 0.0045,
+    "credit_modified": 0.0008,
+    "pin": 0.002
+   }
+  },
+  {
+   "I": 2,
+   "k": 2,
+   "cells": 6,
+   "n": 2,
+   "median_seconds": {
+    "prevent": 0.0005,
+    "credit_original": 0.0493,
+    "credit_modified": 0.0023,
+    "pin": 0.0113
+   }
+  },
+  {
+   "I": 2,
+   "k": 3,
+   "cells": 8,
+   "n": 2,
+   "median_seconds": {
+    "prevent": 0.0006,
+    "credit_original": 0.0647,
+    "credit_modified": 0.0058,
+    "pin": 0.0705
+   }
+  },
+  {
+   "I": 2,
+   "k": 4,
+   "cells": 10,
+   "n": 2,
+   "median_seconds": {
+    "prevent": 0.0007,
+    "credit_original": 4.4779,
+    "credit_modified": 0.0352,
+    "pin": 0.4615
+   }
+  },
+  {
+   "I": 3,
+   "k": 1,
+   "cells": 6,
+   "n": 2,
+   "median_seconds": {
+    "prevent": 0.002,
+    "credit_original": 0.0407,
+    "credit_modified": 0.0039,
+    "pin": 0.0342
+   }
+  },
+  {
+   "I": 3,
+   "k": 2,
+   "cells": 9,
+   "n": 2,
+   "median_seconds": {
+    "prevent": 0.0027,
+    "credit_original": 1.4185,
+    "credit_modified": 0.0053,
+    "pin": 0.3097
+   }
+  }
+ ],
+ "tractable_envelope": {
+  "<=1s": [
+   [
+    1,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    1
+   ]
+  ],
+  "<=10s": [
+   [
+    1,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    3,
+    2
+   ]
+  ]
+ },
+ "credit_growth_ratios_along_cells": [
+  7.0,
+  1.86,
+  1.0,
+  2.93,
+  1.31,
+  21.92,
+  3.16
+ ],
+ "exponential_credit_cost_exhibited": true,
+ "host": "sandboxed Linux, CPython 3.10.12",
+ "note": "Reference (exhaustive) algorithms; production may improve constants but the |I|*k exponential in Credit is structural (mainTB cost analysis)."
+}

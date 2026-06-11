@@ -1,0 +1,40 @@
+{
+ "status": "PASS",
+ "results": [
+  {
+   "puzzle": "P1 one pivotal switch (tutorial)",
+   "R1_keys_equal_reference": true,
+   "R2_defvalid_matches_prop_pivotal": true,
+   "R3_witnesses_accepted_supersets_rejected": true
+  },
+  {
+   "puzzle": "P2 delayed cause with distractor",
+   "R1_keys_equal_reference": true,
+   "R2_defvalid_matches_prop_pivotal": true,
+   "R3_witnesses_accepted_supersets_rejected": true
+  },
+  {
+   "puzzle": "P3 overdetermination",
+   "R1_keys_equal_reference": true,
+   "R2_defvalid_matches_prop_pivotal": true,
+   "R3_witnesses_accepted_supersets_rejected": true
+  },
+  {
+   "puzzle": "P4 guard (request/cancel)",
+   "R1_keys_equal_reference": true,
+   "R2_defvalid_matches_prop_pivotal": true,
+   "R3_witnesses_accepted_supersets_rejected": true
+  },
+  {
+   "puzzle": "P5 delayed overdetermination",
+   "R1_keys_equal_reference": true,
+   "R2_defvalid_matches_prop_pivotal": true,
+   "R3_witnesses_accepted_supersets_rejected": true
+  },
+  {
+   "puzzle": "TempoBench sample (real artifact)",
+   "per_cell_agreement_f1": 1.0,
+   "ok": true
+  }
+ ]
+}

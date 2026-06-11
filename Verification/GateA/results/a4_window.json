@@ -1,0 +1,102 @@
+{
+ "status": "PASS",
+ "results": [
+  {
+   "puzzle": "P1 one pivotal switch (tutorial)",
+   "k": 1,
+   "same_step_relevant_cells": [],
+   "moore_safe": true,
+   "D2_classification_ok": true,
+   "cause_cells": [
+    [
+     0,
+     0
+    ]
+   ],
+   "D3a_mealy_covers_all_causes": true,
+   "D3b_moore_coverage_iff_safe": true
+  },
+  {
+   "puzzle": "P2 delayed cause with distractor",
+   "k": 2,
+   "same_step_relevant_cells": [],
+   "moore_safe": true,
+   "D2_classification_ok": true,
+   "cause_cells": [
+    [
+     0,
+     0
+    ]
+   ],
+   "D3a_mealy_covers_all_causes": true,
+   "D3b_moore_coverage_iff_safe": true
+  },
+  {
+   "puzzle": "P3 overdetermination",
+   "k": 1,
+   "same_step_relevant_cells": [],
+   "moore_safe": true,
+   "D2_classification_ok": true,
+   "cause_cells": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "D3a_mealy_covers_all_causes": true,
+   "D3b_moore_coverage_iff_safe": true
+  },
+  {
+   "puzzle": "P4 guard (request/cancel)",
+   "k": 0,
+   "same_step_relevant_cells": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "moore_safe": false,
+   "D2_classification_ok": true,
+   "cause_cells": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "D3a_mealy_covers_all_causes": true,
+   "D3b_moore_coverage_iff_safe": true
+  },
+  {
+   "puzzle": "P5 delayed overdetermination",
+   "k": 2,
+   "same_step_relevant_cells": [],
+   "moore_safe": true,
+   "D2_classification_ok": true,
+   "cause_cells": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "D3a_mealy_covers_all_causes": true,
+   "D3b_moore_coverage_iff_safe": true
+  }
+ ],
+ "verdict": "PRODUCTION RULE: adopt Mealy edge-rendering (option a) \u2014 it covers every cause cell on all five gold instances including the same-column guard; OR restrict corpora to Moore-safe instances (option b), which excludes the P4 class entirely (stronger than the trivial-instance filter, which only drops single-literal same-column causes)."
+}

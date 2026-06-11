@@ -1,0 +1,10 @@
+HOA: v1
+States: 1
+Start: 0
+AP: 2 "btn" "lamp"
+controllable-AP: 1
+Acceptance: 0 t
+--BODY--
+State: 0
+[0 & 1] 0
+--END--

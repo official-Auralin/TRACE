@@ -1,0 +1,66 @@
+{
+ "status": "MEASURED(n=1)",
+ "rows_compared": 1,
+ "row_errors": 0,
+ "per_variant_agreement_with_tempobench_gold": {
+  "original": {
+   "mean_f1": 1.0,
+   "perfect_agreement_rate": 1.0
+  },
+  "modified": {
+   "mean_f1": 1.0,
+   "perfect_agreement_rate": 1.0
+  }
+ },
+ "caveat": "n is small; full datasets at huggingface.co/datasets/nikolausholzer/tempobench. Conjecture-corp discrimination requires overdetermined rows, where the variants diverge.",
+ "rows": [
+  {
+   "effect": "XXX g",
+   "k": 3,
+   "inputs": [
+    "r"
+   ],
+   "observed_window_inputs": [
+    [
+     0,
+     1,
+     0,
+     1
+    ]
+   ],
+   "artifact_preaudit_F1F2F3": [
+    true,
+    true,
+    true
+   ],
+   "gold_cells": [
+    "((0, 3), 1)"
+   ],
+   "ours_original_cells": [
+    "((0, 3), 1)"
+   ],
+   "ours_modified_cells": [
+    "((0, 3), 1)"
+   ],
+   "gold_actuality_consistent": true,
+   "agreement_original": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "agreement_modified": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+   },
+   "variants_diverge_here": false,
+   "minimal_causes_original": [
+    "((0, 3),)"
+   ],
+   "minimal_flip_sets_modified": [
+    "((0, 3),)"
+   ],
+   "source": "tb_embedded_sample.jsonl"
+  }
+ ]
+}

@@ -1,0 +1,34 @@
+# Gate A Verification Suite (TRACE_validation_plan.md, Gate A)
+
+Run everything: `python3 run_all.py` → `results/REPORT.md` + per-test JSON evidence.
+No dependencies beyond Python ≥3.10 stdlib.
+
+| File | Gate | What it proves | PASS condition |
+|---|---|---|---|
+| `a1_audit.py` | A1 | F1(operational)/F2/F3 checker is sound (self-validates on 1 positive + 4 negative labelled HOA controls), then audits any corpus in `external/` | every control classified correctly on all three assumptions |
+| `a2_oracle_check.py` | A2(i) | the reference oracle (parser→expansion→simulation→4 causal objects) reproduces mainTB's published answers from machine-readable HOA artifacts | exact match, 5 puzzles × {prevent, credit-orig, credit-mod, pin} |
+| `a2_corp_compare.py` | A2(ii) | per-cell agreement of TempoBench gold keys vs Γ^ac under BOTH HP variants | harness PASSES iff all rows parse, pre-audit F2/F3, and gold is actuality-consistent; agreement rate is the measured result. **Status: MEASURED(n=1)** on the instance embedded in the cloned tempobench repo — perfect per-cell agreement (F1=1.0, both variants). |
+| `A2_definitional_note.md` | A2(def.) | primary-source answer to mainTB's roadmap-V2 TODO: CORP uses Halpern's **modified** variant with output-resets to **actual** values — not mainTB's original/updated input-cell contingencies | n/a (evidence document, quotes + sources) |
+| `a3_variants.py` + `A3_decision_record.md` | A3 | variant divergence is exactly the overdetermined class; dual-acceptance = union of variants, no supersets; per-consumer `hp_variant_policy` decided | T1∧T2∧T3 on all 5 puzzles |
+| `a4_window.py` | A4 | same-step (t=k) relevance detector; Mealy rendering covers all cause cells, Moore loses exactly the P4 class | D1–D3 on all 5 puzzles |
+
+## Honest limitations (peer-review notes on the tests themselves)
+1. **F1 is verified as a necessary operational condition** (I/O partition declared +
+   output-functional + input-total). Sufficiency (artifact is *the* synthesized
+   implementation, not a coincidentally-functional monitor) requires re-synthesis
+   from the TLSF source — out of sandbox scope, recorded as a manual step.
+2. **A2(ii) measured on n=1 only.** The cloned tempobench repo contains no dataset
+   files; its one embedded gold-keyed instance was extracted (external/tb_embedded_sample.jsonl,
+   provenance recorded) and agrees perfectly with our oracle under both variants. The
+   schema mapping is now validated against real repo code (dataset.py). The instance is
+   NOT overdetermined, so it cannot discriminate Conjecture corp's variants — the full
+   HuggingFace dataset (nikolausholzer/tempobench) is still required for that; network
+   and PyPI fetches from the sandbox failed (logged). A 2.5: real-label HOA syntax
+   (named APs, not indices) was a discovered gap, fixed and regression-locked via the
+   good_control_named_labels fixture.
+3. Oracle searches are exhaustive over window cells with cause-size caps
+   (≤3 cells for actual causes, ≤4 for flips/pin) — sound for the gold puzzles
+   (all published causes are size ≤2) and for any instance whose causes are below
+   the cap; the production grader must lift the caps or certify them per instance.
+4. Quotes in A2_definitional_note.md are from author-hosted/arXiv versions, not
+   versions of record.

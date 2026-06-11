@@ -1,0 +1,1320 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Proposition}
+\newtheorem{assumption}{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\newcommand{\Effects}{\mathcal{E}}
+\newcommand{\LTL}{\mathrm{LTL}}
+\newcommand{\LTLf}{\mathrm{LTL}_f}
+\newcommand{\AP}{\mathrm{AP}}
+\newcommand{\Close}{\mathrm{Close}}
+\newcommand{\Lang}{\mathcal{L}}
+\newcommand{\Nat}{\mathbb{N}}
+\newcommand{\True}{\mathsf{true}}
+\newcommand{\Frame}{\mathfrak{F}}
+\newcommand{\Design}{\eta}
+\newcommand{\Adm}{\mathrm{Adm}}
+
+\title{Frame-Relative Counterfactual Necessity for Explaining Synthesized
+Temporal Behavior}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+LTL synthesis is many-to-one: a controller alone fixes neither a unique
+specification nor a unique temporal explanation of its behavior. We study the
+reverse question under a declared \emph{causal frame}: given background,
+intervention model, candidate vocabulary, similarity order, and preference order,
+when is a candidate \(C\) a \emph{frame-relative counterfactual necessary
+condition} for effect \(E\)?
+
+We separate two notions throughout. \textbf{Trace-existential necessity (N1)}
+applies to a Mealy machine \(M\), trace \(\tau\), and frame: deciding validity
+for a fixed \(C\) is a one-player shortest-edit search plus non-emptiness check
+(the frozen machine has no free move). N1 is confined to co-safety / finite-change
+causes; \(\omega\)-liveness commitments require the strategy level. \textbf{Strategy-guarantee
+necessity (N2)} additionally requires a synthesis artifact \((G_\varphi,\sigma,V_{\Frame})\)
+(not determined by \(M\) alone): a constrained \emph{reverse parity game} decides
+whether the controller can drop \(C\) and still guarantee \(E\) against admissible
+environments (parity winning region, then a one-player check that re-imposes the
+objective).
+
+For a \emph{fixed} candidate \(C\) and finite candidate space
+\(\mathcal{K}_{\Frame}\), validity and \(\triangleleft\)-minimality are decidable
+under stated bounds; we do \emph{not} present a complete solver or a tight
+complexity theorem. Canonical default frames fix every component except the
+declared vocabulary, grammar, and tie-breaks; the answer is then a function of
+\((M,\tau,E)\) \emph{given that declaration}. A finite-trace specialization
+aligns with TempoBench-style TCE \emph{conditionally} on machine-checkable
+assumptions: a control-validated audit confirms them on the publicly available
+TempoBench sample artifact, and a reference implementation of the finite
+construction reproduces five worked instances from HOA encodings and matches
+the one available TempoBench answer key per cell. Corpus-scale evaluation
+awaits the dataset's re-release.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+\label{sec:intro}
+
+The standard synthesis pipeline is
+\[
+  \varphi_{\LTL}\longrightarrow A_{\varphi}\longrightarrow G_{\varphi}
+  \longrightarrow \sigma \longrightarrow M ,
+\]
+where \(\varphi_{\LTL}\) is an LTL specification, \(A_{\varphi}\) an automaton for
+its models, \(G_{\varphi}\) a parity game, \(\sigma\) a winning strategy, and
+\(M=(S,s_0,I,O,\delta,\lambda)\) a Mealy implementation (\(\delta:S\times
+2^I\to S\), \(\lambda:S\times 2^I\to 2^O\)). The pipeline loses information: many
+specifications yield the same machine and many strategies are behaviorally
+equivalent, so the reconstructive reverse map \(M\to\varphi\) is ill-posed.
+
+We pose instead an \emph{explanatory} reverse question. The inputs split by
+regime. \textbf{Trace-level analysis} takes \((M,\Frame,E,\tau)\): a Mealy
+machine \(M=(S,s_0,I,O,\delta,\lambda)\) fixing the I/O partition (\(I\cap
+O=\emptyset\)), a causal frame \(\Frame\), a temporal effect \(E\) (a single,
+possibly conjunctive, \(\omega\)-regular trace property), and observed trace
+\(\tau\in\Lang(M)\). \textbf{Strategy-level analysis} additionally requires a
+synthesis/game artifact \((G_\varphi,\sigma,V_{\Frame})\) --- parity game
+\(G_\varphi=(V,V_0,V_1,T,\Omega)\), frozen winning strategy \(\sigma\) implemented
+by \(M\), and editable vertex set \(V_{\Frame}\subseteq V_0\) --- which \(M\) alone
+does not determine. Optional specification \(\varphi\) may justify \(G_\varphi\) and
+\(\Frame=\operatorname{Frame}(\varphi;\Design)\), but the strategy query is not a
+function of \((M,\tau,E)\) alone. Throughout we use ``cause'' for a
+\emph{frame-relative necessary condition}; this is counterfactual necessity, not
+Halpern--Pearl actual causation (Section~\ref{sec:overdetermination}).
+
+The task is to \emph{define and check} candidates and, when
+\(\mathcal{K}_{\Frame}\) is finite or bounded, to \emph{search} for a
+\(\triangleleft\)-minimal valid one \(C^\star\); we do not claim a complete solver
+for open LTL candidate spaces or minimal dominion extraction. A trace is the infinite word
+\(\tau=a_0a_1\cdots\) with \(a_t=i_t\cup o_t\in 2^{I\cup O}\),
+\(o_t=\lambda(s_t,i_t)\), \(s_{t+1}=\delta(s_t,i_t)\); in implementations \(\tau\)
+is a lasso \(uv^\omega\).
+
+The intended output is not ``the controller wins,'' but a temporal explanation of
+what had to remain true for the chosen effect to occur, \emph{relative to a
+declared frame}. We commit to a \emph{counterfactual-necessity} reading: \(C\)
+holds on \(\tau\), removing \(C\) is realizable under the frame, and on the
+closest admissible executions that remove \(C\) the effect fails. This is not
+sufficiency and not Halpern--Pearl actual causation (which adds a
+minimal-sufficient-set requirement); Section~\ref{sec:overdetermination} discusses
+what the necessity reading excludes. We avoid the unqualified phrase ``weakest
+necessary condition'': in standard logic the \emph{strongest} necessary condition
+for \(E\) (equivalently the weakest \emph{sufficient} condition) is \(E\) itself,
+while the weakest necessary condition is \(\True\), so the phrase is doubly
+misleading for what we do. Instead, ``more permissive'' means larger language
+\(\Lang(C)\), ``insufficient'' means ``does not by itself force the effect,'' and
+these are kept distinct.
+
+\section{Related Work and Contributions}
+\label{sec:related}
+
+This work sits at the intersection of three lines of research; our claims are
+deltas relative to them.
+
+\paragraph{Counterfactual and actual causation.} The necessity core is
+Lewis--Stalnaker: a cause is what, on the closest worlds where it is absent,
+removes the effect, with centering and a limit assumption on the similarity
+order. Halpern--Pearl actual causation adds a minimal-sufficient-set requirement
+and a contingency quantifier; we adopt only the necessity half
+(Section~\ref{sec:overdetermination}) and are explicit about what this excludes
+(preemption discrimination, sufficiency).
+
+\paragraph{Temporal/\(\omega\)-regular causality.} The closest technical
+relatives are automata-theoretic accounts of causes for \(\omega\)-regular
+effects in reactive systems (downward-closed \(\omega\)-regular causes via
+game/automaton constructions), which also underlie TempoBench ground truth. Our
+delta is not ``another parity solve'' but \emph{what the game is asked}:
+\begin{itemize}[nosep]
+  \item \textbf{Centering:} N1 is trace-existential (closest admissible
+        counterfactual trace); N2 is strategy-centered (can \(\sigma\) drop a
+        commitment while still guaranteeing \(E\)?), without Lewis--Stalnaker
+        trace centering.
+  \item \textbf{Objective:} \(B_{\Frame}\rightarrow E\) with non-commitment
+        witnessed on \(B_{\Frame}\wedge\neg C\) plays, not a single global
+        \(\omega\)-regular cause language.
+  \item \textbf{Intervention:} re-opening a declared vertex subset
+        \(V_{\Frame}\) of a \emph{frozen} \(\sigma\), not synthesizing an
+        unconstrained alternative controller.
+  \item \textbf{Framing:} background, admissible counterfactuals, similarity,
+        candidate vocabulary, and anti-circularity are explicit parameters; prior
+        constructions fix many of these implicitly.
+\end{itemize}
+We do not claim a new causality-synthesis algorithm; the contribution is this
+parameterization plus sound decision procedures for fixed \(C\) (and bounded
+search when \(|\mathcal{K}_{\Frame}|\) is finite).
+
+\paragraph{Reactive synthesis and parity games.} We use only standard facts:
+LTL\(\to\)deterministic parity automaton translation; parity games are determined,
+solvable in quasi-polynomial time, and lie in \(\mathrm{UP}\cap\mathrm{co\text{-}UP}\);
+HOA is the interchange format for \(\omega\)-automata. These are background.
+
+\paragraph{Contributions.} (1)~An explicit \emph{causal frame} \(\Frame\)
+factoring a temporal causal query into background, effect scope, intervention
+model, candidate vocabulary, similarity order, and preference order, with
+canonical default frames (Section~\ref{sec:canonical-frames}) that pin all
+components but the declared vocabulary, grammar, and tie-breaks. (2)~A clean
+separation of trace-existential necessity (N1: one-player shortest-edit +
+non-emptiness) from strategy-guarantee necessity (N2: reverse parity game with
+sound-and-complete decision for fixed \(C\), Section~\ref{sec:rpg}). (3)~A
+decidable anti-circularity condition (Assumption~\ref{ass:anticirc}) --- semantic
+position-masking for point/bounded effects, pure-logic non-entailment for all
+effects, and a mandatory effect cone for general \(\omega\)-regular effects ---
+that bars logical entailment and point-position restatement while admitting
+input/invariant causes. (4)~A finite-trace specialization aligning with
+TempoBench-style TCE \emph{conditionally} on (F1)--(F2), which we have not
+verified (Section~\ref{sec:tempobench}). Core deliverables are the definitions
+and Propositions~\ref{prop:rpg-sound}--\ref{prop:tb-reduction}; a tight
+complexity theorem, dominion minimization, and empirical evaluation are left open.
+
+\paragraph{Scope (read once).} \textbf{Established:} valid-cause clauses; N1/N2
+distinction; Proposition~\ref{prop:rpg-sound} (N2 decision for fixed
+\(V_{\Frame},C\)); certificate characterization
+(Proposition~\ref{prop:weakest}); finite specialization
+(Proposition~\ref{prop:tb-reduction}). \textbf{Scoped:} candidate checking and
+search over finite/bounded \(\mathcal{K}_{\Frame}\); conditional complexity
+(Section~\ref{sec:complexity}); TempoBench alignment on (F1)--(F2).
+\textbf{Not claimed:} full solver, HP-style actual causation, verified benchmark
+artifacts, or tight minimal-dominion completeness.
+
+\section{Background: Parity Games}
+\label{sec:background}
+
+A parity game is \(G=(V,V_0,V_1,T,\Omega)\) with vertices \(V=V_0\sqcup V_1\)
+(system \(V_0\), environment \(V_1\)), a total edge relation \(T\subseteq V\times
+V\), and a priority map \(\Omega:V\to\Nat\). A play is an infinite path; under the
+\emph{min-even} convention used throughout, the system wins iff the least priority
+seen infinitely often is even. LTL formulas translate to deterministic parity
+automata, so synthesis reduces to deciding \(\exists\sigma\,\forall\rho.\
+\mathrm{Play}(\sigma,\rho)\models\varphi\); a winning \(\sigma\) is implementable
+as a Mealy machine. We reuse this machinery in reverse: we freeze \(M\) as the
+strategy and ask which temporal conditions were necessary for a chosen effect.
+
+\section{The Formal Framework}
+\label{sec:formal}
+
+\subsection{The causal frame and admissible counterfactuals}
+
+The reverse-causal object is the frame
+\[
+  \Frame=(B_{\Frame},E_{\Frame},S_{\Frame},O_{\Frame},
+          \mathcal{K}_{\Frame},\mathcal{I}_{\Frame},{\preceq},\triangleleft),
+\]
+where \(B_{\Frame}\) is a background constraint (environment assumptions and
+system guarantees, when present, are folded in; \(B_{\Frame}=\True\) if none),
+\(E_{\Frame}=\bigwedge_{r\in S_{\Frame}}E_r\) is the effect selected from a
+decomposition \(E=E_1\land\cdots\land E_m\) by indices \(S_{\Frame}\) (if no
+scoping, \(E_{\Frame}=E\)), \(O_{\Frame}\subseteq O\) the relevant outputs,
+\(\mathcal{K}_{\Frame}\) the candidate-cause space, \(\mathcal{I}_{\Frame}\) the
+intervention model, \({\preceq}=\{\preceq_\tau\}_\tau\) the similarity orders, and
+\(\triangleleft\) the candidate-preference order (\(C'\triangleleft C\): \(C'\) is
+preferred). When derived from a specification we write
+\(\Frame=\operatorname{Frame}(\varphi;\Design)\); \(\Frame\) is \emph{not}
+\(\varphi\) and is unrelated to a Kripke frame. A useful slogan: \emph{\(M\) gives
+behavior; \(\Frame\) gives explanatory scope.}
+
+The intervention model fixes the admissible counterfactual set
+\(\Adm_M^{\Frame}(\tau)\) in one of three regimes:
+\begin{description}[leftmargin=2.2cm,style=nextline]
+  \item[Input-only] counterfactuals stay genuine machine behaviors,
+        \(\Adm_M^{\Frame}(\tau)=\Lang(M)\cap\Lang(B_{\Frame})\). (Default; asks
+        which environment behavior caused the effect.)
+  \item[Output-intervention] outputs may be edited away from \(\lambda\):
+        \(\Adm_M^{\Frame}(\tau)=\mathrm{Edit}_O^{\Frame}(\Lang(M))\cap
+        \Lang(B_{\Frame})\), where \(\mathrm{Edit}_O^{\Frame}\) toggles outputs at
+        a frame-permitted position set; a separate output/event-causality regime.
+  \item[Strategy-structure] the system's commitments are re-opened:
+        \(\Adm_M^{\Frame}(\tau)=\{\mathrm{Play}(\sigma',\rho)\mid\sigma'\in
+        \Sigma_{\Frame},\ \rho\}\cap\Lang(B_{\Frame})\), with
+        \[
+          \Sigma_{\Frame}=\{\sigma'\mid \sigma'\text{ agrees with }\sigma
+          \text{ on }V_0\setminus V_{\Frame}\}
+        \]
+        for a declared editable set \(V_{\Frame}\subseteq V_0\) of the synthesis
+        game \(G_\varphi=(V,V_0,V_1,T,\Omega)\) and frozen strategy \(\sigma\)
+        (we require \(\sigma\in\Sigma_{\Frame}\)). By default we take
+        \(\sigma'\) to range over \emph{finite-memory} strategies on
+        \(G_\varphi\) (sufficient for \(\omega\)-regular objectives on finite
+        arenas); the witness search returns an accepting lasso \(\pi\) on a
+        finite sub-arena, from which such a \(\sigma'\) exists by standard
+        synthesis (Section~\ref{sec:rpg}). This regime requires inputs
+        \((G_\varphi,\sigma,V_{\Frame})\) in addition to \(M\).
+\end{description}
+The \(\tau\)-argument is kept uniformly even though the first two regimes do not
+depend on \(\tau\), because frame-relative interventions (the finite-horizon
+TempoBench specialization of Section~\ref{sec:tempobench}) perturb \(\tau\) itself.
+
+\subsection{Similarity to the actual trace}
+\label{sec:similarity}
+
+Counterfactual causality needs a notion of closeness, a preorder \(\preceq_\tau\)
+where \(\tau'\preceq_\tau\tau''\) reads ``\(\tau'\) is at least as close to
+\(\tau\) as \(\tau''\).'' Our canonical order is \emph{count-first}: let
+\[
+  \mathrm{Diff}_\tau(\tau')=\{t\mid\tau'(t)\neq\tau(t)\},\quad
+  d(\tau,\tau')=|\mathrm{Diff}_\tau(\tau')|\in\Nat\cup\{\infty\},
+\]
+and define the primary key by \(d\) alone (fewer changed positions is closer;
+\(\infty\) on top). Traces with an \emph{infinite} change set form a single
+\(\preceq_\tau\)-maximal class we do not order internally; \(\Close\) (below) is
+taken over \emph{finite-change} removals whenever any exist. Under this
+\emph{count-only} order, \(\Close_{\tau,M}^{\Frame}(\neg C)\) is the full set of
+minimum-count admissible \(\neg C\)-removals, and validity quantifies over
+\emph{all} of them (effect must fail on each). This matches minimal-intervention
+practice (Hamming distance on traces) and avoids an arbitrary tie-break changing
+validity when two minimum-count removals differ only in \emph{which} positions
+changed.
+
+\begin{definition}[Optional profile refinement]
+\label{def:profile-refine}
+A frame may declare a total order \(\lhd_\Sigma\) on \(2^{I\cup O}\) and refine
+\(\preceq_\tau\) lexicographically by difference profile \(\mathrm{prof}_\tau\)
+(changed positions in order, each tagged with its new value). On finite-change
+traces this yields a \emph{total} order with unique minimum \(\tau\) (centering)
+and unique \(\Close\) (a single witness). Validity then depends on that tie-break;
+reports must state \(\lhd_\Sigma\) or use count-only (default in
+\(\Frame_{\mathrm{trace}}\) and \(\Frame_{\mathrm{TB}}\)).
+\end{definition}
+
+On finite-change traces the count-only order is antisymmetric among distinct
+traces at fixed \(d\), well-founded (the count key is well-ordered), and has
+unique minimum \(\tau\) among admissible traces. Lexicographic comparison of
+\emph{infinite}-change profiles is \emph{not} well-founded, which is why
+\(\Close\) is restricted to finite-change removals; if the only removals require
+infinitely many edits, \(\Close\) is empty and the candidate fails non-vacuity.
+This is a \textbf{scope boundary}, stated upfront: trace-level necessity (N1)
+is confined to \emph{co-safety / finite-change} causes. An \(\omega\)-liveness
+commitment whose removal requires infinitely many trace edits (e.g.\ removing
+\(GF\,req\) from a lasso forces \(FG\,\neg req\)) has \(\Close=\emptyset\) at
+the trace level and belongs to N2, where ``dropping a commitment'' is one
+strategic deviation (Section~\ref{sec:rpg}). Neither N1 nor N2 alone is a
+complete account of temporal explanation; the split reflects an inherent limit of
+trace-level Lewis--Stalnaker necessity for liveness.
+
+We reject two common alternatives on principled grounds: the first-difference
+(Baire) order ties traces that differ only in \emph{when} the same minimal edit
+occurs, and pure change-set \emph{inclusion} makes incomparable edits at the
+same count --- both blur ``minimal intervention'' when several same-count
+removals exist.
+
+\begin{remark}[Closest removals for lasso counterfactuals]
+\label{rem:lasso-close}
+When \(\tau=uv^\omega\), \(M\) is finite-state, and the regime is input-only or
+output-intervention, every admissible \(\neg C\)-trace is a bounded-period lasso
+(a path in the finite product \(M\times A_{\neg C}\times A_E\)), and \(d\) is
+finite exactly on perturbations agreeing with \(\tau\) on its tail. Under
+count-only \(\preceq_\tau\), \(\Close_{\tau,M}^{\Frame}(\neg C)\) is the set of
+minimum-count removals, found by BFS over that product; under the optional profile
+refinement (Definition~\ref{def:profile-refine}) it is a unique shortest-edit
+witness.
+\end{remark}
+
+\begin{remark}[Centering and the strategy-structure regime]
+\label{rem:strat-centering}
+Strategy-guarantee necessity (N2, Section~\ref{sec:two-notions}) is a
+\emph{type-level} property of the controller \(\sigma\) --- ``can \(\sigma\) drop
+a commitment and still guarantee \(E\)?'' --- and is centered on the actual
+\emph{strategy} \(\sigma\), not on the actual trace \(\tau\). It therefore does
+\emph{not} require trace-centering (Assumption~\ref{ass:wf}(ii)), and
+Proposition~\ref{prop:rpg-sound} does not use it; the trace-level
+Lewis--Stalnaker axiom is simply not the right notion at the strategy level.
+Trace-centering matters only for the \emph{token-level} certificate
+\(C^{\flat}\) (Proposition~\ref{prop:weakest}): if one wishes to run that
+construction \emph{within} a strategy-structure frame (a separate, optional use),
+the edited-vertex subset order ties all plays of \(\sigma\) with \(\tau\), so one
+must refine it lexicographically (edited-vertex subset, then the trace-level
+count-first order) to restore \(\tau\) as unique minimum. Absent that refinement,
+Proposition~\ref{prop:weakest} is read only for the input-only/output regimes,
+while the strategy-structure regime carries the validity content of
+Proposition~\ref{prop:rpg-sound} (which needs no centering).
+\end{remark}
+
+\begin{assumption}[Well-formedness]
+\label{ass:wf}
+Fix \(M,\Frame,\tau\). (i)~\textbf{Actual-world admissibility:}
+\(\tau\in\Adm_M^{\Frame}(\tau)\). (ii)~\textbf{Centering:} \(\preceq_\tau\) has
+\(\tau\) as unique minimum (\(\tau\prec_\tau\tau'\) for admissible
+\(\tau'\neq\tau\)). (iii)~\textbf{Well-foundedness (Limit Assumption):}
+\(\preceq_\tau\) has no infinite strictly descending chain on
+\(\Adm_M^{\Frame}(\tau)\), so every non-empty admissible set has minimal elements
+and every element dominates a minimal one. Parts (i)--(ii) are Lewis--Stalnaker
+centering; (iii) holds for the canonical order when \(\Close\) is restricted to
+finite-change removals (Section~\ref{sec:similarity}), and is otherwise an explicit
+hypothesis on \(\preceq_\tau\).
+\end{assumption}
+
+\subsection{Valid causes}
+
+The closest admissible counterfactuals removing \(C\) are
+\[
+  \Close_{\tau,M}^{\Frame}(\neg C)=
+  \min\nolimits_{\preceq_\tau}\{\tau'\in\Adm_M^{\Frame}(\tau)\mid\tau'\models\neg C\}
+\]
+(over finite-change removals; Section~\ref{sec:similarity}; under count-only
+\(\preceq_\tau\) this is the full minimum-count set). The valid-cause set is
+\[
+\begin{aligned}
+  \mathsf{Causes}_{M,\Frame,\tau}(E_{\Frame})=\{C\in\mathcal{K}_{\Frame}\mid{}&
+  \tau\in\Lang(C),\ \tau\in\Lang(E_{\Frame}),\\
+  &\Close_{\tau,M}^{\Frame}(\neg C)\neq\emptyset,\\
+  &\Close_{\tau,M}^{\Frame}(\neg C)\cap\Lang(E_{\Frame})=\emptyset\}.
+\end{aligned}
+\]
+The third (non-vacuity) clause is essential: without it any \(C\) that no
+admissible trace violates --- a tautology, or any invariant of \(M\) under an
+input-only frame --- would pass vacuously. The fourth clause is counterfactual
+dependence on \emph{every} closest removal (under count-only) or the unique
+closest removal (under profile refinement).
+
+\paragraph{Strategy-level causes need a re-opening frame.}
+\begin{proposition}
+\label{prop:strategy-frame}
+Let \(C_M\) be an invariant of \(M\) (\(\Lang(M)\subseteq\Lang(C_M)\)). Under an
+input-only frame, \(C_M\notin\mathsf{Causes}_{M,\Frame,\tau}(E_{\Frame})\) for
+every \(\tau,E_{\Frame}\).
+\end{proposition}
+\begin{proof}
+\(\Adm_M^{\Frame}(\tau)\subseteq\Lang(M)\subseteq\Lang(C_M)\), so no admissible
+trace violates \(C_M\); \(\Close_{\tau,M}^{\Frame}(\neg C_M)=\emptyset\) and
+non-vacuity fails.
+\end{proof}
+Thus an invariant is \emph{vacuous under input-only} counterfactuals; testing it
+requires re-opening the machine's commitments, the principled regime for which
+is strategy-structure intervention (the reverse parity game).
+
+\subsection{Anti-circularity}
+
+\(\mathcal{K}_{\Frame}\) must be constrained, or the test admits circular
+``causes'' that re-assert the effect. The key distinction is between
+\emph{causing \(E\) through \(M\)} (what a genuine cause does, and must be allowed)
+and \emph{restating \(E\)} (asserting the effect at its own evaluation positions,
+which is circular). The condition bans the latter without touching the former.
+
+\begin{assumption}[Anti-circularity]
+\label{ass:anticirc}
+Every \(C\in\mathcal{K}_{\Frame}\) is \emph{effect-disjoint}:
+\begin{enumerate}[label=(\roman*)]
+  \item \textbf{No restatement (semantic, point/bounded effects).} For a point
+        effect \(E_{\Frame}=X^k o\), \(C\) does not constrain the value of \(o\) at
+        position \(k\): \(\Lang(C)\) is invariant under flipping \(o\) at position
+        \(k\) (i.e.\ \(\tau'\in\Lang(C)\iff\tau'[k{:}o{\mapsto}\neg o]\in\Lang(C)\),
+        where the bracket flips only \(o\) at time \(k\)). Equivalently, in the
+        masked vocabulary that hides \(o@k\), \(C\) is well-defined. This is the
+        clean, semantic form of ``\(C\) does not assert the effect at its own
+        position''; it admits a cooldown cause ``\(o\) at \(t=5\)'' for effect
+        ``\(o\) at \(t=10\)'' (\(t\neq k\)) and any inputs, while barring
+        \(X^k o\), \(X^k\neg o\), and trivial re-encodings such as
+        \(X^k(o\lor\bot)\). For a bounded conjunctive effect the masking is applied
+        at each constrained position. \emph{For a general \(\omega\)-regular
+        effect} (\(GF\,grant\), \(G(req\to F\,grant)\), parity acceptance) there is
+        no single ``effect position'' to mask; guard (ii) and a declared
+        \emph{effect cone} (Assumption~\ref{ass:cone}, mandatory) apply instead.
+  \item \textbf{No pure-logic entailment (all effects).} \(\Lang(C)\not\subseteq
+        \Lang(E_{\Frame})\), decidable by emptiness of \(\Lang(C)\cap
+        \overline{\Lang(E_{\Frame})}\) (an \(\omega\)-regular inclusion test). The
+        test is \emph{not} relativized to \(\Adm_M^{\Frame}(\tau)\): a candidate
+        that forces \(E_{\Frame}\) only \emph{through \(M\)} is \emph{not} excluded
+        (this is what reactive causes do); only one that forces \(E_{\Frame}\) by
+        pure logic --- already a logical strengthening of the effect --- is. This
+        bars logical entailment and point-position restatement; it does \emph{not}
+        exclude system-relative aliases or near-restatements that pass (ii) alone
+        (hence the mandatory effect cone below).
+\end{enumerate}
+We call this ``precise and decidable'' in the sense that (i) is a decidable
+semantic invariance check for point/bounded effects, (ii) is a decidable
+\(\omega\)-regular inclusion test for all effects, and the effect cone is a
+declared finite AP subset; we do \emph{not} claim a uniform syntactic
+``effect-position'' notion for arbitrary temporal effects.
+\end{assumption}
+
+\begin{assumption}[Effect cone (mandatory for general effects)]
+\label{ass:cone}
+For every non-point effect \(E_{\Frame}\), the frame declares a finite
+\(\AP\)-subset \(\mathsf{Cone}(E_{\Frame})\) of propositions that may appear in
+effect-shaped subformulas (outputs and acceptance atoms tied to \(E\)). Every
+\(C\in\mathcal{K}_{\Frame}\) must satisfy \(\AP(C)\cap\mathsf{Cone}(E_{\Frame})
+=\emptyset\) unless \(C\) is explicitly marked, in \(\Frame_{\mathrm{strat}}\), as
+an internal-state observable (e.g.\ \(\mathit{at\_}s\)) or a declared
+system-guarantee invariant. This blocks vacuous near-restatements that name the
+effect atom --- e.g.\ a bare recurrence \(GF\,grant\), or a guarded re-assertion of
+\(grant\) --- for effect \(GF\,grant\) when \(\mathsf{Cone}=\{grant\}\), while still
+allowing input causes and, under a declared regime, strategy-level state
+observables and system-guarantee invariants (e.g.\ the controller commitment
+\(G(req\to F\,grant)\), admitted only by such an explicit declaration, never at the
+trace level).
+\end{assumption}
+
+This is what makes the worked causes admissible. For the general effect
+\(F\,grant\), guard (i) is silent and (ii) is operative: the input cause \(req\)
+satisfies \(\Lang(req)\not\subseteq\Lang(F\,grant)\) (a \(req\)-at-0, grant-free
+trace witnesses this), so it is admitted --- yet \(req\) does force \(F\,grant\) on
+\(\Lang(M)\), which is precisely why it is a cause. The TempoBench cause
+\(\Gamma^\star\) (Section~\ref{sec:tempobench}), pinning \(o\) at \(k\) through the
+functional machine, is admitted similarly (for the point effect \(X^k o\), guard
+(i) masks only \(o@k\), which \(\Gamma^\star\), being over inputs, does not touch).
+The invariant \(G(req\rightarrow F\,grant)\) names the cone atom \(grant\), so when
+\(\mathsf{Cone}(F\,grant)=\{grant\}\) it is admitted \emph{only} as a declared
+system-guarantee invariant under \(\Frame_{\mathrm{strat}}\) (never at the trace
+level); given that declaration it is not a logical restatement either, since a
+request-free trace satisfies it vacuously while failing the effect. \emph{Excluded} are logical
+restatements: \(X\,grant\) and \(req\land X\,grant\) entail \(F\,grant\) (fail
+(ii)); \(X^k o\) and \(X^k(o\lor\bot)\) for point effect \(X^k o\) fail (i).
+
+\begin{remark}[Strategy-level state observables]
+\label{rem:strat-obs}
+Under \(\Frame_{\mathrm{strat}}\), candidates may use \(\mathit{at\_}s\) atoms
+(exposing internal state). Anti-circularity (ii) still requires
+\(\Lang(C)\not\subseteq\Lang(E_{\Frame})\); coincidence of \(C\) with \(E\) on
+\(\Lang(M)\) is machine entailment, not logical restatement. Such observables are
+admissible when the explanatory question is about a controller \emph{commitment},
+not a trace event (Section~\ref{sec:liveness-example}).
+\end{remark}
+
+\subsection{Minimal cause and the preference order}
+
+\begin{definition}[Minimal temporal cause]
+\label{def:mincause}
+\(C^\star\in\mathcal{K}_{\Frame}\) is a minimal temporal cause iff
+\(C^\star\in\mathsf{Causes}_{M,\Frame,\tau}(E_{\Frame})\) (validity) and no
+\(C'\in\mathsf{Causes}_{M,\Frame,\tau}(E_{\Frame})\) has \(C'\triangleleft C^\star\)
+(minimality). When \(\triangleleft\) is partial, several incomparable minimal
+causes may exist --- ``\emph{a} minimal cause,'' not ``the.'' We assume
+\(\triangleleft\) well-founded (automatic when \(\mathcal{K}_{\Frame}\) is finite).
+\end{definition}
+
+Validity already encodes necessity; \(\triangleleft\) selects \emph{among}
+necessary causes. Taking permissiveness (larger \(\Lang(C)\)) as the
+\emph{primary} key is defective: if \(A,B\) are each valid then \(A\lor B\) is
+weaker, so a permissiveness-first order drifts to ever-larger disjunctions and
+would even prefer \(F\,req\) to \(req\). We therefore make \emph{syntactic
+readability primary and permissiveness only a tie-break}; the canonical order is
+\[
+  (\text{smaller formula size},\ \text{smaller temporal depth},\
+   \text{more permissive (larger }\Lang(C)\text{)}),
+\]
+lexicographic. For ``size'' and ``depth'' to be reproducible we fix a candidate
+grammar (the readable LTL grammar of Section~\ref{sec:construction}) and a normal
+form (negations on literals, fixed \(\land,\lor\) ordering, no redundant
+\(X\)-nesting), measuring size as syntax-tree node count; the grammar and measure
+are part of the frame. We do not claim this priority is uniquely correct --- it is
+a declared design choice; the frame may substitute another well-founded order. The
+default has three consequences: (i)~it avoids overfitting (large conjunctions lose
+on size); (ii)~it avoids disjunctive drift (\(A\lor B\) is larger, chosen only
+when no smaller cause exists --- exactly overdetermination,
+Section~\ref{sec:overdetermination}); (iii)~the degenerate extensionally maximal
+object below has no small readable formula. We require of \(\mathcal{K}_{\Frame}\)
+that the trace-exclusion artifact \(A\setminus\{f_0\}\) be inexpressible (it holds
+for the readable grammar/template families). If the necessary condition
+lies outside \(\mathcal{K}_{\Frame}\) (e.g.\ \(a\lor b\) when only literals are
+admitted), the method reports \(\mathsf{Causes}=\emptyset\); the remedy is to
+enlarge \(\mathcal{K}_{\Frame}\), not to return a spurious singleton.
+
+\begin{theorem}[Decidability for fixed finite candidate space]
+\label{thm:finite-K}
+Fix \((M,\Frame,\tau,E_{\Frame})\) with \(|\mathcal{K}_{\Frame}|<\infty\). For
+each \(C\in\mathcal{K}_{\Frame}\), membership in
+\(\mathsf{Causes}_{M,\Frame,\tau}(E_{\Frame})\) is decidable (N1: non-emptiness
+plus shortest-edit search, Remark~\ref{rem:lasso-close}; anti-circularity is
+decidable by Assumption~\ref{ass:anticirc}). If \(\triangleleft\) is
+well-founded on \(\mathcal{K}_{\Frame}\), a \(\triangleleft\)-minimal valid
+\(C^\star\) exists and is found by finite search. This is the precise ``compute a
+minimal cause'' claim; unbounded LTL grammar search is only decidable under an
+explicit size bound (Section~\ref{sec:complexity}).
+\end{theorem}
+
+\subsection{Two distinct necessity notions}
+\label{sec:two-notions}
+
+We state \emph{once} the central distinction (it recurs throughout and we
+cross-reference here rather than repeat it).
+
+\begin{center}
+\small
+\begin{tabular}{@{}l|l|l@{}}
+\hline
+ & \textbf{N1 (trace-existential)} & \textbf{N2 (strategy-guarantee)} \\
+\hline
+Inputs & \(M,\Frame,E,\tau\) & \(G_\varphi,\sigma,V_{\Frame},\Frame,E\) \\
+Centering & actual trace \(\tau\) & actual strategy \(\sigma\) \\
+Question & closest \(\neg C\) trace fails \(E\)? &
+  can \(\sigma\) drop \(C\) and still guarantee \(E\)? \\
+Machinery & one-player shortest-edit + non-emptiness &
+  reverse parity game + re-imposed objective \\
+Liveness & fails if \(\Close=\emptyset\) & primary regime \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{description}[leftmargin=2.2cm,style=nextline]
+  \item[Trace-existential necessity (N1)] the literal \(\mathsf{Causes}\)
+        definition above: every closest admissible \(\neg C\)-trace (under
+        count-only \(\preceq_\tau\), or the unique one under profile refinement)
+        must fail \(E\). Deciding N1 for fixed \(C\) is non-emptiness of
+        \(\Adm\cap\Lang(\neg C)\) over finite-change removals plus a
+        shortest-edit search in the product \(M\times A_{\neg C}\times A_E\)
+        (Remark~\ref{rem:lasso-close}), then evaluating \(E\) on the result --- not
+        emptiness alone. Token-level: ``this execution.''
+  \item[Strategy-guarantee necessity (N2)] the two-player, strategy-level
+        question: can the system \emph{drop the commitment} \(C\) and still
+        \emph{guarantee} \(E\) against every \emph{admissible} environment?
+        ``Admissible'' means satisfying the background \(B_{\Frame}\) (e.g.\ a
+        fairness assumption); quantifying over \emph{all} environments, including
+        \(B_{\Frame}\)-violating ones, would let an unfair environment trivially
+        falsify any liveness commitment, so both clauses are relativized to
+        \(B_{\Frame}\). Formally, the frozen \(\sigma\) is assumed to secure the
+        guarantee and to satisfy \(C\) (the actuality requirement at the strategy
+        level); \(C\) is \emph{strategy-necessary} iff \textbf{no}
+        \(\sigma'\in\Sigma_{\Frame}\) both
+        \begin{itemize}
+          \item[(i)] \emph{secures} \(E\) on admissible plays:
+                \(\forall\rho.\ \mathrm{Play}(\sigma',\rho)\models
+                (B_{\Frame}\rightarrow E)\), and
+          \item[(ii)] is \emph{not} \(C\)-committed on an admissible play:
+                \(\exists\rho.\ \mathrm{Play}(\sigma',\rho)\models
+                B_{\Frame}\wedge\neg C\).
+        \end{itemize}
+        Type-level: ``this controller's guarantee.'' (When \(B_{\Frame}=\True\),
+        (i) is \(\forall\rho.\,E\) and (ii) is \(\exists\rho.\,\neg C\), as in the
+        un-relativized form.) N2 is centered on the actual \emph{strategy}
+        \(\sigma\), not on \(\tau\): it is a property of the controller, so the
+        trace-level centering of \(\tau\) plays no role here (cf.\
+        Remark~\ref{rem:strat-centering}).
+\end{description}
+The reverse parity game (Section~\ref{sec:rpg}) decides N2; N1 is the one-player
+check. We do \emph{not} claim a single parity game decides N1.
+
+\subsection{The certificate \texorpdfstring{\(C^{\flat}\)}{C-flat}}
+\label{sec:certificate}
+
+Write \(A=\Adm_M^{\Frame}(\tau)\) and \(F=\{\tau'\in A\mid\tau'\not\models
+E_{\Frame}\}\) (admissible effect-failures), and
+\(\uparrow_{\preceq_\tau}(F)=\{\tau''\mid\exists\tau'\in F.\ \tau'\preceq_\tau
+\tau''\}\) (here ``above'' means \emph{farther} from \(\tau\)). Let \(C^{\flat}\)
+be \emph{any} \(\omega\)-regular property with
+\(\Lang(C^{\flat})\cap A=A\setminus\uparrow_{\preceq_\tau}(F)\); this pins
+\(C^{\flat}\) only on \(A\), so ``\(C^{\flat}\)'' names an equivalence class, not a
+unique formula.
+
+\begin{proposition}[Nearest-failure-anchored certificate]
+\label{prop:weakest}
+Suppose Assumption~\ref{ass:wf} holds, \(\preceq_\tau\) is well-founded on \(A\),
+\(\tau\models E_{\Frame}\), and \(F\neq\emptyset\). Then:
+\begin{enumerate}[label=(\alph*)]
+  \item \(C^{\flat}\) satisfies the four valid-cause \emph{clauses}; hence it is a
+        valid cause \emph{provided} \(C^{\flat}\in\mathcal{K}_{\Frame}\). As a
+        distance-defined object \(C^{\flat}\) need not lie in \(\mathcal{K}_{\Frame}\)
+        (it may be unreadable or fail effect-disjointness), so we do not assert
+        \(C^{\flat}\in\mathsf{Causes}\) unconditionally; it is a witness, not the
+        returned answer \(C^\star\);
+  \item \(\Close_{\tau,M}^{\Frame}(\neg C^{\flat})=\min_{\preceq_\tau}(F)\);
+  \item among valid causes whose closest removals are the globally nearest
+        effect-failures, \(C^{\flat}\) is the \emph{smallest-language} one:
+        \(\Lang(C^{\flat})\cap A\subseteq\Lang(C)\cap A\) for every such \(C\).
+        Equivalently --- and this is not a contradiction --- its admissible models
+        \(\Lang(C^{\flat})\cap A=A\setminus\uparrow(F)\) form the \emph{largest}
+        failure-free neighborhood of \(\tau\), because its complement
+        \(\uparrow(F)\) is the \emph{smallest} failure-containing up-set; the cause
+        is language-minimal precisely because the failures it must admit are pushed
+        as far out as possible.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+Within \(A\), \(\neg C^{\flat}\equiv\uparrow(F)\). For (b): by antisymmetry and
+well-foundedness \(\min(\uparrow(F))=\min(F)\) (if \(m\in\min(\uparrow F)\) then
+some \(f\in F\) has \(f\preceq_\tau m\), minimality gives \(m\preceq_\tau f\), and
+antisymmetry \(m=f\in F\); the converse is similar). For (a): \(\min(F)\neq
+\emptyset\) by the Limit Assumption (non-vacuity); every closest removal lies in
+\(F\), failing \(E_{\Frame}\); \(\tau\models E_{\Frame}\) by hypothesis and
+\(\tau\models C^{\flat}\) since centering gives \(\tau\notin\uparrow(F)\). For (c):
+let \(C\) be valid with \(\Close_{\tau,M}^{\Frame}(\neg C)=\min_{\preceq_\tau}(F)\).
+If \(\tau'\in\Lang(C^{\flat})\cap A\) but \(\tau'\notin\Lang(C)\), then
+\(\tau'\models\neg C\), so some \(\tau''\in\Close_{\tau,M}^{\Frame}(\neg C)\)
+satisfies \(\tau''\preceq_\tau\tau'\) (well-founded minimality). Since
+\(\Close_{\tau,M}^{\Frame}(\neg C)=\min(F)\subseteq F\), we have \(\tau''\in F\),
+hence \(\tau'\in\uparrow(F)\), contradicting
+\(\tau'\in A\setminus\uparrow(F)=\Lang(C^{\flat})\cap A\).
+\end{proof}
+
+\begin{remark}[The extensionally maximal cause is the wrong target]
+\label{rem:weakest-degenerate}
+The \emph{extensionally maximal} (largest-language) valid cause --- we avoid
+``weakest'' to prevent clash with Dijkstra's weakest precondition --- is
+degenerate: removing a single nearest failure \(f_0\) gives the valid cause
+\(A\setminus\{f_0\}\), maximal yet non-explanatory and arbitrary in \(f_0\). The
+\emph{answer} is the \(\triangleleft\)-minimal readable \(C^\star\); \(C^{\flat}\)
+is a \emph{theoretical certificate} (smallest anchored language on \(A\), generally
+unreadable, not necessarily in \(\mathcal{K}_{\Frame}\)); it lower-bounds
+\(\Lang(C)\cap A\) among anchored valid causes but does not by itself yield
+\(C^\star\) --- search still enumerates \(\mathcal{K}_{\Frame}\) or runs CEGIS
+(Section~\ref{sec:construction}). The extensionally maximal artifact is excluded
+(unreadable and large). These three objects --- \(C^\star\) (answer), \(C^{\flat}\)
+(certificate anchor), extensionally maximal (excluded) --- must not be conflated. \(C^{\flat}\) stays
+\(\omega\)-regular when \(\uparrow_{\preceq_\tau}(F)\) is (true for the count-first
+order via Remark~\ref{rem:lasso-close} on lassos; otherwise an explicit
+automaticity hypothesis). We do not claim the order \emph{relation} is automatic in
+general.
+\end{remark}
+
+A useful output is the triple \((C^\star,W,\Pi)\): the cause \(C^\star\); the
+preserved region \(W\) (accepting region of \(P=M\times A_E\) in one-player regimes,
+or \(W_\exists\) in strategy-structure); and counterfactual witnesses \(\Pi\)
+(one per rejected competitor \(C'\), each a lasso
+\(\pi_{C'}\in\Close_{\tau,M}^{\Frame}(\neg C')\cap\Lang(E_{\Frame})\) from the
+emptiness/shortest-edit check or Proposition~\ref{prop:rpg-sound}).
+
+\subsection{Canonical frames}
+\label{sec:canonical-frames}
+
+To answer the objection that a free choice of \(\Frame\) injects the cause, we fix
+canonical defaults; results are reported against one unless a deviation is
+justified.
+\begin{description}[leftmargin=2.4cm,style=nextline]
+  \item[\(\Frame_{\mathrm{trace}}\)] \(B_{\Frame}=\True\) (or stated environment
+        assumptions), input-only, count-only \(\preceq_\tau\) (Definition~\ref{def:profile-refine}:
+        no profile tie-break unless declared), effect-disjoint candidates over
+        \(I\cup O\) with declared \(\mathsf{Cone}(E_{\Frame})\), and
+        \(\triangleleft=\) (size, depth, permissiveness). Default for one execution;
+        the toy example uses optional profile refinement for a unique witness.
+  \item[\(\Frame_{\mathrm{strat}}\)] as above but strategy-structure over stated
+        \((G_\varphi,\sigma,V_{\Frame})\) with edited-vertex order refined by trace
+        distance (Remark~\ref{rem:strat-centering}), internal-state observables
+        allowed (Remark~\ref{rem:strat-obs}), tested via Section~\ref{sec:rpg}.
+  \item[\(\Frame_{\mathrm{TB}}\)] the finite-horizon, point-effect, input-only
+        frame of Section~\ref{sec:tempobench}.
+\end{description}
+Two safeguards: every component but candidate vocabulary, grammar, similarity
+tie-break, and effect cone is fixed by the regime; and under a \emph{fully
+specified} canonical frame (including those declarations)
+\(\mathsf{Causes}_{M,\Frame,\tau}(E_{\Frame})\) is a function of
+\((M,\tau,E_{\Frame})\) alone. Frame-relativity means results are conditional on
+that declaration, as background conditions are in ordinary causal explanation.
+Determinacy requires stating vocabulary, grammar, count-only vs.\ profile
+\(\preceq_\tau\), and \(\mathsf{Cone}(E_{\Frame})\) for non-point effects.
+
+\section{Trace-Level Construction and Toy Example}
+\label{sec:construction}
+
+\subsection{The trace-level procedure (one-player)}
+
+Given \((M,\Frame,E,\tau)\), the trace-level test (N1) is: (1)~compile \(E\) into
+a deterministic parity automaton \(A_E=(Q,q_0,2^{I\cup O},\delta_E,\Omega)\) and
+form the frozen product \(P=M\times A_E\) (a \emph{one-player} arena: \(M\) is
+fixed, so only the environment moves); (2)~for a candidate \(C\), build
+\(A_{\neg C}\) and check
+\[
+  \Close_{\tau,M}^{\Frame}(\neg C)\neq\emptyset
+  \quad\text{and}\quad
+  \Close_{\tau,M}^{\Frame}(\neg C)\cap\Lang(E)=\emptyset ,
+\]
+an emptiness check plus shortest-edit search (Remark~\ref{rem:lasso-close}). To
+\emph{search} for a \(\triangleleft\)-minimal valid cause when
+\(|\mathcal{K}_{\Frame}|<\infty\), enumerate candidates (Theorem~\ref{thm:finite-K});
+otherwise use bounded grammar/template search with CEGIS:
+\[
+  C ::= p \mid \neg C \mid C\land C \mid X C \mid F C \mid G C \mid C\,U\,C,
+\]
+or templates \(G(a\to F b),F(a\land X b),G(a\to X b),GF a,FG a\), proposing \(C\),
+checking N1, and refining from witnesses \(\Pi\). The certificate \(C^{\flat}\)
+(Section~\ref{sec:certificate}) characterizes the anchored language lower bound but
+does not replace this search. Strategy-level minimality uses dominion subset search
+(Section~\ref{sec:rpg}). The returned formula need not be a subformula of
+\(\varphi\); we translate readable LTL from \(\mathcal{K}_{\Frame}\) when needed.
+
+\subsection{Toy example}
+\label{sec:toy}
+
+Let \(\varphi=G(req\rightarrow F\,grant)\) and let \(M\) have states
+\(idle,pending\) with initial state \(s_0=idle\), specified completely:
+\[
+\begin{array}{rclcl}
+  \delta(idle,req)&=&pending, &\quad& \lambda(idle,\cdot)=\emptyset,\\
+  \delta(idle,\neg req)&=&idle, &\quad& \lambda(pending,\cdot)=\{grant\},\\
+  \delta(pending,\cdot)&=&idle. & &
+\end{array}
+\]
+A request in \(idle\) moves to \(pending\) next; in \(pending\) the machine emits
+\(grant\) and returns to \(idle\); a request in \(pending\) is \emph{not} latched.
+The machine is effectively Moore (\(grant\) holds exactly in \(pending\)). The
+actual trace is \(\{req\},\{grant\},\emptyset,\emptyset,\ldots\) and the effect is
+\(E=F\,grant\).
+
+\paragraph{The minimal trace-level cause is \(req\).} Use \(\Frame_{\mathrm{trace}}\)
+with count-only \(\preceq_\tau\) (\(\Adm=\Lang(M)\)). Every minimum-count removal
+sets \(\neg req\) at time \(0\): the machine stays in \(idle\), never enters
+\(pending\), never grants; \(d=2\) and \(F\,grant\) fails. No \(\neg req\)-removal
+of count \(\le2\) preserves the effect (emitting \(grant\) needs a \(req\) in
+\(idle\) at some \(j\ge1\); the cheapest such trace has \(d=3\)). All minimum-count
+removals fail \(F\,grant\); so \(req\) is non-vacuous and necessary --- a valid
+cause. (Under profile refinement the unique closest removal is the \(d=2\) trace
+above; under Baire or inclusion orders \(req\) would spuriously fail.) The candidate
+\(req\land X\,grant\) is barred by Assumption~\ref{ass:anticirc}(ii) and loses on
+size. Hence \(C_\tau=req\).
+
+\paragraph{Why \(req\) can feel uninformative.} That ``a request alone does not
+explain \emph{why} the machine granted'' is a critique of the input-only
+\emph{frame}, which fixes the machine's response rule as background: relative to
+that, the only thing that had to hold for the grant was that a request arrived. To
+make the response rule a candidate, move to a strategy frame. The strategy-level
+target is \(C_M=G(req\rightarrow F\,grant)\), or, exposing the state,
+\(G((\mathit{at\_idle}\land req)\rightarrow X\,pending)\land G(pending\rightarrow
+grant)\) (the first conjunct must be guarded by \(\mathit{at\_idle}\), since a
+request in \(pending\) is not latched, so unguarded \(G(req\to X\,pending)\) is not
+an invariant). These entail \(G((\mathit{at\_idle}\land req)\rightarrow X\,grant)\),
+hence \(G(req\rightarrow F\,grant)\) on traces whose requests arrive only in
+\(idle\). By Proposition~\ref{prop:strategy-frame}, \(C_M\) is testable only under
+a strategy frame; it names the cone atom \(grant\), so when
+\(\mathsf{Cone}(F\,grant)=\{grant\}\) it is admissible only because
+\(\Frame_{\mathrm{strat}}\) declares it a system-guarantee invariant
+(Assumption~\ref{ass:cone}), not at the trace level. The two answers --- \(req\) (trace) and
+\(G(req\to F\,grant)\) (strategy) --- are outputs of two different frames, not
+competitors.
+
+\section{The Reverse Parity Game (Strategy Level)}
+\label{sec:rpg}
+
+Many temporal effects (\(GF\,a\), \(FG\,stable\), \(G(req\to F\,ack)\)) cannot be
+explained by a single finite event; the parity condition is needed to reason about
+recurrence. But it is needed \emph{only} for N2: in the input-only and
+output-intervention regimes the trace test is one-player
+(Section~\ref{sec:two-notions}). This section gives the genuine two-player object
+for N2. (``Reverse'' here names the \emph{explanatory} direction --- we run the
+synthesis machinery backwards, from a frozen controller to the conditions it
+needed --- not a retrograde or backward-time analysis; the game itself is a
+standard forward parity game on a partial-commitment arena.) Fix the synthesis game \(G_\varphi=(V,V_0,V_1,T,\Omega)\), the frozen
+\(\sigma\) implemented by \(M\), the candidate \(C\) with deterministic parity
+monitor \(A_{\neg C}\), the effect monitor \(A_E\), and the editable vertex set
+\(V_{\Frame}\subseteq V_0\) defining \(\Sigma_{\Frame}\).
+
+\begin{definition}[Reverse parity game]
+\label{def:rpg}
+\(G^{\mathrm{rev}}_{M,\Frame,C,E}=(V^r,V^r_0,V^r_1,T^r,\Omega^r)\) has vertices
+\(V^r=V\times Q_B\times Q_E\times Q_{\neg C}\), pairing a game vertex with the
+states of deterministic monitors \(A_B\) (for the background \(B_{\Frame}\)),
+\(A_E\), and \(A_{\neg C}\). It is \emph{partitioned} so that \(V^r_0\)
+(\(\exists\), the re-opened system) are vertices over \(V_{\Frame}\), where
+\(\exists\) may take any \(G_\varphi\)-move, and \(V^r_1\) (\(\forall\)) are all
+others: vertices over \(V_1\) (environment) and over the frozen
+\(V_0\setminus V_{\Frame}\) (single-successor, assigned to \(\forall\) to keep a
+genuine partition while leaving play unaffected). Edges carry the synthesis-game
+label \(\ell:T\to 2^{I\cup O}\); \(T^r\) updates \(V\) by \(T\) and each monitor by
+its transition function on \(\ell\). The \(\exists\)-objective is the
+assume-guarantee condition \(B_{\Frame}\rightarrow E\): \(\exists\) wins \(\pi\)
+iff \(\pi|_{I\cup O}\models B_{\Frame}\rightarrow E\). This is \(\omega\)-regular,
+so \(\Omega^r\) is a parity index for it and \(G^{\mathrm{rev}}\) is a genuine
+parity game; \(A_B\) and \(A_{\neg C}\) are also read off as \emph{auxiliary}
+acceptance conditions used in the witness search below.
+\end{definition}
+
+N2 is a \emph{conjunctive} strategy-existence question --- \(\exists\sigma'\) that
+secures \(B_{\Frame}\rightarrow E\) (\(\forall\rho\)) \emph{and} admits an
+admissible \(\neg C\) play (\(\exists\rho.\ B_{\Frame}\wedge\neg C\)) --- and
+ordinary parity solving returns one winning strategy and the winning region, not
+the set of all winning strategies. \textbf{Caution:} for a parity/B\"uchi
+objective, staying inside the winning region forever does \emph{not} imply winning
+(a play may remain in \(W_\exists\) yet violate the parity condition), so we do
+\emph{not} use a ``trap'' multi-strategy of ``all moves staying in \(W_\exists\)'';
+we re-impose the objective explicitly in the witness search.
+
+\begin{proposition}[Reverse-game soundness for N2]
+\label{prop:rpg-sound}
+Assume the frozen \(\sigma\in\Sigma_{\Frame}\) secures \(B_{\Frame}\rightarrow E\)
+and satisfies \(C\) (the strategy-level actuality requirement). Let \(W_\exists\)
+be the \(\exists\)-winning region of \(G^{\mathrm{rev}}_{M,\Frame,C,E}\) for
+objective \(B_{\Frame}\rightarrow E\), and let \(\mathcal{A}[W_\exists]\) be the
+sub-arena obtained by restricting \(G^{\mathrm{rev}}\) to \(W_\exists\) (keeping
+only edges that stay in \(W_\exists\)). Then \(C\) is \emph{not}
+strategy-necessary (N2 fails) iff \(\mathcal{A}[W_\exists]\) contains a play
+\(\pi\) with
+\[
+  \pi|_{I\cup O}\models B_{\Frame}\wedge E\wedge\neg C .
+\]
+Equivalently, \(C\) is strategy-necessary iff the product
+\(\mathcal{A}[W_\exists]\times A_B\times A_E\times A_{\neg C}\) has no accepting
+lasso for the conjunction \(B_{\Frame}\wedge E\wedge\neg C\) --- a one-player
+\(\omega\)-regular non-emptiness check (not mere reachability of a vertex).
+\end{proposition}
+\begin{proof}
+Let \(\Pi_{\mathrm{win}}\) be the plays consistent with \emph{some}
+\(\sigma'\in\Sigma_{\Frame}\) that secures \(B_{\Frame}\rightarrow E\). We claim
+\(\Pi_{\mathrm{win}}=\{\pi:\pi\text{ stays in }W_\exists\text{ and }\pi\models
+B_{\Frame}\rightarrow E\}\). (\(\subseteq\)) A securing strategy keeps every play
+in \(W_\exists\) and wins it, so its plays satisfy \(B_{\Frame}\rightarrow E\).
+(\(\supseteq\)) Given such a \(\pi\), we may take \(\pi=uv^\omega\) to be an
+accepting \emph{lasso}: \(\mathcal{A}[W_\exists]\) is finite and the winning
+condition \(\omega\)-regular, so whenever a qualifying play exists a lasso one
+does (this is the lasso/non-emptiness fact, standard for deterministic
+\(\omega\)-automata over a finite arena). Define \(\sigma'\) to follow the
+(ultimately periodic) moves of \(\pi\) while the history matches \(\pi\), and a
+fixed \emph{finite-memory} winning strategy from \(W_\exists\) after any
+environment deviation: every \(\exists\)-move on \(\pi\) goes to \(W_\exists\)
+(\(\pi\) stays there), and the environment cannot escape \(W_\exists\). Following a
+lasso needs only finite memory (the period), and finite-memory winning strategies
+exist for parity objectives on finite arenas, so \(\sigma'\) is finite-memory;
+hence \(\sigma'\in\Sigma_{\Frame}\) (which is the finite-memory class by default,
+Section~\ref{sec:formal}), \(\sigma'\) secures \(B_{\Frame}\rightarrow E\), and
+\(\pi\) is one of its plays. Now \(C\) is not strategy-necessary iff some
+\(\sigma'\) secures \(B_{\Frame}\rightarrow E\) (i) and admits a play with
+\(B_{\Frame}\wedge\neg C\) (ii), i.e.\ iff \(\Pi_{\mathrm{win}}\) contains a play
+with \(B_{\Frame}\wedge\neg C\). By the claim such a play stays in \(W_\exists\)
+and satisfies \(B_{\Frame}\rightarrow E\); with \(B_{\Frame}\) this gives \(E\), so
+it satisfies \(B_{\Frame}\wedge E\wedge\neg C\) and lies in
+\(\mathcal{A}[W_\exists]\). Conversely any \(\mathcal{A}[W_\exists]\)-play with
+\(B_{\Frame}\wedge E\wedge\neg C\) satisfies \(B_{\Frame}\rightarrow E\) and stays
+in \(W_\exists\), hence lies in \(\Pi_{\mathrm{win}}\) and witnesses (i)+(ii). The
+lasso/non-emptiness characterization is standard for deterministic
+\(\omega\)-automata over a finite arena.
+\end{proof}
+
+This decision is sound \emph{and} complete and uses only (a)~a two-player parity
+solve for the winning region \(W_\exists\) and (b)~a one-player
+\(\omega\)-regular non-emptiness check on \(\mathcal{A}[W_\exists]\). It does
+\emph{not} rely on a maximal-permissive-strategy construction, sidestepping the
+fact that for parity objectives the ``moves staying in \(W_\exists\)''
+multi-strategy is \emph{not} winning (a Bernet--Janin--Walukiewicz most-permissive
+\emph{winning} strategy needs memory); the crucial point is that the objective
+\(B_{\Frame}\rightarrow E\) is re-imposed in the witness search, so non-winning
+plays that merely stay in \(W_\exists\) are excluded. The input-only/output
+regimes are the degenerate case \(V_{\Frame}=\emptyset\) (\(V^r_0=\emptyset\)):
+the game is one-player and the question collapses to the trace check of
+Section~\ref{sec:construction} (N1). Minimizing \(V_{\Frame}\) is a separate
+optimization (Section~\ref{sec:complexity}).
+
+\paragraph{From commitments to a trace cause.} If \(C\) is strategy-necessary
+(no \(\mathcal{A}[W_\exists]\)-play satisfies \(B_{\Frame}\wedge E\wedge\neg C\)),
+the witness is the set \(D_C\subseteq V_{\Frame}\) of editable vertices whose
+\(\sigma\)-move, if re-opened, would let \(\exists\) secure
+\(B_{\Frame}\rightarrow E\) via a \(\neg C\)-deviation, with
+transitions \(T_C=\{(v,\sigma(v))\mid v\in D_C\}\). For a \emph{safety} commitment
+the induced cause is \(C\equiv G\bigwedge_{v\in D_C}(\mathit{at\_}v\to
+\mathit{move}_\sigma(v))\) (negation \(F\bigvee(\ldots)\)); for a \emph{liveness}
+commitment, e.g.\ \(C=GF\,\mathit{at\_serve}\) below, it is
+\(GF\bigvee_{v\in D_C}\mathit{at\_}v\). Breaking \(T_C\) is exactly what a
+\(\neg C\)-deviation does.
+
+\paragraph{Minimal strategy cause.} The strategy level so far has only
+\emph{validity} (N2). A \emph{minimal strategy cause} is a \(\subseteq\)-minimal
+editable set \(V_{\Frame}\) (equivalently a minimal dominion \(D_C\)) under which
+\(C\) is strategy-necessary. Unlike the trace level, this minimization is not a
+single parity solve but a subset search with the parity decision as oracle
+(Section~\ref{sec:complexity}); we state plainly that the strategy level delivers
+validity via the game and minimality only via this separate, harder optimization.
+
+\subsection{Worked liveness example}
+\label{sec:liveness-example}
+
+The toy effect \(F\,grant\) is reachability (co-safety) and needs no recurrence.
+For a parity effect, take a two-state machine over input \(req\), output \(grant\):
+\[
+  \delta(\mathit{serve},\cdot)=\mathit{wait},\ \
+  \delta(\mathit{wait},req)=\mathit{serve},\ \
+  \delta(\mathit{wait},\neg req)=\mathit{wait};\quad
+  \lambda(\mathit{serve},\cdot)=\{grant\},\ \lambda(\mathit{wait},\cdot)=\emptyset.
+\]
+Being Moore, the machine emits \(grant\) exactly \emph{while} in \(\mathit{serve}\)
+(not the step after), entering \(\mathit{serve}\) one step after a request in
+\(\mathit{wait}\). The initial state is \(s_0=\mathit{wait}\). Effect \(E=GF\,grant\); actual trace
+\(\tau=(\{req\},\{grant\})^\omega\) (i.e.\ \(a_0=\{req\}\), \(a_1=\{grant\}\),
+\dots), which grants infinitely often.
+
+\paragraph{Fairness is required.} No controller guarantees \(GF\,grant\) against
+\emph{every} environment: one issuing finitely many requests traps the machine in
+\(\mathit{wait}\). The well-posed question carries the environment-fairness background
+\(B_{\Frame}=GF\,req\), and the guaranteed objective is \(GF\,req\rightarrow
+GF\,grant\), again \(\omega\)-regular. Without \(B_{\Frame}\) the winning region is
+empty and every candidate is vacuously ``necessary,'' so stating \(B_{\Frame}\) is
+what makes the example meaningful.
+
+The monitor \(A_E\) for \(GF\,grant\) is a two-priority parity (Büchi) automaton
+(priority \(0\) on \(grant\), \(1\) elsewhere; accepting iff \(0\) recurs); a
+single priority cannot encode ``infinitely often.'' The product is accepting iff
+the play visits \(\mathit{serve}\) infinitely often --- genuine recurrence, not
+reachability.
+
+\paragraph{The strategy-level cause is the recurrence commitment.} Take
+\(C=GF\,\mathit{at\_serve}\) (effect-disjoint: it names \(\mathit{at\_serve}\), and
+\(\Lang(GF\,\mathit{at\_serve})\not\subseteq\Lang(GF\,grant)\) by pure logic,
+coinciding only through \(M\)). Under \(\Frame_{\mathrm{strat}}\) with
+\(V_{\Frame}\) the \(\mathit{wait}\)-vertices and \(B_{\Frame}=GF\,req\), apply
+Proposition~\ref{prop:rpg-sound}. The witness search asks for a play in
+\(\mathcal{A}[W_\exists]\) satisfying \(GF\,req\wedge GF\,grant\wedge\neg C\),
+i.e.\ \(GF\,req\wedge GF\,grant\wedge FG\,\mathit{at\_wait}\). But \(grant\) is
+emitted only in \(\mathit{serve}\), so \(GF\,grant\) entails \(GF\,\mathit{at\_serve}\),
+which contradicts \(FG\,\mathit{at\_wait}\); no such play exists, so \(C\) is
+strategy-necessary. (Note this uses the \(B_{\Frame}\)-relativized N2: an unfair
+environment with finitely many requests would, against the frozen \(\sigma\),
+yield a play with \(FG\,\mathit{at\_wait}=\neg C\), but that play violates
+\(B_{\Frame}=GF\,req\) and is therefore not an admissible deviation witness; this
+is exactly why clause~(ii) is relativized to \(B_{\Frame}\).) The dominion \(D_C\)
+is the \(\mathit{wait}\)-vertices from which \(\sigma\) serves on a request --- the
+accepting-recurrence-preserving commitment. By contrast the \emph{stronger} ``serve
+every request'' \(G((\mathit{at\_wait}\land req)\to X\,\mathit{at\_serve})\) is
+\emph{not} necessary (a deviation may skip some requests yet serve infinitely
+many, securing the objective on a \(B_{\Frame}\)-fair play while violating the
+invariant), and the reachability candidate ``\(grant\) at time \(1\)'' is likewise
+not necessary. Only a recurrence-preserving commitment passes --- why parity, not
+reachability, is the right acceptance here.
+
+\section{Overdetermination, Preemption, and Necessity vs.\ Sufficiency}
+\label{sec:overdetermination}
+
+Pure necessity has known limitations under overdetermination and preemption; we
+address them head-on.
+
+\paragraph{Overdetermination.} If inputs \(a\) and \(b\) each force \(E=X\,grant\)
+and both hold, neither singleton is necessary (removing \(a\) leaves \(b\), which
+still forces the grant), so neither is valid --- the correct report under
+necessity. The \emph{necessary condition} (not necessarily ``the actual
+cause'' in a stronger sense) is the disjunction \(C=a\lor b\), whose closest
+removal sets both false and destroys \(E\) --- \emph{provided}
+\(\mathcal{K}_{\Frame}\) admits disjunctions. This does not conflict with the
+readability-first preference order (Section~\ref{sec:formal}), which penalizes
+disjunctions on size: \(a\lor b\) is dispreferred to any smaller valid singleton,
+so it is returned \emph{only} when no smaller valid cause exists --- which is
+exactly the overdetermined case, where there genuinely is no smaller necessary
+cause. If \(\mathcal{K}_{\Frame}\) is
+restricted (e.g.\ to literals), no singleton is valid and the method reports
+\(\mathsf{Causes}=\emptyset\); the remedy is to enlarge \(\mathcal{K}_{\Frame}\).
+In this symmetric example \(C^{\flat}\) coincides with \(a\lor b\) on the
+admissible set, but this identification is special to the example: in general
+\(C^{\flat}\) is the distance-defined neighborhood and need not equal any readable
+disjunction.
+
+\paragraph{Preemption.} If \(a\) forces \(E\) and \(b\) would have only had \(a\)
+been absent, then on a trace with both, \(a\) alone is not necessary; the
+necessary condition is again \(a\lor b\). Distinguishing preempting from preempted
+needs sufficiency/contingency, which necessity does not provide. A frame wanting
+this imports a Halpern--Pearl-style contingency by pinning \(b\) in
+\(B_{\Frame}\), recovering \(a\) relative to that frame.
+
+\paragraph{Why necessity.} Two objections. ``Necessity flags trivial conditions
+(`the system was powered on').'' It does not: non-vacuity discards conditions no
+admissible counterfactual can violate, and \(B_{\Frame}\) absorbs standing
+operating assumptions into the setting. ``Why not sufficiency (Halpern--Pearl)?''
+HP adds a minimal-sufficient-set requirement with a contingency quantifier; even
+in the Boolean setting its complexity is definition-sensitive --- NP-complete for
+the original definition in binary models, \(\Sigma_2^P\)-complete for the original
+definition in general models, \(\mathrm{D}_2^P\)-complete for the updated
+definition (Eiter--Lukasiewicz; Aleksandrowicz--Chockler--Halpern--Ivrii). Lifting
+any of these to \(\omega\)-regular effects layers the contingency quantifier atop
+language operations, so HP sufficiency is at least as expensive as --- and
+conceptually heavier than --- our necessity test (a one-player shortest-edit plus
+non-emptiness check, or, at the strategy level, a parity solve followed by a
+non-emptiness check). We claim only that necessity is \emph{no harder} (and uniform and
+decidable), not that sufficiency is \emph{strictly} harder over \(\omega\)-regular
+effects (which would require fixing an HP-over-\(\omega\)-regular semantics we do
+not develop). We thus target necessity by design, report overdetermined effects as
+disjunctive causes when expressible, and expose contingency through \(B_{\Frame}\).
+
+\section{Decidability and Complexity}
+\label{sec:complexity}
+
+We give conditional bounds, not a fully proved complexity theorem; hypotheses are
+explicit. Let \(|M|,|A_E|,|A_{\neg C}|\) be the machine/monitor sizes and \(d\) the
+priority count.
+
+\paragraph{One-player (input-only / output-intervention).} Candidate checking is
+non-vacuity (non-emptiness of \(\Adm_M^{\Frame}(\tau)\cap\Lang(\neg C)\) over
+finite-change removals) plus effect-failure. We do \emph{not} assume the closeness
+\emph{relation} is automatic (its primary key compares unbounded counts). Instead,
+by Remark~\ref{rem:lasso-close}, the closest removal is a shortest-edit path in the
+finite product \(M\times A_{\neg C}\times A_E\) (size \(O(|M|\,|A_{\neg C}|\,
+|A_E|)\)), computable by BFS, then \(E\) is evaluated on it --- polynomial in the
+product (plus parity solving \(|V|^{O(d)}\), quasi-polynomial, if \(E\) is a
+genuine parity effect). For LTL candidates the \emph{deterministic} parity
+monitors used in the explicit product are worst-case \emph{doubly} exponential in
+\(|C|\) (\(\LTL\to\) deterministic parity is doubly exponential), so the explicit
+shortest-edit product route is doubly exponential in the formula size. The
+underlying language checks (non-emptiness of \(\Adm\cap\Lang(\neg C)\) and
+effect-failure) are themselves no harder than \(\LTL\) model checking ---
+\textsc{PSpace} in the formula size --- when carried out via \emph{nondeterministic}
+monitors rather than explicit determinization; we do \emph{not} claim a uniform
+\textsc{PSpace} bound for the full minimum-count validity quantification.
+\(C^{\flat}\) is \(\omega\)-regular and computable when
+\(\uparrow_{\preceq_\tau}(F)\) is (via the shortest-edit construction on lassos;
+else an explicit automaticity hypothesis).
+
+\paragraph{Minimal-cause search.} Over a finite template family,
+\(|\mathcal{K}_{\Frame}|\) checks; over the open LTL grammar, bounded-size search
+is decidable but exponential in the bound (as in syntax-guided synthesis).
+
+\paragraph{Two-player (strategy-structure).} Deciding N2 for a \emph{fixed}
+\(V_{\Frame}\) (Proposition~\ref{prop:rpg-sound}) is: solve the parity game for
+objective \(B_{\Frame}\rightarrow E\) (size \(O(|V|\,|A_B|\,|A_E|)\), \(O(d)\)
+priorities) to get the winning region \(W_\exists\), then a one-player
+\(\omega\)-regular non-emptiness check for \(B_{\Frame}\wedge E\wedge\neg C\) on
+\(\mathcal{A}[W_\exists]\) (product with \(A_B,A_E,A_{\neg C}\); an accepting-lasso
+search). Parity solving is in \(\mathrm{UP}\cap\mathrm{co\text{-}UP}\) and
+quasi-polynomial, and the non-emptiness check is polynomial in the product, so the
+decision is quasi-polynomial. (We do \emph{not} invoke a permissive-strategy
+computation; the winning region plus the re-imposed objective suffices.) Finding a
+\(\subseteq\)-minimal \(V_{\Frame}\) (the minimal dominion) is a \emph{separate}
+search over \(\le 2^{|V_0|}\) vertex subsets, each tested by the above. We do not
+prove a tight class, but record an upper bound: checking that a given
+\(V_{\Frame}\) is necessity-inducing is one quasi-polynomial parity decision, and
+checking minimality is a co-\(\mathrm{NP}\)-style universal quantification over
+its proper subsets (each a parity decision); so the minimal-dominion decision sits
+within a polynomial-hierarchy level relative to a parity oracle (e.g.\ a
+\(\Sigma_2\)-type search), naturally encoded as SAT/SMT/MaxSAT over
+vertex-selection variables with the parity decision as oracle. Exact completeness
+is left open.
+
+\paragraph{Finite-horizon (TempoBench).} \(\mathcal{K}_{\Frame_{\mathrm{TB}}}\) is
+finite but \emph{exponential} (\(\le 2|I|(k+1)\) literals, hence
+\(\le 2^{2|I|(k+1)}\) constraint sets). Checking one candidate is a finite
+reachability check over \(A_{\mathrm{HOA}}\) on the window, polynomial in
+\(|A_{\mathrm{HOA}}|\) and \(k\). Validity is not monotone in \(\Gamma\)
+(Remark~\ref{rem:nonmonotone}), so greedy deletion is unsound; a subset-minimal
+cause needs exhaustive/hitting-set/CEGIS search. Each check is polynomial; the
+search is the hard part.
+
+\section{TempoBench Specialization}
+\label{sec:tempobench}
+
+We specialize the framework to a TempoBench-style temporal causal evaluation
+(TCE) task. \emph{Conditionally on the assumptions (F1)--(F2) below, which we have
+not verified against the released artifacts}, the solver receives the same
+information and solves the same finite-horizon problem, returning a
+\emph{necessity}-based answer. Beyond (F1)--(F2) there is a second gap: TempoBench
+labels TCE with CORP, a Halpern--Pearl \emph{actual-causation} tool, whereas we
+compute counterfactual \emph{necessity}, and the two differ on overdetermined
+effects (Section~\ref{sec:overdetermination}). So this is a \emph{proposed,
+necessity-based} alignment offering an \emph{alternate} object, not a demonstrated
+reproduction of CORP's key. TempoBench has two tasks: temporal trace evaluation (TTE), asking whether a
+finite trace is accepted by a supplied automaton, and TCE, asking for the minimal
+input constraints necessary for a specified output at a specified
+timestep.\footnote{TempoBench: \url{https://arxiv.org/abs/2510.27544};
+implementation \url{https://github.com/nik-hz/tempobench}.}
+
+\paragraph{What the solver is given.} An automaton \(A_{\mathrm{HOA}}\) in HOA
+format, the AP list, a finite trace \(\tau_{\le n}=\alpha_0\cdots\alpha_n\)
+(\(\alpha_t\subseteq I\cup O\)), and one or more point effects written e.g.\
+\(\texttt{XXX }g=X^3 g\). The reverse question
+\(M+\varphi+\Frame+E+\tau\to C^\star\) specializes to
+\(A_{\mathrm{HOA}}+\Frame_{\mathrm{TB}}+\tau_{\le n}+(E_{\Frame}=X^k o)\to C^\star\):
+\emph{which provided input facts were necessary for output \(o\) at timestep
+\(k\)?} The effect class is
+\(\mathcal{E}_{TB}=\{X^k o\mid o\in O_{\Frame},\ 0\le k<|\tau_{\le n}|,\
+o\in\alpha_k\}\) (positive selected-output occurrences at fixed timesteps); broad
+effects (\(F\,grant\), \(G(req\to F\,grant)\), \(GF\,ready\),
+\(\mathrm{Acc}_{\mathrm{parity}}\), internal-state reachability) are extensions
+beyond TCE.
+
+\begin{remark}[What \(A_{\mathrm{HOA}}\) is; faithfulness assumptions]
+\label{rem:hoa}
+TempoBench presents the system as a finite-state \emph{acceptor}
+\(A_{\mathrm{HOA}}=(Q,2^{I\cup O},\delta,q_0,F)\): it reads valuation sequences
+(inputs and outputs together) and accepts a finite trace when its run from \(q_0\)
+ends in \(F\) (TempoBench's TTE semantics). It is an acceptor over \(I\cup O\),
+not an I/O transducer; \(\Lang(A_{\mathrm{HOA}})\) plays the role of \(\Lang(M)\),
+not of the effect monitor. For faithfulness we assume, \emph{conditionally}:
+\textbf{(F1)} \(\Lang(A_{\mathrm{HOA}})\) is exactly the system's behavior set
+(not a specification monitor \(A_\varphi\)); and \textbf{(F2)} the behavior set is
+\emph{functional in the inputs} (input-deterministic), since the automata come
+from reactive synthesis --- consistent with the acceptor framing, and the property
+the operational reading uses to speak of ``the'' output at each timestep.
+\textbf{We have not independently verified (F1)--(F2) against the released HOA
+artifacts}; whether they are input-deterministic system models rather than
+specification monitors is a checkable benchmark property. Accordingly the
+alignment is stated \emph{conditionally on (F1)--(F2)}: if they hold, the reduction
+below is exact; if the supplied automata are specification monitors, (F1) fails and
+the alignment does not apply. Given (F1)--(F2), the point effect \(X^k o\) needs no
+separate monitor (it is the membership check \(o\in\alpha_k\)); there is no product
+to build, and the solver uses \(A_{\mathrm{HOA}}\) directly.
+\end{remark}
+
+\paragraph{The specialized frame.} \(\Frame_{\mathrm{TB}}\) is input-only
+(\(A_{\mathrm{HOA}}\) fixed; outputs, transitions, priorities not intervened on),
+with candidates the timestep-indexed input literals over the window
+\(0,\ldots,k\): constraint sets \(\Gamma\subseteq\{0,\ldots,k\}\times
+\mathrm{Lit}(I)\) (\(\mathrm{Lit}(I)=\{i,\neg i\}\)), denoting
+\(C_\Gamma=\bigwedge_{(t,\ell)\in\Gamma}X^t\ell\). There are \(\le 2|I|(k+1)\)
+literals, hence \(\le 2^{2|I|(k+1)}\) candidate sets: the space is finite but
+\emph{exponential}, not linear. The closeness order is the count-only coarsening,
+counted in changed \emph{input cells}: under input-only intervention with (F2),
+outputs are determined by inputs, so a counterfactual's chosen changes are its
+input-cell changes, and we count those rather than the full-valuation positions of
+the general order (Section~\ref{sec:similarity}). So \(\Close\) is the full set of
+minimum-count removals; minimality of causes is by set inclusion over \(\Gamma\).
+
+\paragraph{Finite-horizon definitions.} Entirely in finite-trace terms (no
+infinitary acceptance for \(A_{\mathrm{HOA}}\) is used). A finite sequence
+\(\beta=\beta_0\cdots\beta_n\) is \emph{accepted} iff its run from \(q_0\) ends in
+\(F\) (under (F2) the run is unique given the inputs); write
+\(\Lang_{\le n}(A_{\mathrm{HOA}})\) for accepted length-\((n{+}1)\) sequences and
+\(\Adm^{\le k}_{A,\Frame_{\mathrm{TB}}}=\Lang_{\le n}(A_{\mathrm{HOA}})\). For a
+candidate \(\Gamma\), a removal is an admissible \(\beta\) violating \(C_\Gamma\),
+and
+\[
+  \Close^{\le k}_{\tau_{\le n},A}(\neg C_\Gamma)=
+  \min\nolimits_{\#\text{changes}}\{\beta\in\Adm^{\le k}_{A,\Frame_{\mathrm{TB}}}
+  \mid\beta\not\models C_\Gamma\}.
+\]
+\[
+\begin{aligned}
+  \mathsf{Causes}^{\le n}_{A,\Frame_{\mathrm{TB}},k}(X^k o)=\{\Gamma\mid{}&
+  \tau_{\le n}\models C_\Gamma,\ o\in\alpha_k,\
+  \Close^{\le k}_{\tau_{\le n},A}(\neg C_\Gamma)\neq\emptyset,\\
+  &\forall\beta\in\Close^{\le k}_{\tau_{\le n},A}(\neg C_\Gamma).\ o\notin\beta_k\}.
+\end{aligned}
+\]
+A minimal cause \(C^\star=C_{\Gamma_E^\star}\) uses any subset-minimal valid
+\(\Gamma_E^\star\) (several may exist).
+
+\begin{remark}[Validity is not monotone; greedy deletion is unsound]
+\label{rem:nonmonotone}
+Membership is not monotone under \(\subseteq\) on \(\Gamma\): enlarging \(\Gamma\)
+can make a candidate valid (the cheapest removal must flip more) or invalid (the
+closest removal flips an irrelevant added literal while keeping the output). So
+``delete literals while valid'' need not reach a subset-minimal cause; computing
+\(\Gamma_E^\star\) needs genuine search (exhaustive, hitting-set/MaxSAT, or CEGIS).
+Each validity check is polynomial; the search is hard. Greedy becomes sound only
+under an extra monotonicity hypothesis, which we do not assume.
+\end{remark}
+
+\begin{proposition}[Finite specialization --- a definitional correspondence]
+\label{prop:tb-reduction}
+This is a \emph{definitional} restatement, not a deep theorem: the finite-horizon
+objects above were \emph{defined} to mirror the general clauses, and the content is
+that the mirroring is exact and needs no infinitary acceptance. We state it as a
+proposition only to record that correspondence precisely. With
+\(\Frame_{\mathrm{TB}}\) as the
+input-only frame, \(B_{\Frame}=\True\), admissible set
+\(\Lang_{\le n}(A_{\mathrm{HOA}})\), the change-counting order on the window, subset
+minimality, and (F1)--(F2), and interpreting the general \(\mathsf{Causes}\) clauses
+over finite traces with \(\LTLf\) semantics, for every \(\Gamma\):
+\(\Gamma\in\mathsf{Causes}^{\le n}_{A,\Frame_{\mathrm{TB}},k}(X^k o)\) iff
+\(C_\Gamma\) satisfies the four valid-cause clauses on \(\tau_{\le n}\) under
+\(\Frame_{\mathrm{TB}}\).
+\end{proposition}
+\begin{proof}
+Each of the four clauses refers only to positions \(0,\ldots,k\) (actuality is
+\(\tau_{\le n}\models C_\Gamma\) and \(o\in\alpha_k\); non-vacuity is non-emptiness
+of admissible \(\neg C_\Gamma\)-removals; effect-failure asks \(o\notin\beta_k\)
+over closest removals), each determined by the length-\((k{+}1)\) prefix under
+\(\LTLf\). These are verbatim the clauses of
+\(\mathsf{Causes}^{\le n}_{A,\Frame_{\mathrm{TB}},k}\): admissible sets coincide,
+the closeness order is in both cases the count-only coarsening of \(\preceq_\tau\)
+on the window (so \(\Close\) is the full minimum-count set and effect-failure
+quantifies over all of it), and (F2) makes ``\(o\) at \(k\)'' a well-defined
+function of the admissible inputs. No infinite object appears, so no
+\(\omega\)-acceptance is needed.
+\end{proof}
+
+\paragraph{Evaluation compatibility.} TempoBench scores at the AP level (partial
+credit per atomic proposition at a timestep) and the TS level (a timestep counts
+only if its whole constraint set matches). The output should therefore preserve
+timestep structure: a flat formula \(X\,in_2\land X^3\neg in_0\) should also be
+reported grouped (\(1\!:in_2\), \(3\!:\neg in_0\)). The pipeline should preserve
+TempoBench's difficulty features (effect depth \(k\), automaton states, transition
+count, trace length, causal-input count, unique inputs) and add no hidden
+information from the original specification.
+
+\section{Limitations and Conclusion}
+\label{sec:conclusion}
+
+\paragraph{Established.} A frame-relative, counterfactual-necessity notion of
+temporal cause, decided in the common regimes by automaton emptiness/shortest-edit
+search and in the strategy regime by the reverse parity game with a
+sound-and-complete decision (Proposition~\ref{prop:rpg-sound});
+Proposition~\ref{prop:weakest} characterizes the nearest-failure certificate; and
+Proposition~\ref{prop:tb-reduction} shows the finite construction is the literal
+specialization of the general definition, aligning it with TempoBench TCE.
+
+\paragraph{Scoped / conjectural.} Complexity statements (Section~\ref{sec:complexity})
+are at the level of construction sizes and standard solving bounds, not a fully
+proved complexity theorem; they rely on automaticity of \(\preceq_\tau\), which we
+establish for the canonical order on lassos and otherwise assume. The reverse game
+decides \emph{strategy-guarantee} necessity (N2), a distinct type-level notion from
+trace-existential N1; we do not claim one game decides N1, nor that one game
+performs the edited-vertex minimization. The HP comparison is a contrast, not a
+proved separation. The TempoBench alignment is conditional on (F1)--(F2)
+(Remark~\ref{rem:hoa}), which we have not verified against the artifacts.
+
+\paragraph{Limitations.} The method reports frame-relative necessary conditions,
+not full actual causes: disjunctions for overdetermined effects, no preempting/%
+preempted discrimination, and \(\mathsf{Causes}=\emptyset\) when the necessary cause
+lies outside \(\mathcal{K}_{\Frame}\). Outputs are determinate only after the
+eligible vocabulary is declared. Evidence here is two worked examples plus the
+TempoBench alignment; a non-toy case study --- a strategy-level extraction on a
+realistic arbiter, and an end-to-end TempoBench TCE instance with
+\(\Gamma^\star\) compared to ground truth --- is left to future work and is the
+main thing needed before empirical claims.
+
+\paragraph{Conclusion.} Frame-relative counterfactual necessity over a frozen
+synthesized strategy, with a parity-game lift for strategy-level causes, is a
+useful organizing frame for temporal causal explanation. This document fixes the
+definitions, the two regimes, and their soundness relationships; closing the
+remaining gaps (a proved complexity theorem, the dominion-minimization procedure,
+and an empirical evaluation) would turn it into a complete method.
+
+\appendix
+
+\section{Compact Notation}
+\label{app:symbols}
+
+Standard logical, temporal, set, and automaton notation is used as usual. We list
+only the document-specific or overloaded objects.
+\begin{description}[leftmargin=2.6cm,style=nextline]
+  \item[\(\Frame\)] the causal frame
+        \((B_{\Frame},E_{\Frame},S_{\Frame},O_{\Frame},\mathcal{K}_{\Frame},
+        \mathcal{I}_{\Frame},\preceq,\triangleleft)\); explanatory scope, not a
+        Kripke frame and not \(\varphi\).
+  \item[\(E_{\Frame}\)] the frame-selected effect (\(=E\) if no scoping); a single
+        \(\omega\)-regular trace property.
+  \item[\(\mathcal{K}_{\Frame}\)] candidate-cause space (effect-disjoint,
+        Assumption~\ref{ass:anticirc}).
+  \item[\(\mathcal{I}_{\Frame}\)] intervention model fixing
+        \(\Adm_M^{\Frame}(\tau)\) (input-only / output-intervention /
+        strategy-structure). Distinct from the input set \(I\).
+  \item[\(\Adm_M^{\Frame}(\tau)\)] admissible counterfactual traces under the
+        frame.
+  \item[\(\preceq_\tau\)] similarity order; canonically the count-first
+        lexicographic \emph{total} order (Section~\ref{sec:similarity}), unique
+        minimum \(\tau\). \(\uparrow_{\preceq_\tau}(X)\): traces \emph{farther}
+        from \(\tau\) than some element of \(X\).
+  \item[\(\Close_{\tau,M}^{\Frame}(\neg C)\)] \(\preceq_\tau\)-minimal admissible
+        \(\neg C\)-removals (over finite-change removals).
+  \item[\(\triangleleft\)] preference order on causes; canonically
+        (size, depth, permissiveness), \(C'\triangleleft C\) means \(C'\) preferred.
+  \item[\(\mathsf{Causes}_{M,\Frame,\tau}(E_{\Frame})\)] valid causes
+        (Section~\ref{sec:formal}); \(C^\star\) a \(\triangleleft\)-minimal one.
+  \item[\(C^{\flat}\)] the nearest-failure certificate
+        (Section~\ref{sec:certificate}); determined only on
+        \(\Adm_M^{\Frame}(\tau)\), generally not in \(\mathcal{K}_{\Frame}\).
+  \item[N1 / N2] trace-existential (one-player) / strategy-guarantee (two-player)
+        necessity (Section~\ref{sec:two-notions}).
+  \item[\(\Sigma_{\Frame},V_{\Frame}\)] strategies agreeing with \(\sigma\) outside
+        the editable vertex set \(V_{\Frame}\); \(D_C,T_C\) the causal dominion and
+        its transitions.
+  \item[{\(G^{\mathrm{rev}}_{M,\Frame,C,E}\), \(W_\exists\), \(\mathcal{A}[W_\exists]\)}]
+        the reverse parity game (Definition~\ref{def:rpg}), its
+        \(\exists\)-winning region, and the sub-arena restricted to it
+        (Proposition~\ref{prop:rpg-sound}).
+  \item[\(A_{\mathrm{HOA}}\), \(\Gamma\), \(C_\Gamma\)] TempoBench acceptor; an
+        input-literal constraint set and its formula (Section~\ref{sec:tempobench}).
+  \item[\(\mathit{at\_s}\)] atomic proposition exposing internal state \(s\)
+        (prefix \(\mathit{at\_}\) to avoid clash with input names).
+\end{description}
+
+\end{document}

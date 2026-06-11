@@ -1,0 +1,260 @@
+{
+ "status": "PASS",
+ "results": [
+  {
+   "puzzle": "P1 one pivotal switch (tutorial)",
+   "overdetermined": false,
+   "original_updated_witnesses": [
+    [
+     [
+      0,
+      0
+     ]
+    ]
+   ],
+   "modified_witnesses": [
+    [
+     [
+      0,
+      0
+     ]
+    ]
+   ],
+   "variants_agree": true,
+   "T1T2_pattern_ok": true,
+   "dual_acceptance_set": [
+    [
+     [
+      [
+       0,
+       0
+      ]
+     ],
+     "both"
+    ]
+   ],
+   "T3_dual_equals_union_no_supersets": true
+  },
+  {
+   "puzzle": "P2 delayed cause with distractor",
+   "overdetermined": false,
+   "original_updated_witnesses": [
+    [
+     [
+      0,
+      0
+     ]
+    ]
+   ],
+   "modified_witnesses": [
+    [
+     [
+      0,
+      0
+     ]
+    ]
+   ],
+   "variants_agree": true,
+   "T1T2_pattern_ok": true,
+   "dual_acceptance_set": [
+    [
+     [
+      [
+       0,
+       0
+      ]
+     ],
+     "both"
+    ]
+   ],
+   "T3_dual_equals_union_no_supersets": true
+  },
+  {
+   "puzzle": "P3 overdetermination",
+   "overdetermined": true,
+   "original_updated_witnesses": [
+    [
+     [
+      0,
+      0
+     ]
+    ],
+    [
+     [
+      1,
+      0
+     ]
+    ]
+   ],
+   "modified_witnesses": [
+    [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ]
+    ]
+   ],
+   "variants_agree": false,
+   "T1T2_pattern_ok": true,
+   "dual_acceptance_set": [
+    [
+     [
+      [
+       0,
+       0
+      ]
+     ],
+     "orig"
+    ],
+    [
+     [
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       0
+      ]
+     ],
+     "mod"
+    ],
+    [
+     [
+      [
+       1,
+       0
+      ]
+     ],
+     "orig"
+    ]
+   ],
+   "T3_dual_equals_union_no_supersets": true
+  },
+  {
+   "puzzle": "P4 guard (request/cancel)",
+   "overdetermined": false,
+   "original_updated_witnesses": [
+    [
+     [
+      0,
+      0
+     ]
+    ],
+    [
+     [
+      1,
+      0
+     ]
+    ]
+   ],
+   "modified_witnesses": [
+    [
+     [
+      0,
+      0
+     ]
+    ],
+    [
+     [
+      1,
+      0
+     ]
+    ]
+   ],
+   "variants_agree": true,
+   "T1T2_pattern_ok": true,
+   "dual_acceptance_set": [
+    [
+     [
+      [
+       0,
+       0
+      ]
+     ],
+     "both"
+    ],
+    [
+     [
+      [
+       1,
+       0
+      ]
+     ],
+     "both"
+    ]
+   ],
+   "T3_dual_equals_union_no_supersets": true
+  },
+  {
+   "puzzle": "P5 delayed overdetermination",
+   "overdetermined": true,
+   "original_updated_witnesses": [
+    [
+     [
+      0,
+      0
+     ]
+    ],
+    [
+     [
+      1,
+      1
+     ]
+    ]
+   ],
+   "modified_witnesses": [
+    [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      1
+     ]
+    ]
+   ],
+   "variants_agree": false,
+   "T1T2_pattern_ok": true,
+   "dual_acceptance_set": [
+    [
+     [
+      [
+       0,
+       0
+      ]
+     ],
+     "orig"
+    ],
+    [
+     [
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       1
+      ]
+     ],
+     "mod"
+    ],
+    [
+     [
+      [
+       1,
+       1
+      ]
+     ],
+     "orig"
+    ]
+   ],
+   "T3_dual_equals_union_no_supersets": true
+  }
+ ]
+}

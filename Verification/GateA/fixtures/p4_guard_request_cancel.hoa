@@ -1,0 +1,11 @@
+HOA: v1
+States: 1
+Start: 0
+AP: 3 "req" "cancel" "grant"
+controllable-AP: 2
+Acceptance: 0 t
+--BODY--
+State: 0
+[2 & 0 & !1] 0
+[!2 & (!0 | 1)] 0
+--END--

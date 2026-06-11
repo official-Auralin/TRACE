@@ -1,0 +1,276 @@
+{
+ "self_validation": [
+  {
+   "fixture": "good_control_p1",
+   "expected_F1F2F3": [
+    true,
+    true,
+    true
+   ],
+   "observed_F1F2F3": [
+    true,
+    true,
+    true
+   ],
+   "classified_correctly": true,
+   "detail": {
+    "states": 2,
+    "aps": [
+     "btn",
+     "lamp"
+    ],
+    "inputs": [
+     "btn"
+    ],
+    "F2_input_deterministic": true,
+    "F2_violations": [],
+    "F3_input_total": true,
+    "F3_violations": [],
+    "F1_h1_io_partition_declared": true,
+    "F1_h3_nontrivial_acceptance_present": false,
+    "F1_operational": true,
+    "note": "F1_operational is a NECESSARY condition; sufficiency requires re-synthesis cross-check (manual)."
+   }
+  },
+  {
+   "fixture": "good_control_named_labels",
+   "expected_F1F2F3": [
+    true,
+    true,
+    true
+   ],
+   "observed_F1F2F3": [
+    true,
+    true,
+    true
+   ],
+   "classified_correctly": true,
+   "detail": {
+    "states": 2,
+    "aps": [
+     "btn",
+     "lamp"
+    ],
+    "inputs": [
+     "btn"
+    ],
+    "F2_input_deterministic": true,
+    "F2_violations": [],
+    "F3_input_total": true,
+    "F3_violations": [],
+    "F1_h1_io_partition_declared": true,
+    "F1_h3_nontrivial_acceptance_present": false,
+    "F1_operational": true,
+    "note": "F1_operational is a NECESSARY condition; sufficiency requires re-synthesis cross-check (manual)."
+   }
+  },
+  {
+   "fixture": "bad_f2_output_nondet",
+   "expected_F1F2F3": [
+    false,
+    false,
+    true
+   ],
+   "observed_F1F2F3": [
+    false,
+    false,
+    true
+   ],
+   "classified_correctly": true,
+   "detail": {
+    "states": 1,
+    "aps": [
+     "btn",
+     "lamp"
+    ],
+    "inputs": [
+     "btn"
+    ],
+    "F2_input_deterministic": false,
+    "F2_violations": [
+     [
+      0,
+      [
+       1
+      ],
+      2
+     ]
+    ],
+    "F3_input_total": true,
+    "F3_violations": [],
+    "F1_h1_io_partition_declared": true,
+    "F1_h3_nontrivial_acceptance_present": false,
+    "F1_operational": false,
+    "note": "F1_operational is a NECESSARY condition; sufficiency requires re-synthesis cross-check (manual)."
+   }
+  },
+  {
+   "fixture": "bad_f2_state_nondet",
+   "expected_F1F2F3": [
+    false,
+    false,
+    true
+   ],
+   "observed_F1F2F3": [
+    false,
+    false,
+    true
+   ],
+   "classified_correctly": true,
+   "detail": {
+    "states": 2,
+    "aps": [
+     "btn",
+     "lamp"
+    ],
+    "inputs": [
+     "btn"
+    ],
+    "F2_input_deterministic": false,
+    "F2_violations": [
+     [
+      0,
+      [
+       1
+      ],
+      2
+     ]
+    ],
+    "F3_input_total": true,
+    "F3_violations": [],
+    "F1_h1_io_partition_declared": true,
+    "F1_h3_nontrivial_acceptance_present": false,
+    "F1_operational": false,
+    "note": "F1_operational is a NECESSARY condition; sufficiency requires re-synthesis cross-check (manual)."
+   }
+  },
+  {
+   "fixture": "bad_f3_partial",
+   "expected_F1F2F3": [
+    false,
+    true,
+    false
+   ],
+   "observed_F1F2F3": [
+    false,
+    true,
+    false
+   ],
+   "classified_correctly": true,
+   "detail": {
+    "states": 1,
+    "aps": [
+     "btn",
+     "lamp"
+    ],
+    "inputs": [
+     "btn"
+    ],
+    "F2_input_deterministic": true,
+    "F2_violations": [],
+    "F3_input_total": false,
+    "F3_violations": [
+     [
+      0,
+      [
+       0
+      ]
+     ]
+    ],
+    "F1_h1_io_partition_declared": true,
+    "F1_h3_nontrivial_acceptance_present": false,
+    "F1_operational": false,
+    "note": "F1_operational is a NECESSARY condition; sufficiency requires re-synthesis cross-check (manual)."
+   }
+  },
+  {
+   "fixture": "monitor_f1_spec_monitor",
+   "expected_F1F2F3": [
+    false,
+    false,
+    true
+   ],
+   "observed_F1F2F3": [
+    false,
+    false,
+    true
+   ],
+   "classified_correctly": true,
+   "detail": {
+    "states": 2,
+    "aps": [
+     "btn",
+     "lamp"
+    ],
+    "inputs": [
+     "btn"
+    ],
+    "F2_input_deterministic": false,
+    "F2_violations": [
+     [
+      0,
+      [
+       0
+      ],
+      2
+     ],
+     [
+      0,
+      [
+       1
+      ],
+      2
+     ],
+     [
+      1,
+      [
+       0
+      ],
+      2
+     ],
+     [
+      1,
+      [
+       1
+      ],
+      2
+     ]
+    ],
+    "F3_input_total": true,
+    "F3_violations": [],
+    "F1_h1_io_partition_declared": false,
+    "F1_h3_nontrivial_acceptance_present": true,
+    "F1_operational": false,
+    "note": "F1_operational is a NECESSARY condition; sufficiency requires re-synthesis cross-check (manual)."
+   }
+  }
+ ],
+ "external": [
+  {
+   "file": "tb_sample_arbiter.hoa",
+   "states": 6,
+   "aps": [
+    "g",
+    "r"
+   ],
+   "inputs": [
+    "r"
+   ],
+   "F2_input_deterministic": true,
+   "F2_violations": [],
+   "F3_input_total": true,
+   "F3_violations": [],
+   "F1_h1_io_partition_declared": true,
+   "F1_h3_nontrivial_acceptance_present": false,
+   "F1_operational": true,
+   "note": "F1_operational is a NECESSARY condition; sufficiency requires re-synthesis cross-check (manual)."
+  }
+ ],
+ "status": "PASS",
+ "self_validation_pass": true,
+ "external_rates": {
+  "F1": 1.0,
+  "F2": 1.0,
+  "F3": 1.0
+ }
+}
