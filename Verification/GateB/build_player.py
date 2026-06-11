@@ -18,8 +18,33 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 from itertools import product
 from hoa import HOA, expand
 from engine import Instance, minimal_actual_causes, minimal_flip_sets
+from itertools import product as iproduct, combinations as icombos
 from fixtures import PUZZLES
 from generator import sample_instance
+
+def find_contingency(inst, S):
+    """The W=w certifying S as a decider (same search as satisfies_ac2, returning
+    the held cells that differ from the recording). Used only for the in-game
+    pair-of-runs demonstration; grading still uses the oracle."""
+    Sset = set(map(tuple, S))
+    others = [c for c in inst.cells() if tuple(c) not in Sset]
+    for wvals in iproduct((0, 1), repeat=len(others)):
+        cont = {tuple(c): v for c, v in zip(others, wvals)}
+        diff = [c for c in others if cont[tuple(c)] != inst.obs[c[0]][c[1]]]
+        on = dict(cont); off = dict(cont)
+        off.update({tuple(c): 1 - inst.obs[c[0]][c[1]] for c in S})
+        if inst.fires(inst.with_cells(on)) is not True: continue
+        if inst.fires(inst.with_cells(off)) is not False: continue
+        robust = True
+        for rsz in range(1, len(diff) + 1):
+            for back in icombos(diff, rsz):
+                h = dict(on)
+                for c in back: h[tuple(c)] = inst.obs[c[0]][c[1]]
+                if inst.fires(inst.with_cells(h)) is not True: robust = False; break
+            if not robust: break
+        if robust:
+            return [[c[0], c[1], cont[tuple(c)]] for c in diff]   # held-off backups
+    return None
 
 # ---------- junction-graph construction ----------
 def build_graph(inst):
@@ -127,11 +152,14 @@ def level(name, provenance, inst):
     accepted = sorted(orig | mod)
     why = ["decider" if m in orig and m not in mod else
            "extinguish" if m in mod and m not in orig else "both" for m in accepted]
+    demos = [find_contingency(inst, list(m)) if w == "decider" else []
+             for m, w in zip(accepted, why)]
+    assert all(d is not None for d in demos), "decider without certifiable contingency"
     return {"name": name, "prov": provenance, "k": inst.k,
             "inputs": inst.inputs, "obs": inst.obs,
             "nodes": nodes, "start": start,
             "accepted": [[list(c) for c in m] for m in accepted],
-            "why": why,
+            "why": why, "demos": demos,
             "verified": True}
 
 def main(seed=23, n_generated=6):
