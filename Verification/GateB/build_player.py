@@ -122,13 +122,16 @@ def verify_equivalence(inst, nodes, start):
 def level(name, provenance, inst):
     nodes, start = build_graph(inst)
     assert verify_equivalence(inst, nodes, start), f"RENDER != HOA on {name}"
-    orig = minimal_actual_causes(inst, max_size=len(inst.cells()))
-    mod = minimal_flip_sets(inst, max_size=len(inst.cells()))
-    accepted = sorted(set(tuple(sorted(m)) for m in (list(orig) + list(mod))))
+    orig = set(tuple(sorted(m)) for m in minimal_actual_causes(inst, max_size=len(inst.cells())))
+    mod = set(tuple(sorted(m)) for m in minimal_flip_sets(inst, max_size=len(inst.cells())))
+    accepted = sorted(orig | mod)
+    why = ["decider" if m in orig and m not in mod else
+           "extinguish" if m in mod and m not in orig else "both" for m in accepted]
     return {"name": name, "prov": provenance, "k": inst.k,
             "inputs": inst.inputs, "obs": inst.obs,
             "nodes": nodes, "start": start,
             "accepted": [[list(c) for c in m] for m in accepted],
+            "why": why,
             "verified": True}
 
 def main(seed=23, n_generated=6):

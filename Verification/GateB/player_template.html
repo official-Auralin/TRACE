@@ -173,9 +173,15 @@ document.getElementById("reset").onclick=()=>{grid=clone(L.obs);render();documen
 document.getElementById("submit").onclick=()=>{
   const d=diff().map(c=>c.join(",")).sort().join("|");
   if(!d){card("Throw what decided the light and leave it thrown.","var(--bad)");return;}
-  const ok=L.accepted.some(m=>m.map(c=>c.join(",")).sort().join("|")===d);
-  if(ok){solved[li]=true;document.getElementById("omsg").textContent=L.prov;
-         document.getElementById("overlay").classList.add("show");}
+  const hit=L.accepted.findIndex(m=>m.map(c=>c.join(",")).sort().join("|")===d);
+  if(hit>=0){
+    solved[li]=true;
+    const why=(L.why||[])[hit], isLit=L.nodes[walk(grid).at(-1)].kind==="bulb";
+    const expl=why==="extinguish"?"the smallest set of throws that puts the light out"
+      :(isLit?"this switch decided the light — a backup kept it shining, but with the backup held off, your switch is what made the difference"
+             :"this switch decided the light");
+    document.getElementById("omsg").innerHTML=expl+`<div style="font-size:11px;color:var(--dim);margin-top:6px">${L.prov}</div>`;
+    document.getElementById("overlay").classList.add("show");}
   else{hearts--;render();
     if(hearts<=0){card("Out of tries — tap the level tab to retry.","var(--bad)");hearts=2;}
     else card("Not quite.","var(--bad)");}
