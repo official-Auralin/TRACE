@@ -16,7 +16,10 @@ function freshDom(){
   return el;
 }
 let fail=0;
-for(const m of ["stop","pin","credit"]){
+const pages=["stop","pin","credit"];
+for(const m of ["auto_stop","auto_pin","auto_credit"])
+  if(fs.existsSync(`${__dirname}/../../TRACE_${m}.html`))pages.push(m);
+for(const m of pages){
   const el=freshDom();
   const html=fs.readFileSync(`${__dirname}/../../TRACE_${m}.html`,"utf8");
   const js=html.match(/<script>([\s\S]*)<\/script>/)[1];

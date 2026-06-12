@@ -22,7 +22,7 @@ import json, hashlib, sys, os, glob
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "GateA"))
 from hoa import HOA
 from engine import Instance, pivots, minimal_actual_causes, determining_sets, sufficient
-from build_player import build_graph, verify_equivalence
+from render import build_graph, verify_equivalence
 from a2_corp_compare import parse_trace
 from mode_assign import assign_mode, MODE_ASSIGN_VERSION
 import build_modes as BM
@@ -103,12 +103,14 @@ def main(paths):
         assert verify_equivalence(inst, nodes, start), f"render != HOA on {iid}"
         ok, metrics, reasons = quality_gate(inst, mode, nodes)
         if not ok:
-            log.append({"id": iid, "mode": mode, "why": why, "quality": metrics,
-                        "rejected": reasons}); continue
-        buckets[mode].append((iid, {"name": iid[:6], "prov": f"auto · {why} · assigner v{MODE_ASSIGN_VERSION}",
+            log.append({"id": iid, "name": row.get("name"), "mode": mode, "why": why,
+                        "quality": metrics, "rejected": reasons}); continue
+        buckets[mode].append((iid, {"name": row.get("name") or iid[:6],
+                                    "prov": f"auto {iid[:6]} · {why} · assigner v{MODE_ASSIGN_VERSION}",
                                     "k": inst.k, "inputs": inst.inputs, "obs": inst.obs,
                                     "nodes": nodes, "start": start}))
-        log.append({"id": iid, "mode": mode, "why": why, "quality": metrics})
+        log.append({"id": iid, "name": row.get("name"), "mode": mode, "why": why,
+                    "quality": metrics})
     goal = {"stop": BM.STOP_JS, "pin": BM.PIN_JS, "credit": BM.CREDIT_JS}
     texts = {"stop": ("STOP IT", "One throw. <b>Put the light out by flipping a single switch</b> — or finish the tally and say nothing alone can."),
              "pin": ("PIN IT", "<b>Lock switches so the light CANNOT go out</b> — the sweep verifies every completion before your eyes."),
@@ -130,5 +132,17 @@ def main(paths):
     return shas, log
 
 if __name__ == "__main__":
-    main(sys.argv[1:] or [os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                          "..", "GateA", "external", "tb_embedded_sample.jsonl")])
+    if sys.argv[1:]:
+        main(sys.argv[1:])
+    else:
+        # Default: the gold-12 coverage set (the same twelve instances the
+        # retired single-board build shipped), regenerated deterministically.
+        import gold_inputs
+        path, _ = gold_inputs.write()
+        shas, log = main([path])
+        rec = {"assigner_version": MODE_ASSIGN_VERSION,
+               "quality_gate_version": QUALITY_GATE_VERSION,
+               "classified": log, "page_sha16": shas}
+        open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                          "results", "gold12_build.json"), "w").write(
+            json.dumps(rec, indent=1, sort_keys=True))

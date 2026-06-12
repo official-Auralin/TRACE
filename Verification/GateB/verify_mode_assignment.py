@@ -7,8 +7,10 @@ and lands the gold instances correctly.
      total on retained instances and returns the identical verdict when called
      twice on independently re-parsed copies of the same inputs.
   A3 declaration wins: an explicit "mode" field overrides the rule.
-  D1/D2 build determinism: building twice, and building with the input order
-     reversed, yields byte-identical pages."""
+  D1/D2 build determinism over the FULL gold-12 input set (the same twelve
+     instances the retired single-board build shipped): building twice, and
+     building with the input order reversed, yields byte-identical pages;
+     gold12.jsonl itself regenerates byte-identically (D0)."""
 import json, sys, os, random, hashlib
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "GateA"))
 from hoa import HOA
@@ -17,23 +19,7 @@ from fixtures import PUZZLES
 from generator import sample_instance, random_mealy
 from mode_assign import assign_mode
 from build_from_inputs import main as build_main, row_to_instance, instance_id
-
-def fixture_row(p):
-    # serialize a fixture as a raw input row (spot-style trace with all APs per step)
-    inst = Instance(HOA(p["hoa"]), p["inputs"], p["obs"], p["out"], p["k"])
-    h = inst.h
-    from hoa import simulate
-    _, outs = simulate(h, inst.inputs, inst.obs)
-    _, oidx = h.io_split(inst.inputs)
-    onames = [h.aps[j] for j in oidx]
-    steps = []
-    for t in range(inst.k + 1):
-        lits = []
-        for j, nm in enumerate(onames): lits.append(nm if outs[t][j] else "!" + nm)
-        for r, nm in enumerate(inst.inputs): lits.append(nm if inst.obs[r][t] else "!" + nm)
-        steps.append("&".join(lits))
-    return {"hoa": p["hoa"], "trace": ";".join(steps),
-            "effects": ["X" * p["k"] + " " + p["out"] if p["k"] else p["out"]], "error": None}
+from gold_inputs import gold_rows
 
 ok = True
 # A1 gold placement
@@ -72,9 +58,13 @@ m, why = assign_mode(row_to_instance(row), declared="credit")
 ok &= (m == "credit" and why == "declared")
 print("A3 declared mode overrides:", m == "credit")
 
-# D1/D2 build determinism with order permutation
-rows = [fixture_row(p) for p in PUZZLES] + [row]
-import tempfile
+# D0 gold12 regenerates byte-identically; D1/D2 build determinism over gold-12
+g1 = "\n".join(json.dumps(r, sort_keys=True) for r in gold_rows())
+g2 = "\n".join(json.dumps(r, sort_keys=True) for r in gold_rows())
+ok &= g1 == g2
+print("D0 gold12 input set regenerates byte-identically:", g1 == g2,
+      f"({len(gold_rows())} rows)")
+rows = gold_rows()
 d = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
 f1, f2 = os.path.join(d, "auto_in1.jsonl"), os.path.join(d, "auto_in2.jsonl")
 open(f1, "w").write("\n".join(json.dumps(r) for r in rows))

@@ -790,8 +790,11 @@ canonical human game:
   verification is the explanation.
 - **The variant fork dissolves at the surface**: CREDIT IT's win object is the player's own
   exhibited contingency pair-of-runs — the original/updated HP object only; extinguishing sets
-  are never a Credit answer. Iteration 12's dual acceptance survives only in the labeled
-  sandbox archive (`TRACE_play.html`).
+  are never a Credit answer. Iteration 12's dual acceptance is retired with its build
+  (removed from the repo; git history preserves it). The twelve instances that build shipped
+  remain the pipeline's coverage obligation: regenerated deterministically (`gold_inputs.py`)
+  and either emitted-and-verified or rejected-with-reason by the quality gate
+  (`verify_modes.py` gold-12 section).
 - **Verified**: `verify_modes.py` proves the live verdict equals the oracle for *every possible
   player action* on every emitted level; `verify_mode_assignment.py` proves deterministic mode
   assignment and byte-identical builds; a versioned quality gate (`build_from_inputs.py`)
@@ -806,8 +809,8 @@ canonical human game:
 
 1. ~~Certify shipped instances with the formal checker~~ — done: every emitted level's live
    semantics are proven equal to the oracle (`verify_modes.py`, GateB harness).
-2. **Human pilot (V6 / Gate D1)** on the mode-explicit pages, with the sandbox archive and the
-   budgeted white-box arm as comparison conditions; P3/P4/P5 strata carry the conceptual load.
+2. **Human pilot (V6 / Gate D1)** on the mode-explicit pages, with the budgeted white-box arm
+   as a comparison condition; P3/P4/P5 strata carry the conceptual load.
    *Not yet scheduled — pilot readiness pending.*
 3. Re-run corpus statistics and the CORP comparison on the real TempoBench dataset when it
    arrives (external dependency; dataset being re-prepared upstream).

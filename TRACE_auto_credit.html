@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRACE — CREDIT IT</title>
+<style>
+  :root{--bg:#16151a;--panel:#221f28;--cell:#2e2a36;--edge:#454051;--ink:#efeae0;
+        --dim:#8a8496;--gold:#f4c84a;--blue:#6aa8ff;--bad:#e0705f;--good:#7fd08a}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Avenir Next",system-ui,sans-serif;
+       display:flex;flex-direction:column;align-items:center;min-height:100vh}
+  h1{font-size:19px;letter-spacing:5px;margin:14px 0 2px;color:var(--gold)}
+  .goal{font-size:14px;margin:2px 12px 10px;max-width:680px;text-align:center;line-height:1.45}
+  .goal b{color:var(--gold)}
+  .tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;justify-content:center}
+  .tab{background:var(--panel);border:1px solid var(--edge);color:var(--dim);border-radius:16px;
+       padding:5px 12px;font-size:12px;cursor:pointer}
+  .tab.active{color:var(--gold);border-color:var(--gold)}
+  .tab.done::after{content:" \2714";color:var(--good)}
+  .modebar{display:flex;gap:8px;margin-bottom:10px}
+  .modebar a{font-size:11px;color:var(--dim);text-decoration:none;border:1px solid var(--edge);
+             border-radius:10px;padding:3px 9px}
+  .modebar a.here{color:var(--gold);border-color:var(--gold)}
+  #machine{background:var(--panel);border-radius:18px;padding:12px 16px;box-shadow:0 8px 30px #0008;
+           max-width:880px;width:min(97vw,880px)}
+  .worldlab{font-size:10px;letter-spacing:2px;color:var(--dim);margin:2px 0 2px}
+  #recwrap{border:1px dashed var(--edge);border-radius:12px;padding:4px 6px;margin-bottom:8px;
+           overflow-x:auto;opacity:.92}
+  #svgwrap{overflow-x:auto}
+  svg{display:block;margin:0 auto}
+  .trk{fill:none;stroke:#8d86a0;stroke-width:2.2;pointer-events:none}
+  .trk.idle{stroke:#4a4556;opacity:.45}
+  .trk.live{stroke:var(--gold);stroke-width:3;stroke-dasharray:7 5;animation:flow 1s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-12}}
+  .trkhit{fill:none;stroke:#fff;stroke-width:14;opacity:0;cursor:pointer}
+  .jx{fill:var(--cell);stroke:#6a6378;stroke-width:1.8;cursor:pointer}
+  .jx.cand{stroke:var(--gold);stroke-width:3}
+  .jx.lockd{stroke:var(--blue);stroke-width:3}
+  .jxring{fill:none;stroke:var(--blue);stroke-width:1.6;opacity:.85}
+  .jxhit{fill:#fff;opacity:0;cursor:pointer}
+  .tag{font-size:10px;text-anchor:middle;cursor:pointer}
+  .tag.tried{fill:#56505f}
+  .tag.fresh{fill:var(--gold)}
+  .bulb.lit{fill:#3a3220;stroke:var(--gold);filter:drop-shadow(0 0 10px var(--gold))}
+  .bulb.dark{fill:#1c1a22;stroke:#4a4556}
+  .blab{font-size:13px;text-anchor:middle;pointer-events:none}
+  .blab.lit{fill:var(--gold)}.blab.dark{fill:#4a4556}
+  .gnd{stroke:#4a4556;stroke-width:1.6}
+  .collab{fill:var(--dim);font-size:10px;text-anchor:middle}
+  .collab.k{fill:var(--gold)}
+  .hud{display:flex;justify-content:space-between;align-items:center;margin:6px 2px;font-size:13px}
+  .delta{font-size:11px;color:var(--dim)}
+  button{font-family:inherit;border:none;border-radius:12px;padding:9px 15px;font-size:13px;cursor:pointer}
+  #reset{background:var(--cell);color:var(--ink)}
+  .primary{background:var(--blue);color:#0b1830;font-weight:700}
+  .verdictgold{background:var(--cell);color:var(--gold);border:1px solid var(--gold)}
+  .btnrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  #card{margin-top:8px;border-radius:12px;padding:9px 13px;font-size:13px;display:none;
+        border:1px solid var(--edge);line-height:1.45}
+  #card.show{display:block}
+  #sweepbar{height:7px;background:var(--cell);border-radius:4px;margin:6px 2px;display:none}
+  #sweepfill{height:7px;background:var(--gold);border-radius:4px;width:0%}
+  #overlay{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;
+           flex-direction:column;gap:10px;z-index:9}
+  #overlay.show{display:flex}
+  #overlay .big{font-size:44px}
+  #overlay button{background:var(--gold);color:#241d05;font-weight:700}
+  .foot{font-size:10px;color:#565060;margin:12px 0 18px;text-align:center;max-width:700px;line-height:1.5;padding:0 12px}
+</style>
+</head>
+<body>
+<h1>CREDIT IT</h1>
+<div class="modebar"><a href="TRACE_stop.html" class="">STOP IT</a> <a href="TRACE_pin.html" class="">PIN IT</a> <a href="TRACE_credit.html" class="here">CREDIT IT</a></div>
+<div class="goal"><b>Make the light OBEY one switch:</b> claim it, build the bench, make it blink.</div>
+<div class="tabs" id="tabs"></div>
+<div id="machine">
+  <div class="worldlab">THE RECORDING — what actually happened (frozen)</div>
+  <div id="recwrap"></div>
+  <div class="worldlab">YOUR BENCH — experiment freely</div>
+  <div id="svgwrap"></div>
+  <div id="sweepbar"><div id="sweepfill"></div></div>
+  <div class="hud"><div class="delta" id="delta"></div><div id="hearts"></div></div>
+  <div class="btnrow" id="btnrow"></div>
+  <div id="card"></div>
+</div>
+<div class="foot">This page contains NO answer key: every verdict is computed in front of you by
+running the machine itself (the board is build-verified to behave identically to the source
+automaton on every possible switch setting). Auto-built from raw instance inputs; mode assigner v1.0; quality gate v1.0 (mode-appropriateness + legibility).</div>
+<div id="overlay"><div class="big">✔</div><div id="omsg" style="color:var(--gold);text-align:center;max-width:80vw"></div><button onclick="nextLevel()">▸</button></div>
+<script>
+const LEVELS=[{"inputs":["a","b"],"k":1,"name":"P3","nodes":[{"kind":"bulb","x":2,"y":0},{"kind":"gnd","x":2,"y":1.8},{"col":1,"kind":"pass","next":0,"x":1,"y":0},{"col":1,"kind":"pass","next":1,"x":1,"y":1.8},{"cell":[1,0],"col":0,"kind":"test","out0":3,"out1":2,"state":0,"x":0.45,"y":0.4},{"cell":[0,0],"col":0,"kind":"test","out0":4,"out1":2,"state":0,"x":0.0,"y":0.0}],"obs":[[1,0],[1,0]],"prov":"auto 27c05a \u00b7 rule1: overdetermined (0 pivots, 2 actual causes) \u00b7 assigner v1.0","start":5},{"inputs":["a","b"],"k":2,"name":"P5","nodes":[{"kind":"bulb","x":3,"y":0},{"kind":"gnd","x":3,"y":1.8},{"col":2,"kind":"pass","next":0,"x":2,"y":0},{"col":2,"kind":"pass","next":2,"x":2,"y":0},{"col":1,"kind":"pass","next":3,"x":1,"y":0},{"col":2,"kind":"pass","next":1,"x":2,"y":1.8},{"cell":[1,1],"col":1,"kind":"test","out0":5,"out1":2,"state":1,"x":1.45,"y":0.4},{"cell":[0,0],"col":0,"kind":"test","out0":6,"out1":4,"state":0,"x":0.0,"y":0.0}],"obs":[[1,0,0],[0,1,0]],"prov":"auto d40de1 \u00b7 rule1: overdetermined (0 pivots, 2 actual causes) \u00b7 assigner v1.0","start":7}];
+
+let li=0,L,grid,hearts,solved=[];
+const CW=160,X0=70,NY0=40,LH=58,JR=9;
+const px=x=>X0+x*CW, py=y=>NY0+y*LH;
+const clone=g=>g.map(r=>r.slice());
+function walkG(g){const seq=[L.start];let cur=L.start;
+  for(let i=0;i<200;i++){const n=L.nodes[cur];
+    if(n.kind==="pass"){cur=n.next;seq.push(cur);continue;}
+    if(n.kind!=="test")break;
+    cur=g[n.cell[0]][n.cell[1]]?n.out1:n.out0;seq.push(cur);}
+  return seq;}
+const litOf=g=>L.nodes[walkG(g).at(-1)].kind==="bulb";
+const allCells=()=>{const c=[];for(let r=0;r<L.inputs.length;r++)for(let t=0;t<=L.k;t++)c.push([r,t]);return c;};
+const testable=()=>{const s=new Set();L.nodes.forEach(n=>{if(n.kind==="test")s.add(n.cell.join(","));});
+  return allCells().filter(c=>s.has(c.join(",")));};
+function ends(n,to){const r1=n.kind==="pass"?4:JR+1,r2=to.kind==="test"?JR+1:(to.kind==="pass"?4:18);
+  const x1=px(n.x),y1=py(n.y),x2=px(to.x),y2=py(to.y);
+  const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1;
+  return [x1+dx/len*r1,y1+dy/len*r1,x2-dx/len*r2,y2-dy/len*r2,dx/len,dy/len];}
+function boardSVG(g,opts){
+  // opts: {interactive, scale, markCell:(cell)->cls, tagText:(cell)->str|null}
+  const seq=walkG(g),isLit=L.nodes[seq.at(-1)].kind==="bulb";
+  const onRoute=new Set();for(let i=0;i+1<seq.length;i++)onRoute.add(seq[i]+">"+seq[i+1]);
+  const xs=L.nodes.filter(n=>n.x!==undefined).map(n=>n.x),ys=L.nodes.filter(n=>n.y!==undefined).map(n=>n.y);
+  const W=px(Math.max(...xs))+50,H=py(Math.max(...ys))+34;
+  const sc=opts.scale||1;
+  let s=`<svg width="${W*sc}" height="${H*sc}" viewBox="0 0 ${W} ${H}">`;
+  for(let t=0;t<=L.k;t++)s+=`<text class="collab ${t===L.k?'k':''}" x="${px(t)}" y="14">${t===L.k?"\u25BC ":""}${t}</text>`;
+  s+=`<path class="trk live" d="M${px(L.nodes[L.start].x)-38},${py(L.nodes[L.start].y)} L${px(L.nodes[L.start].x)-JR-2},${py(L.nodes[L.start].y)}"/>`;
+  L.nodes.forEach((n,i)=>{
+    if(n.kind==="pass"){const to=L.nodes[n.next];const[a,b,c,d2]=ends(n,to);
+      s+=`<path class="trk ${onRoute.has(i+">"+n.next)?'live':''}" d="M${a},${b} L${c},${d2}"/>`;return;}
+    if(n.kind!=="test")return;
+    const v=g[n.cell[0]][n.cell[1]];
+    [["out1",1],["out0",0]].forEach(([f,val])=>{
+      const to=L.nodes[n[f]];const[x1,y1,x2,y2,ux,uy]=ends(n,to);
+      const al=v===val,live=al&&onRoute.has(i+">"+n[f]);
+      const gx=al?x1:x1+ux*12,gy=al?y1:y1+uy*12;
+      const mx=(gx+x2)/2,my=(gy+y2)/2-Math.min(13,Math.abs(x2-gx)*.06);
+      const d=`M${gx},${gy} Q${mx},${my} ${x2},${y2}`;
+      s+=`<path class="trk ${al?(live?'live':''):'idle'}" d="${d}"/>`;
+      if(opts.interactive)s+=`<path class="trkhit" data-r="${n.cell[0]}" data-t="${n.cell[1]}" data-v="${val}" d="${d}"/>`;
+    });});
+  L.nodes.forEach((n,i)=>{
+    if(n.x===undefined)return;const x=px(n.x),y=py(n.y);
+    if(n.kind==="bulb"){
+      s+=`<circle class="bulb ${isLit?'lit':'dark'}" cx="${x}" cy="${y}" r="15" stroke-width="2"/>
+          <text class="blab ${isLit?'lit':'dark'}" x="${x}" y="${y+4.5}">\u229B</text>`;}
+    else if(n.kind==="gnd"){
+      s+=`<line class="gnd" x1="${x-8}" y1="${y}" x2="${x+8}" y2="${y}"/>
+          <line class="gnd" x1="${x-5}" y1="${y+4}" x2="${x+5}" y2="${y+4}"/>
+          <line class="gnd" x1="${x-2}" y1="${y+8}" x2="${x+2}" y2="${y+8}"/>`;}
+    else if(n.kind==="pass"){
+      s+=`<circle cx="${x}" cy="${y}" r="3.5" fill="#56505f"/>`;}
+    else if(n.kind==="test"){
+      const key=n.cell.join(",");
+      const extra=opts.markCell?opts.markCell(n.cell):"";
+      const thrown=g[n.cell[0]][n.cell[1]]!==L.obs[n.cell[0]][n.cell[1]];
+      if(thrown&&opts.interactive)s+=`<circle class="jxring" cx="${x}" cy="${y}" r="${JR+5}"/>`;
+      s+=`<circle class="jx ${extra}" data-r="${n.cell[0]}" data-t="${n.cell[1]}" cx="${x}" cy="${y}" r="${JR}"/>`;
+      if(opts.interactive)s+=`<circle class="jxhit" data-r="${n.cell[0]}" data-t="${n.cell[1]}" cx="${x}" cy="${y}" r="${JR+7}"/>`;
+      const tg=opts.tagText?opts.tagText(n.cell):null;
+      if(tg)s+=`<text class="tag ${tg.cls}" data-r="${n.cell[0]}" data-t="${n.cell[1]}" x="${x}" y="${y-JR-5}">${tg.txt}</text>`;
+    }});
+  s+="</svg>";return s;}
+function card(msg,col){const c=document.getElementById("card");c.className="show";
+  c.style.borderColor=col||"var(--edge)";c.innerHTML=msg;}
+function hideCard(){document.getElementById("card").className="";}
+function win(msg){solved[li]=true;tabs();
+  document.getElementById("omsg").innerHTML=msg+`<div style="font-size:11px;color:var(--dim);margin-top:6px">${L.prov}</div>`;
+  document.getElementById("overlay").classList.add("show");}
+function tabs(){document.getElementById("tabs").innerHTML=LEVELS.map((l,i)=>
+  `<div class="tab ${i===li?'active':''} ${solved[i]?'done':''}" onclick="load(${i})">${l.name}</div>`).join("");}
+function nextLevel(){document.getElementById("overlay").classList.remove("show");
+  load(Math.min(li+1,LEVELS.length-1));}
+function renderRecording(){
+  const save=grid;grid=null;
+  document.getElementById("recwrap").innerHTML=boardSVG(L.obs,{interactive:false,scale:0.55});
+  grid=save;}
+
+
+// CREDIT IT — single taps only, no gestures:
+//   tap the ★ tag above a switch  -> claim it (gold)
+//   tap a switch or a track            -> set the bench (your contingency)
+//   MAKE IT BLINK                      -> run the two-arm demonstration
+let cand;
+function load(i){li=i;L=LEVELS[i];grid=clone(L.obs);cand=null;hearts=2;hideCard();tabs();render();}
+function render(){
+  renderRecording();
+  document.getElementById("svgwrap").innerHTML=boardSVG(grid,{interactive:true,
+    markCell:c=>(cand&&cand.join(",")===c.join(","))?"cand":"",
+    tagText:c=>({txt:"★",cls:(cand&&cand.join(",")===c.join(","))?"fresh":"tried"})});
+  document.getElementById("delta").innerHTML=cand?
+    `claim: <b style="color:var(--gold)">(${L.inputs[cand[0]]}, moment ${cand[1]})</b> — press MAKE IT BLINK; if it refuses, rearrange the bench to silence the backup`
+    :`<b style="color:var(--gold)">tap the ★ above a switch</b> to claim it · tap switches to set the bench`;
+  document.getElementById("hearts").textContent="♥".repeat(hearts)+"♡".repeat(2-hearts);
+  document.getElementById("btnrow").innerHTML=
+    `<button id="reset">↺</button>
+     <button id="blink" class="primary" ${cand?"":"disabled style='opacity:.4'"}>MAKE IT BLINK</button>`;
+  document.getElementById("reset").onclick=()=>{grid=clone(L.obs);cand=null;hideCard();render();};
+  document.getElementById("blink").onclick=()=>{if(cand)blinkTest();};
+  document.querySelectorAll(".tag").forEach(h=>h.onclick=()=>{
+    cand=[+h.dataset.r,+h.dataset.t];
+    grid[cand[0]][cand[1]]=L.obs[cand[0]][cand[1]];   // claims are stated at the recorded value
+    hideCard();render();});
+  document.querySelectorAll(".jxhit").forEach(h=>h.onclick=()=>{
+    grid[+h.dataset.r][+h.dataset.t]^=1;render();});
+  document.querySelectorAll(".trkhit").forEach(h=>h.onclick=()=>{
+    grid[+h.dataset.r][+h.dataset.t]=+h.dataset.v;render();});
+}
+function blinkTest(){
+  const c=cand;
+  grid[c[0]][c[1]]=L.obs[c[0]][c[1]];render();
+  const gOn=clone(grid), gOff=clone(grid); gOff[c[0]][c[1]]^=1;
+  if(!litOf(gOn)){hearts--;render();card("With this bench the light is OUT even with the switch as recorded — it commands nothing here. Rearrange the bench."+(hearts?"":" Out of tries — tap the tab to retry."),"var(--bad)");if(hearts<=0)hearts=2;return;}
+  if(litOf(gOff)){hearts--;render();card("Flip it and the light STAYS on — something else is carrying it. Find and silence the backup, then try again."+(hearts?"":" Out of tries — tap the tab to retry."),"var(--bad)");if(hearts<=0)hearts=2;return;}
+  let n=0;const seqs=[gOff,gOn,gOff,gOn];
+  const beat=()=>{
+    if(n<seqs.length){grid=clone(seqs[n]);render();n++;setTimeout(beat,420);return;}
+    const diff=allCells().filter(cc=>!(cc[0]===c[0]&&cc[1]===c[1])&&gOn[cc[0]][cc[1]]!==L.obs[cc[0]][cc[1]]);
+    for(let m=1;m<(1<<diff.length);m++){
+      const h=clone(gOn);
+      diff.forEach((cc,j)=>{if((m>>j)&1)h[cc[0]][cc[1]]=L.obs[cc[0]][cc[1]];});
+      if(!litOf(h)){
+        hearts--;grid=h;render();
+        card("It blinked — but your bench was doing hidden work: returning these switches to the recording (left on your bench) kills the light even with your claim in place. The switch must command the light, not your scaffolding."+(hearts?"":" Out of tries — tap the tab to retry."),"var(--bad)");
+        if(hearts<=0)hearts=2;return;}}
+    grid=clone(gOn);render();
+    win(`You made the light obey (${L.inputs[c[0]]}, moment ${c[1]}): on with it as recorded, off when flipped — and the demonstration held when your bench was handed back to the recording. That switch truly decided the recorded flash.`);};
+  beat();
+}
+
+load(0);
+</script>
+</body>
+</html>

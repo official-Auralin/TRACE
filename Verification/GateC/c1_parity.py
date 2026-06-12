@@ -33,7 +33,7 @@ from hoa import HOA
 from engine import Instance
 from fixtures import PUZZLES
 from grader import keys
-from build_player import build_graph, walk_graph
+from render import build_graph, walk_graph
 from generator import sample_instance
 from a2_corp_compare import parse_trace
 

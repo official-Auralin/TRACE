@@ -25,7 +25,7 @@ from itertools import product
 from hoa import HOA
 from engine import Instance, pivots, satisfies_ac2, sufficient, determining_sets, minimal_actual_causes
 from fixtures import PUZZLES
-from build_player import build_graph, walk_graph, verify_equivalence
+from render import build_graph, walk_graph, verify_equivalence
 from a2_corp_compare import parse_trace
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")

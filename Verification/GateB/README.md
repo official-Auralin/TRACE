@@ -11,6 +11,13 @@ Chunked execution (sandbox time limits): `python3 b2_corpus.py 0..5` then `agg`;
 | `b1_profile.py` | published tractable (|I|,k) envelope per mode; exponential Credit cost exhibited as predicted | every grid point measured; superpolynomial Credit growth |
 | `generator.py` + `b2_corpus.py` | pipeline P1-P6 prototype (random Mealy, F2/F3 by construction), trivial filter, corpus statistics incl. no-pivot split, Credit-vs-Pin equality, variant divergence | >=100 retained, all pass audit, totals consistent |
 | `b3_identifiability.py` | black-box admission check (exhaustive within a declared device family, one-sided budget guarantee), controls + admission rate | both controls correct |
+| `render.py` | shared junction-graph render core (Shannon decomposition, Mealy edge-rendering) + `verify_equivalence` (board == HOA on every window setting) | n/a (library; builders abort on divergence) |
+| `build_modes.py` | builds the canonical mode pages `TRACE_stop/pin/credit.html` (no embedded keys) with per-level oracle cross-checks incl. credit expressibility (all minimal causes singletons) | cross-checks pass per level |
+| `mode_assign.py` + `build_from_inputs.py` | deterministic mode assignment (v1.0) + quality gate (v1.0: mode-appropriateness, window <= 8 cells, fan-out <= 4, credit 1-3 deciders) building `TRACE_auto_*.html` from raw rows | render==HOA per level; rejections logged with reasons |
+| `gold_inputs.py` | the gold-12 coverage set (P1-P5, TB, seed-23 G1-G6 — the retired build's twelve instances) regenerated deterministically as raw rows | byte-identical regeneration (D0) |
+| `verify_modes.py` | live JS verdict semantics == oracle for EVERY possible player action, on curated AND gold-12 auto pages; every gold-12 input emitted+verified or rejected-with-reason | all checks + full coverage |
+| `verify_mode_assignment.py` | gold placement (P3,P5->credit; P4->pin; P1,P2,TB->stop), assigner purity/totality, declaration-wins, byte-determinism over gold-12 (same inputs / reversed order) | A1-A3, D0-D2 |
+| `runtime_smoke.js` | every level of every emitted page (curated + auto) renders non-empty recording and bench SVG in a DOM stub | no empty render, no runtime error |
 
 ## Honest limitations
 1. Corpus realism not claimed: random Mealy transducers, not SYNTCOMP/ltlsynt syntheses;

@@ -1,0 +1,164 @@
+{
+ "assigner_version": "1.0",
+ "classified": [
+  {
+   "id": "a5a84af8a4",
+   "mode": "stop",
+   "name": "P1",
+   "quality": {
+    "max_tests_per_column": 1,
+    "pivots": 1,
+    "testable_cells": 1,
+    "window_cells": 2
+   },
+   "why": "rule3: lone pivot exists (1 pivot(s))"
+  },
+  {
+   "id": "54398d50a9",
+   "mode": "stop",
+   "name": "P2",
+   "quality": {
+    "max_tests_per_column": 1,
+    "pivots": 1,
+    "testable_cells": 1,
+    "window_cells": 6
+   },
+   "why": "rule3: lone pivot exists (1 pivot(s))"
+  },
+  {
+   "id": "27c05aff66",
+   "mode": "credit",
+   "name": "P3",
+   "quality": {
+    "deciders": 2,
+    "max_tests_per_column": 2,
+    "testable_cells": 2,
+    "window_cells": 4
+   },
+   "why": "rule1: overdetermined (0 pivots, 2 actual causes)"
+  },
+  {
+   "id": "07788a661d",
+   "mode": "pin",
+   "name": "P4",
+   "quality": {
+    "determining_sets": 1,
+    "max_tests_per_column": 2,
+    "testable_cells": 2,
+    "window_cells": 2
+   },
+   "why": "rule2: joint guard (smallest determining set has 2 cells)"
+  },
+  {
+   "id": "d40de14bef",
+   "mode": "credit",
+   "name": "P5",
+   "quality": {
+    "deciders": 2,
+    "max_tests_per_column": 1,
+    "testable_cells": 2,
+    "window_cells": 6
+   },
+   "why": "rule1: overdetermined (0 pivots, 2 actual causes)"
+  },
+  {
+   "id": "d4b5a88f6c",
+   "mode": "stop",
+   "name": "TB",
+   "quality": {
+    "max_tests_per_column": 1,
+    "pivots": 1,
+    "testable_cells": 1,
+    "window_cells": 4
+   },
+   "why": "rule3: lone pivot exists (1 pivot(s))"
+  },
+  {
+   "id": "0a8162aa29",
+   "mode": "pin",
+   "name": "G1",
+   "quality": {
+    "determining_sets": 2,
+    "max_tests_per_column": 2,
+    "testable_cells": 3,
+    "window_cells": 3
+   },
+   "why": "rule2: joint guard (smallest determining set has 2 cells)"
+  },
+  {
+   "id": "8118ec5f26",
+   "mode": "pin",
+   "name": "G2",
+   "quality": {
+    "determining_sets": 1,
+    "max_tests_per_column": 3,
+    "testable_cells": 5,
+    "window_cells": 6
+   },
+   "why": "rule2: joint guard (smallest determining set has 2 cells)"
+  },
+  {
+   "id": "cfb2a29289",
+   "mode": "pin",
+   "name": "G3",
+   "quality": {
+    "determining_sets": 2,
+    "max_tests_per_column": 5,
+    "testable_cells": 6,
+    "window_cells": 6
+   },
+   "rejected": [
+    "fan-out 5 > 4 (illegible column)"
+   ],
+   "why": "rule2: joint guard (smallest determining set has 4 cells)"
+  },
+  {
+   "id": "41c1112a47",
+   "mode": "pin",
+   "name": "G4",
+   "quality": {
+    "determining_sets": 1,
+    "max_tests_per_column": 2,
+    "testable_cells": 3,
+    "window_cells": 4
+   },
+   "why": "rule2: joint guard (smallest determining set has 3 cells)"
+  },
+  {
+   "id": "802aba387d",
+   "mode": "pin",
+   "name": "G5",
+   "quality": {
+    "determining_sets": 1,
+    "max_tests_per_column": 6,
+    "testable_cells": 8,
+    "window_cells": 8
+   },
+   "rejected": [
+    "fan-out 6 > 4 (illegible column)"
+   ],
+   "why": "rule2: joint guard (smallest determining set has 6 cells)"
+  },
+  {
+   "id": "6ddabc031f",
+   "mode": "pin",
+   "name": "G6",
+   "quality": {
+    "determining_sets": 3,
+    "max_tests_per_column": 9,
+    "testable_cells": 8,
+    "window_cells": 8
+   },
+   "rejected": [
+    "fan-out 9 > 4 (illegible column)"
+   ],
+   "why": "rule2: joint guard (smallest determining set has 4 cells)"
+  }
+ ],
+ "page_sha16": {
+  "credit": "c21a3959228de5b0",
+  "pin": "4da6cfd49ef57743",
+  "stop": "c4fe42a4828500e9"
+ },
+ "quality_gate_version": "1.0"
+}

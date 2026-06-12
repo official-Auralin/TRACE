@@ -7,9 +7,11 @@ human game: `TRACE_stop.html` / `TRACE_pin.html` / `TRACE_credit.html`, built by
 `Verification/GateB/build_modes.py`, semantics proven equal to the oracle for every
 possible player action by `verify_modes.py`; arbitrary-input builds via
 `build_from_inputs.py` (deterministic mode assignment §5 + versioned quality gate).
-The dual-acceptance single-board build (`TRACE_play.html`) is retained only as a
-labeled sandbox/archive and pilot-comparison arm; its hidden-objective defect is
-stated on the page itself. The implementation spec §5.0 records the construction.*
+The dual-acceptance single-board build and all other hand-built/legacy surfaces
+are **removed** (git history preserves them); only deterministically built,
+verified pages ship. Pipeline coverage of the retired build's twelve instances
+is part of the verification suite (gold-12: `gold_inputs.py` + `verify_modes.py`).
+The implementation spec §5.0 records the construction.*
 
 ---
 
