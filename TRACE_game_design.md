@@ -435,6 +435,8 @@ Removed during design (untraceable): a "lamp-history scrubber" that previewed co
 
 ## 17. Rubric score
 
+> **Status note (2026-06-12):** this rubric is a **designer self-assessment of design intent**, not empirical evidence. "Approachable / legible / teaches" claims are conditional on the V6 human pilot (validation plan D1), which has not run. Treat the numbers as a checklist of intended properties.
+
 | Criterion | Score | Notes |
 |---|---|---|
 | A. Source faithfulness | **38/40** | Devices 1–6 are the spec's own worked puzzles; modes, budget, grading, verdict, tracks all verbatim. −2: I7/I8 are new devices — composed strictly from spec patterns and knob moves, but their keys still need the spec's checker run on them (the spec itself demands this for any instance). |
@@ -764,15 +766,54 @@ Supersets fail under both (minimality is shared); decoys fail under both. Failur
 
 ### 20.16.4 Faithfulness accounting
 
-For a shipped benchmark corpus, one variant must be declared per corpus (the paper chooses original/updated pending V2); dual acceptance is the right call for the *human game*, where the variant distinction cannot be communicated nonverbally and both readings are spec-documented members of the HP family over the same device. The benchmark configurations section of the doc stands unchanged; this is a play-surface grading policy, recorded here as a deliberate, source-grounded deviation-with-justification rather than silent drift.
+For a shipped benchmark corpus, one variant must be declared per corpus (the paper chooses original/updated pending V2); dual acceptance was judged the right call for the *human game* at this iteration, where the variant distinction cannot be communicated nonverbally and both readings are spec-documented members of the HP family over the same device. The benchmark configurations section of the doc stands unchanged; this is a play-surface grading policy, recorded here as a deliberate, source-grounded deviation-with-justification rather than silent drift. *(Superseded by iteration 13: the mode-explicit construction dissolves the fork at the surface instead of splitting acceptance.)*
 
 ---
 
+## 20.17 Iteration 13 — Visible Verification adopted: the mode-explicit construction ships
+
+The hidden-objective diagnosis of `TRACE_puzzle_construction_proposal.md` (the grader's
+quantifier is invisible from a diff-as-answer board; iteration 12's dual acceptance widened
+the answer key without widening the visible question) was accepted, and construction **C
+(Visible Verification) with B (demonstration gesture) as its Credit mode** is now the
+canonical human game:
+
+- **Three explicit pages**, one per paper mode, paper verbs surfaced: `TRACE_stop.html`
+  (STOP IT = *Prevent*), `TRACE_pin.html` (PIN IT = *Pin*), `TRACE_credit.html` (CREDIT IT =
+  *Credit*). This retires iteration 7's "one implicit question"; the law is now *one declared
+  question per puzzle* (implementation spec §7 L5, §5.0).
+- **Two-world board** restored: frozen RECORDING strip above a live BENCH (resolves §20.14's
+  "one board state cannot witness two experiments").
+- **No answer keys in any page**: every verdict is computed live by walking the build-verified
+  board; ACCEPT shows the completed enumeration/sweep, REJECT leaves a concrete counterexample
+  run on the bench. This retires "Not quite", PROVE IT, and post-hoc explanation layers — the
+  verification is the explanation.
+- **The variant fork dissolves at the surface**: CREDIT IT's win object is the player's own
+  exhibited contingency pair-of-runs — the original/updated HP object only; extinguishing sets
+  are never a Credit answer. Iteration 12's dual acceptance survives only in the labeled
+  sandbox archive (`TRACE_play.html`).
+- **Verified**: `verify_modes.py` proves the live verdict equals the oracle for *every possible
+  player action* on every emitted level; `verify_mode_assignment.py` proves deterministic mode
+  assignment and byte-identical builds; a versioned quality gate (`build_from_inputs.py`)
+  enforces mode-appropriateness + legibility on arbitrary inputs.
+- **Superseded by this iteration**: the spark-budget economy for the white-box human game
+  (C2 decision: live board, β=∞, attempts scored; budgeted arm retained for the pilot); the
+  "shield" button (the ⊘ verdict is now *earned* by the player's own completed tally); the
+  ghost-panel/paired-crank affordance (its AC2 pair-of-runs is now the primary win gesture —
+  bench + MAKE IT BLINK — rather than an auxiliary panel).
+
 ## 21. Next prototype tasks
 
-1. Run the spec's finite checker over I7/I8 to certify their answer keys in all three modes (per §"Computing and certifying the answer key").
-2. Playtest the what-if pair UI (Credit) with children and adults; measure whether "THIS TIME / ALWAYS?" stamps prevent the one-run-proof fallacy.
-3. Implement the deterministic replay engine + native grader behind the HTML mockup for all 8 instances (mockup currently covers I1, I3/I5, I2).
-4. Build the lane-map renderer from HOA input (white-box track) with the trellis layout of the spec's anatomy figure.
-5. Enforce black-box identifiability within β at generation time before shipping any sealed-lid instance.
-6. Calibrate spark budgets per instance against the source rule: humans solve reliably, cheapest brute-force probing does not.
+1. ~~Certify shipped instances with the formal checker~~ — done: every emitted level's live
+   semantics are proven equal to the oracle (`verify_modes.py`, GateB harness).
+2. **Human pilot (V6 / Gate D1)** on the mode-explicit pages, with the sandbox archive and the
+   budgeted white-box arm as comparison conditions; P3/P4/P5 strata carry the conceptual load.
+   *Not yet scheduled — pilot readiness pending.*
+3. Re-run corpus statistics and the CORP comparison on the real TempoBench dataset when it
+   arrives (external dependency; dataset being re-prepared upstream).
+4. Mode-balanced corpus selection (random transducers skew to PIN, 33/40 under assigner v1.0);
+   balance by selection, never by bending the rule.
+5. Enforce black-box identifiability within β at generation time before shipping any sealed-lid
+   instance (B3 admission check exists; needs probe-aware selection — 0/10 admitted at β=3).
+6. Board-image automation for the agents-with-board modality arm (C3).
+

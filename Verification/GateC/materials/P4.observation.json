@@ -1,0 +1,37 @@
+{
+ "machine": "HOA: v1\nStates: 1\nStart: 0\nAP: 3 \"req\" \"cancel\" \"grant\"\ncontrollable-AP: 2\nAcceptance: 0 t\n--BODY--\nState: 0\n[2 & 0 & !1] 0\n[!2 & (!0 | 1)] 0\n--END--\n",
+ "aps": {
+  "inputs": [
+   "req",
+   "cancel"
+  ],
+  "outputs": [
+   "grant"
+  ]
+ },
+ "run": [
+  {
+   "t": 0,
+   "req": 1,
+   "cancel": 0,
+   "grant": 1
+  }
+ ],
+ "target": {
+  "output": "grant",
+  "step": 0
+ },
+ "window": [
+  0,
+  0
+ ],
+ "task": {
+  "object": "credit",
+  "variant": "witness",
+  "hp_variant_policy": "either"
+ },
+ "budgets": {
+  "probes": null,
+  "attempts": 2
+ }
+}

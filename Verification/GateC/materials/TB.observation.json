@@ -1,0 +1,50 @@
+{
+ "machine": "HOA: v1\nStates: 6\nStart: 0\nAP: 2 \"g\" \"r\"\nacc-name: all\nAcceptance: 0 t\nproperties: trans-labels explicit-labels state-acc deterministic\ncontrollable-AP: 0\n--BODY--\nState: 0\n[!g] 1\nState: 1\n[!g] 2\nState: 2\n[!g] 3\nState: 3\n[!g&!r] 4\n[g&r] 5\nState: 4\n[!g] 4\nState: 5\n[g&r] 5\n[!g&!r] 5\n--END--\n",
+ "aps": {
+  "inputs": [
+   "r"
+  ],
+  "outputs": [
+   "g"
+  ]
+ },
+ "run": [
+  {
+   "t": 0,
+   "r": 0,
+   "g": 0
+  },
+  {
+   "t": 1,
+   "r": 1,
+   "g": 0
+  },
+  {
+   "t": 2,
+   "r": 0,
+   "g": 0
+  },
+  {
+   "t": 3,
+   "r": 1,
+   "g": 1
+  }
+ ],
+ "target": {
+  "output": "g",
+  "step": 3
+ },
+ "window": [
+  0,
+  3
+ ],
+ "task": {
+  "object": "credit",
+  "variant": "witness",
+  "hp_variant_policy": "either"
+ },
+ "budgets": {
+  "probes": null,
+  "attempts": 2
+ }
+}

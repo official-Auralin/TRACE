@@ -68,7 +68,11 @@ aligns with TempoBench-style TCE \emph{conditionally} on machine-checkable
 assumptions: a control-validated audit confirms them on the publicly available
 TempoBench sample artifact, and a reference implementation of the finite
 construction reproduces five worked instances from HOA encodings and matches
-the one available TempoBench answer key per cell. Corpus-scale evaluation
+the one available TempoBench answer key per cell; the grader is profiled
+(sub-second full-key computation through small windows, with the
+actual-causation mode the measured exponential), and on a 107-instance
+random-transducer corpus the per-cell actual-cause and determining-set unions
+coincided throughout. Corpus-scale evaluation on real synthesized artifacts
 awaits the dataset's re-release.
 \end{abstract}
 
@@ -1096,11 +1100,15 @@ We specialize the framework to a TempoBench-style temporal causal evaluation
 not verified against the released artifacts}, the solver receives the same
 information and solves the same finite-horizon problem, returning a
 \emph{necessity}-based answer. Beyond (F1)--(F2) there is a second gap: TempoBench
-labels TCE with CORP, a Halpern--Pearl \emph{actual-causation} tool, whereas we
+labels TCE with CORP, a Halpern--Pearl \emph{actual-causation} tool---in
+Halpern's \emph{modified} variant, with contingencies that reset outputs to
+their actual-trace values (verified against the primary sources in the
+companion verification suite)---whereas we
 compute counterfactual \emph{necessity}, and the two differ on overdetermined
 effects (Section~\ref{sec:overdetermination}). So this is a \emph{proposed,
 necessity-based} alignment offering an \emph{alternate} object, not a demonstrated
-reproduction of CORP's key. TempoBench has two tasks: temporal trace evaluation (TTE), asking whether a
+reproduction of CORP's key; any corpus-scale alignment claim must be stated in
+CORP's own (modified) discipline. TempoBench has two tasks: temporal trace evaluation (TTE), asking whether a
 finite trace is accepted by a supplied automaton, and TCE, asking for the minimal
 input constraints necessary for a specified output at a specified
 timestep.\footnote{TempoBench: \url{https://arxiv.org/abs/2510.27544};

@@ -9,11 +9,17 @@
 !index.html
 
 # TRACE playable HTML and docs
+# Canonical human game: the mode-explicit, live-verdict pages (no embedded keys).
+!TRACE_stop.html
+!TRACE_pin.html
+!TRACE_credit.html
+# Sandbox archive (dual-acceptance build, labeled as such on the page) and early mockup.
 !TRACE_play.html
 !TRACE_mockup.html
 !TRACE_game_design.md
 !TRACE_implementation_spec.md
 !TRACE_validation_plan.md
+!TRACE_puzzle_construction_proposal.md
 
 # Verification source, fixtures, and checked result artifacts
 !Verification/GateA/*.py
@@ -26,9 +32,15 @@
 !Verification/GateA/results/*.md
 !Verification/GateB/*.py
 !Verification/GateB/*.md
+!Verification/GateB/*.js
 !Verification/GateB/player_template.html
 !Verification/GateB/results/*.json
 !Verification/GateB/results/*.md
+!Verification/GateC/*.py
+!Verification/GateC/*.md
+!Verification/GateC/materials/*.json
+!Verification/GateC/results/*.json
+!Verification/GateC/results/*.md
 
 # Paper sources and published PDFs
 !tex_files/*.tex

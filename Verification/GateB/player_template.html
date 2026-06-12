@@ -63,21 +63,29 @@
 </head>
 <body>
 <h1>TRACE</h1>
+<div class="prov" style="display:block;margin-bottom:6px">SANDBOX (archive build) — the canonical mode-explicit game is
+<a href="TRACE_stop.html" style="color:var(--gold)">STOP IT</a> ·
+<a href="TRACE_pin.html" style="color:var(--gold)">PIN IT</a> ·
+<a href="TRACE_credit.html" style="color:var(--gold)">CREDIT IT</a></div>
 <div class="prov" id="prov"></div>
 <div class="tabs" id="tabs"></div>
 <div id="machine">
-  <div class="prompt" id="prompt">★ <span>Throw what truly decided the light, and leave it thrown — the smallest true cause wins.</span></div>
+  <div class="prompt" id="prompt">★ <span>Throw a set of switches that is a minimal cause of the light under <i>either</i> Halpern–Pearl reading: a decider (flipping it under some setting of the others toggles the flash) or a smallest extinguishing set (its joint flip alone darkens the flash). Supersets never win.</span></div>
   <div id="svgwrap"></div>
   <div class="answer" id="answer"></div>
   <div class="meters"><div class="delta" id="delta"></div><div id="hearts"></div></div>
   <div class="btnrow"><button id="reset">↺</button><button id="submit">SUBMIT</button></div>
   <div id="card"></div>
 </div>
-<div class="foot">Every board on this page was generated from an HOA automaton artifact and
-machine-verified at build time: walking the drawn graph equals simulating the automaton on
-every possible switch setting, and the accepted answers are the certified keys of the verified
-oracle (minimal causes under either Halpern–Pearl reading). When one switch is read at several
-junctions they share a color and throw together. Built by Verification/GateB/build_player.py.</div>
+<div class="foot">SANDBOX/ARCHIVE BUILD. This page grades against a dual-acceptance key (minimal causes
+under either Halpern–Pearl reading) baked at build time — a policy with a documented
+hidden-objective defect (TRACE_puzzle_construction_proposal.md §1): the two readings cannot be
+told apart from the board. It is retained as a one-board sandbox and pilot-comparison arm; the
+canonical human game is the mode-explicit, live-verdict pages TRACE_stop / TRACE_pin /
+TRACE_credit.html, which embed NO answer key. Every board here was still generated from an HOA
+artifact and machine-verified: walking the drawn graph equals simulating the automaton on every
+possible switch setting. When one switch is read at several junctions they share a color and
+throw together. Built by Verification/GateB/build_player.py.</div>
 <div id="overlay"><div class="big" id="obig">✔</div><div id="omsg" style="color:var(--gold)"></div><button onclick="nextLevel()">▸</button></div>
 <script>
 const LEVELS=/*__LEVELS__*/;

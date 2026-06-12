@@ -16,8 +16,8 @@ mainTB is unusually honest about its own conditionality — it states outright t
 > - **A1: PASS** (checker self-validated on 6 labelled controls incl. named-label HOA syntax; the one real TempoBench artifact passes F1op/F2/F3 at 1.0). *Remaining:* re-run over the full corpus when delivered.
 > - **A2 definitional: RESOLVED** — CORP uses Halpern's *modified* variant (output-resets to actual values, toggleable); Conjecture corp is definitionally unsupported as stated (`A2_definitional_note.md`).
 > - **A2(ii) empirical: MEASURED(n=1), per-cell F1 = 1.0 both variants.** *Remaining (external):* full TCE dataset — pulled from HuggingFace as outdated; N. Holzer is re-preparing it (ETA days). On arrival: drop JSONL in `GateA/external/`, re-run; the decisive rows are the overdetermined ones. Also confirm with him whether keys were generated with CORP contingencies on or off.
-> - **A3: PASS + decision record issued** (dual-acceptance for play; corpus default pending A2(ii)).
-> - **A4: PASS** — production rule: Mealy edge-rendering, or Moore + non-Moore-safe filter.
+> - **A3: PASS + decision record issued.** Benchmark corpora declare ONE `hp_variant` (TempoBench-alignment ⇒ `modified`, per A2 definitional; credit-assignment stance ⇒ `original`; the alignment default is finalized at A2(ii)). *Update (2026-06-12):* with the mode-explicit construction adopted (see Gate C status), the canonical human CREDIT IT surface poses only the original/updated object as a demonstrated decider — dual acceptance no longer governs the canonical play surface; it survives only in the labeled sandbox archive (`TRACE_play.html`).
+> - **A4: PASS — RESOLVED in production:** Mealy edge-rendering shipped (`build_player.py`/`build_modes.py` draw and test the column-k cells the device reads); any remaining undrawn cell is proven effect-irrelevant per instance by Gate C P_CAND (release-blocking CI).
 >
 > **Gate B is unblocked.** Per the dependency rule below, only *TempoBench-alignment claims* (and the corpus-default `hp_variant_policy` in A3) wait on A2(ii); grader, generator, parity, and identifiability work consume our own oracle and artifacts. Every B-deliverable that touches alignment carries the conditional wording mainTB already uses.
 
@@ -36,7 +36,7 @@ mainTB is unusually honest about its own conditionality — it states outright t
 - **Success.** `hp_variant_policy` values in the instance schema are governed by a written rule, tested in CI.
 
 ### A4. Mealy/Moore window reconciliation **[G — demo §2.3] — Priority: MEDIUM-HIGH**
-- **Problem.** The candidate window is 0..k (Puzzle 4's cause sits at t=k), but the demo's junction-graph rendering makes the bulb depend only on inputs 0..k−1. Untested cells are invisible to the human game; a reviewer will ask whether the human and agent candidate spaces are identical (they currently are not, at column k).
+- **Problem (historical — resolved, see status box).** The candidate window is 0..k (Puzzle 4's cause sits at t=k), but the demo's junction-graph rendering made the bulb depend only on inputs 0..k−1, so the human and agent candidate spaces differed at column k. Production resolved this with Mealy edge-rendering plus the per-instance P_CAND effect-irrelevance proof.
 - **Action.** Either implement edge-output rendering (Mealy bulb on the final transition, making column-k cells testable) or formally restrict corpora to causes in 0..k−1 and prove the trivial-instance filter implies no information loss for shipped instances. Update grader `cellsIn` to match.
 - **Success.** A theorem-or-config note: human-testable cells ≡ agent-candidate cells, per instance, verified by the parity audit (D2).
 
@@ -66,6 +66,15 @@ mainTB is unusually honest about its own conditionality — it states outright t
 ---
 
 ## Gate C — Parity (blocks the "same game" claim)
+
+> **STATUS (2026-06-11, see `Verification/GateC/results/REPORT.md`):**
+> - **C1: PASS** on 9 instances (5 worked puzzles, the real TempoBench artifact, 3 generated): observation equivalence (the board is a pure function of the agent observation and behaviorally identical on every input assignment); submission round-trip (every possible board submission ↔ agent JSON answer format with identical grader verdicts — exhaustive); probe parity; candidate-space safety (every human-unreachable cell proven effect-irrelevant in every context — no correct answer is human-inexpressible).
+> - **C2: DECIDED** — white-box humans play the live board (β=∞; attempts are the scored resource), with a budgeted/static white-box arm retained for the pilot so the paper's construct is measured rather than amended away; black-box and agent budgets finite and declared.
+> - **C3: PROTOCOL + MATERIALS** — 2×2 spatial/textual design for the modality confound; agent observation JSONs emitted from the same instances the human board renders (equivalence covered by C1). Board-image automation for the agents-with-board arm remains.
+>
+> **Gate D is unblocked** (pilot design ready); D's only external dependency remains the TempoBench dataset for alignment-claim arms.
+>
+> **STATUS (2026-06-12) — mode-explicit construction adopted.** The Visible-Verification construction (`TRACE_puzzle_construction_proposal.md`, now marked ADOPTED) is implemented and verified: canonical human game = `TRACE_stop/pin/credit.html` (no embedded keys; live verdicts proven equal to the oracle for every possible player action by `verify_modes.py`); deterministic mode assignment + versioned quality gate for arbitrary inputs (`mode_assign.py`, `build_from_inputs.py`, `verify_mode_assignment.py`); P-SUB parity now audited **per variant policy** (original / modified / legacy union). The D1 pilot should compare the mode-explicit surface against the sandbox archive on the P3/P4/P5 strata, and include the budgeted white-box arm (C2).
 
 ### C1. Four-consumer parity audit **[G + mainTB §agent] — Priority: HIGH**
 - Tests, per instance: (i) human board observation ≡ agent JSON observation (information content, both tracks); (ii) human submission (thrown set) serializes to the agent answer format and grades identically; (iii) probe semantics: battery test ≡ `probe()` (cost, returned fields); (iv) attempt accounting identical; (v) candidate-cell spaces identical (A4).

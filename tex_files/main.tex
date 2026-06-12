@@ -2284,7 +2284,11 @@ TempoBench's per-cell ground truth exactly), alongside machine-checked
 reproductions of five worked trace-level instances from HOA encodings. What
 remains before broader empirical claims is a corpus-scale comparison (pending
 the dataset's re-release) and the strategy-level case study --- ideally
-extracting a strategy-level cause from a realistic synthesized arbiter.
+extracting a strategy-level cause from a realistic synthesized arbiter. The
+trace-level checker is additionally profiled (sub-second full-key computation
+on small windows; the actual-causation object is the measured exponential
+mode), and on a 107-instance random-transducer corpus the per-cell
+actual-cause and determining-set unions coincided on every instance.
 
 \paragraph{Conclusion.} The core idea --- frame-relative counterfactual necessity
 for temporal effects over a frozen synthesized strategy, with a parity-game
@@ -3765,11 +3769,15 @@ task. The purpose is not to replace the general construction. The purpose is to
 specialize it so that the solver receives the same kind of information
 TempoBench gives, solves the same kind of finite-horizon causal problem, and
 returns a \emph{necessity}-based answer of the same shape. One caveat throughout:
-TempoBench labels TCE with CORP, a Halpern--Pearl \emph{actual-causation} tool,
+TempoBench labels TCE with CORP, a Halpern--Pearl \emph{actual-causation} tool
+(in Halpern's \emph{modified} variant, with contingencies that reset outputs to
+their actual-trace values, verified against the primary sources in the
+companion verification suite),
 whereas this construction computes counterfactual \emph{necessity}; the two differ
 on overdetermined effects (Section~\ref{sec:overdetermination}), so what follows is
 an \emph{alternate}, necessity-based account of the TCE task, not a reproduction of
-CORP's answer key.
+CORP's answer key. Any corpus-scale alignment claim must be stated in CORP's own
+(modified) discipline.
 
 This appendix is based on the TempoBench paper and public implementation.
 TempoBench has two tasks: temporal trace evaluation (TTE), which asks whether a

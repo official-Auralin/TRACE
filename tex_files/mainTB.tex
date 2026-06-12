@@ -557,9 +557,13 @@ changes destroys it, in which case nothing is a cause under any of our
 readings, and the instance is discarded by the trivial-instance filter of
 Section~\ref{sec:difficulty}. Count-only necessity thus diverges from a
 Halpern--Pearl key exactly on overdetermined and jointly-overdetermining
-structure; how often that structure occurs in TempoBench's corpus is measured
-in roadmap step~V4, and any nonempty key on an overdetermined instance already
-separates the two objects. This collapse of strict counterfactual dependence
+structure; on a prototype corpus of randomly generated input-deterministic,
+input-total transducers, 11 of 139 generated instances were overdetermined
+no-pivotal-cell cases (a further 4 were input-unconditional and discarded),
+and the original-versus-modified variant keys diverged on 59\% of retained
+instances---so the divergence class is common, not exotic; the corresponding
+frequencies on TempoBench's own corpus await its re-release, and any nonempty
+key on an overdetermined instance already separates the two objects. This collapse of strict counterfactual dependence
 under overdetermination is exactly the phenomenon Halpern and Pearl introduced
 contingencies to handle~\cite{halpernpearl2005causes}; our part is to make it
 precise for synthesized temporal controllers and to build on the reading that
@@ -707,7 +711,13 @@ sufficient). A caution about evidence: at the per-cell granularity TempoBench
 grades, \emph{Credit} and \emph{Pin} often \emph{agree}---on every worked puzzle of
 Section~\ref{sec:worked} the actual-cause set equals the union of determining sets,
 and only \emph{Prevent} differs by collapsing. Whether that per-cell equality
-holds in general on (F2)--(F3) instances is open: a proof would make the
+holds in general on (F2)--(F3) instances is open---though on a prototype
+corpus of 107 randomly generated input-deterministic, input-total transducers
+the per-cell equality held on \emph{every} instance at exhaustive search
+depth, strengthening the case that a proof exists. (The same experiment
+yielded a methodological caution: with the minimal-cause search capped at
+three cells, 49 spurious divergences appeared; key searches must be exhaustive
+or carry per-instance certificates.) A proof would make the
 per-cell conjecture independent of the \emph{Credit}-vs-\emph{Pin} choice, and a
 counterexample would be exactly the instance that justifies \emph{Credit}
 specifically. So the case for actual causation as
@@ -743,6 +753,23 @@ non-overdetermined instances and predict divergence---or the need to restate
 the conjecture under the modified discipline---exactly on overdetermined
 ones.
 \end{conjecture}
+
+\paragraph{Variant policy (adopting the verification suite's decision record).}
+The discipline mismatch forces a policy, and we state it rather than let one
+object play two roles. A benchmark corpus declares exactly \emph{one}
+Halpern--Pearl variant per instance file. Corpora whose purpose is
+\emph{TempoBench alignment} grade in the \emph{modified} discipline---CORP's
+own---so that any alignment claim, if it survives the corpus-scale comparison,
+is stated in the variant the compared tool actually implements. Corpora
+advancing this paper's \emph{credit-assignment} argument grade in the
+original/updated variant of Definition~\ref{def:actual}, which we keep as the
+core for the reasons argued above (per-cell credit under symmetric
+overdetermination)---an \emph{independent} stance, not an equivalence stance.
+Instances on which the two variants disagree carry an \texttt{overdetermined}
+difficulty tag. In the playable \emph{Credit} mode the variant is not named
+but \emph{shown}: the win gesture is the player's own exhibited
+contingency pair of runs, which is precisely the original/updated object, so
+the play surface and the declared-variant grading cannot drift apart.
 
 \section{A Benchmark Generator for the TCE Setting}
 \label{sec:pipeline}
@@ -880,8 +907,13 @@ AC2(b) subset-reset checks; per-candidate \emph{Credit} checking is therefore
 exponential in $|I|\cdot k$. In
 short: sufficiency and necessity are polynomial in the explicit automaton; the
 core \emph{Credit} mode is the one that is not, which is why generation leans on
-the difficulty knobs below. Measured grader runtimes over the targeted
-$(|I|,k)$ ranges are roadmap step~V3.
+the difficulty knobs below. The reference implementation exhibits exactly this
+profile: on random three-state transducers, median full-key computation stays
+under one second per instance through $(|I|,k)=(2,3)$ and $(3,1)$, reaches
+$1$--$10$ seconds at $(2,4)$ and $(3,2)$, with \emph{Credit} the exponential
+mode (a $20\times$ cost jump at the envelope boundary) and \emph{Prevent},
+\emph{Pin}, and the modified-variant check remaining orders of magnitude
+cheaper throughout.
 
 \paragraph{Minimality requires search.} By Remark~\ref{rem:nonmonotone} validity
 is not monotone, so a minimal cause is not reachable by greedy deletion. Computing
@@ -996,7 +1028,24 @@ Mathematically the device is a \emph{trellis}: the automaton unrolled in time, o
 column of state-lanes per step, each switch setting an edge to the next column, and
 the observed run a single lit path that ends on a goal node---a cell that flashes
 the target light (Figure~\ref{fig:anatomy}). The trellis is our \emph{depiction}
-of the machine, used in the worked examples below. The \emph{white-box} track
+of the machine, used in the worked examples below. A playable build of this
+board exists for the worked puzzles, the public TempoBench instance, and
+generated instances: each board is produced from the HOA artifact by Shannon
+decomposition of the transition function into one-input junctions, and the
+build verifies, for every input assignment over the window, that walking the
+drawn board agrees with simulating the automaton---the rendering cannot
+diverge from the device it depicts. The playable surface is
+\emph{mode-explicit}: one page per mode of Section~\ref{sec:modes}, each
+posing its question in the mode's plain verb over a two-world board (the
+frozen recording above a live experiment bench), and \emph{key-free}---no
+page embeds an answer key; every verdict is computed in front of the player
+by running the board itself, with acceptance shown as a visibly completed
+enumeration or sweep and rejection as a concrete counterexample run left on
+the bench, so each grader quantifier is discharged on screen rather than
+hidden. (Build-time cross-checks prove the live verdict semantics coincide
+with the certified oracle for every possible player action; an earlier
+single-question build that graded against a baked dual-variant key is
+retained only as a labeled archive.) The \emph{white-box} track
 shows the trellis itself; in the \emph{black-box} track the player sees only
 the switch and light panels and the run---not the state-lanes---and recovers
 the device's behavior by experiment (Section~\ref{sec:agent}).
@@ -1139,7 +1188,14 @@ budget of only $O(k)$ presses cannot enumerate it: the player must form and test
 ability the benchmark means to measure. At $\beta_{\max}=0$ the player must
 simulate the device in their head (pure deduction); a very large budget degrades
 the game to trial and error. Budget is therefore a difficulty knob
-(Section~\ref{sec:difficulty}). A submission is read straight off the
+(Section~\ref{sec:difficulty}). One deliberate deviation in the shipped
+white-box \emph{human} build must be declared here: since the device is shipped
+anyway, the live board simulates freely ($\beta=\infty$; attempts are the
+scored resource)---the human analog of the code-equipped agent regime of
+Section~\ref{sec:agent}, and like it a \emph{declared condition}, reported
+separately. The budgeted construct described above is retained as its own arm
+of the human study (and is the regime of the black-box track and of agent
+evaluations), so live-board, budgeted, and $\beta=0$ results are never pooled. A submission is read straight off the
 panel---marked cells (\emph{Credit}), changed switch (\emph{Prevent}), or locked
 switches (\emph{Pin})---so it is gradable identically for people and agents, with
 no free text.
@@ -1415,9 +1471,15 @@ the actual-cause core does not.
 \label{sec:agent}
 
 The same puzzle is exposed to an AI agent through a text protocol that mirrors the
-human device one-to-one. Parity is the point: within each track, the human
-and the agent receive \emph{the same information} and the same probe tool, take the
-same actions, and are graded by the same checker. Nothing in the agent interface
+human device one-to-one. Parity is the point: within each \emph{declared
+condition}---a track (white- or black-box), a mode, and one declared
+Halpern--Pearl variant---the human and the agent receive \emph{the same
+information} and the same probe tool, take the same actions, and are graded by
+the same checker on the same answer format. Results are never compared across
+undeclared conditions: a human score under one variant is matched only against
+an agent score under the same variant, and the live-board human regime is
+matched against the corresponding free-simulation agent regime
+(Section~\ref{sec:probe}). Nothing in the agent interface
 reveals the answer key or $\varphi$.
 
 \subsection{Observation: two tracks}
@@ -1524,8 +1586,10 @@ automaton and $k$ for sufficiency and necessity, exponential in $|I|\cdot k$ for
 the core \emph{Credit} mode (the contingency search)---and the minimality test adds
 $2^{|\Gamma|}$ calls, small because minimal causes are small. The benchmark
 targets small-window instances on which this is designed to be tractable at
-training scale, with \emph{Credit} the costliest mode; measured grader
-throughput over the targeted $(|I|,k)$ ranges is roadmap step~V3.
+training scale, with \emph{Credit} the costliest mode; the measured envelope of
+the reference implementation (sub-second median full-key computation through
+$(|I|,k)=(2,3)$, $1$--$10$\,s at $(2,4)$ and $(3,2)$) bounds the regime the
+verifiable-reward claim currently extends to.
 
 \subsection{Why the task is hard for current models---and where it is not}
 
@@ -1667,10 +1731,17 @@ for every TempoBench-equivalence claim in this paper.
         Appendix~\ref{app:schema}; measure runtime versus $|I|$ and $k$ for
         each mode; publish the tractable $(|I|,k)$ envelope that the
         verifiable-reward claim of Section~\ref{sec:agent} is then restricted
-        to. The five worked puzzles and the public TempoBench sample instance
-        are already reproduced end-to-end from HOA artifacts by the reference
-        checker (Section~\ref{sec:worked}, Conjecture~\ref{conj:corp}); this
-        step extends that reference implementation to profiled scale.
+        to. \emph{Status:} done at reference scale. The grader implements
+        every mode from its definition (\emph{Prevent} by closest-removal
+        search over Definition~\ref{def:valid} directly---on the worked
+        puzzles its accepted singletons coincide exactly with the pivot sets,
+        i.e.\ Proposition~\ref{prop:pivotal} is checked against the raw
+        definition rather than assumed), reproduces the five worked puzzles
+        and the public TempoBench instance end-to-end from HOA artifacts,
+        accepts every published witness and rejects every strict superset,
+        and is profiled to the envelope reported in
+        Section~\ref{sec:groundtruth}. Production-scale optimization within
+        that envelope remains.
   \item \textbf{Generator and corpus statistics.} Build the generator
         (P1--P6), produce a prototype corpus, and report: instance counts per
         difficulty stratum; the frequency of the no-pivotal-cell verdict,
@@ -1678,12 +1749,28 @@ for every TempoBench-equivalence claim in this paper.
         per-cell agreement rate of \emph{Credit} and \emph{Pin}
         (Section~\ref{sec:two-questions})---a per-cell disagreement instance,
         if found, is the example that justifies \emph{Credit} specifically;
-        and the trivial-instance discard rate.
+        and the trivial-instance discard rate. \emph{Status:} prototyped on
+        randomly generated input-deterministic, input-total transducers
+        (\emph{not} SYNTCOMP syntheses---corpus realism is deliberately not
+        claimed): 139 generated, 107 retained ($23\%$ discarded by the
+        trivial-instance filter), every retained instance re-passing the
+        (F1)--(F3) audit; no-pivotal-cell verdicts split 11 overdetermined
+        versus 4 input-unconditional; \emph{Credit} and \emph{Pin} per-cell
+        unions agreed on all 107; original-versus-modified keys diverged on
+        $59\%$. The same statistics on real synthesized artifacts await the
+        TempoBench corpus.
   \item \textbf{Black-box identifiability enforcement.} Implement the
         admission check of Section~\ref{sec:agent}: an instance enters the
         black-box track only if all devices consistent with the observed run
         and budget-reachable probe information agree on the native answer.
-        Report how restrictive the check is in practice.
+        Report how restrictive the check is in practice. \emph{Status:} the
+        admission check is implemented exhaustively within a declared device
+        family (sound one-sidedly: inadmissibility under full-budget
+        information implies inadmissibility for every smaller budget) and
+        behaves correctly on known-identifiable and known-underdetermined
+        controls; on random two-state, one-input instances with three probes
+        it admitted $0$ of $10$---the check is severely restrictive, and
+        black-box corpora will need probe-aware instance selection.
   \item \textbf{Human pilot and calibration.} Following
         ARC-AGI-2~\cite{chollet2025arcagi2}: recruit a panel, present puzzles
         under a time limit and the standard attempt budget, retain an
@@ -1755,6 +1842,19 @@ general, so discriminating instances can be surfaced.
         but not forced; profile refinement (Appendix~\ref{app:flex}) can change
         which removals are ``closest'' and hence, at the margin, validity. A corpus
         must declare its order.
+  \item \textbf{Playability is a hypothesis until the pilot runs.} What is
+        machine-verified about the playable build is mathematics and parity:
+        render--simulation equivalence, oracle-equality of every on-screen
+        verdict, submission round-trip per declared variant, and
+        candidate-space safety. ``Approachable for humans,'' legibility of
+        generated boards, and the teaching value of the level ramp are
+        \emph{empirical} properties, conditional on the human pilot (roadmap
+        step~V6), which has not yet run; until it does, every such phrase in
+        this paper should be read as design intent. Generated instances
+        additionally pass only a heuristic legibility gate (window-size,
+        fan-out, and accepted-witness caps), not human calibration, and the
+        prototype corpus statistics come from random transducers, not
+        SYNTCOMP syntheses.
 \end{itemize}
 
 \section{Conclusion}

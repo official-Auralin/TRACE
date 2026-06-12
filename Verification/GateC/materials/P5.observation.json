@@ -1,0 +1,49 @@
+{
+ "machine": "HOA: v1\nStates: 4\nStart: 0\nAP: 3 \"a\" \"b\" \"fire\"\ncontrollable-AP: 2\nAcceptance: 0 t\n--BODY--\nState: 0\n[!2 & 0 & 1] 3\n[!2 & 0 & !1] 2\n[!2 & !0 & 1] 1\n[!2 & !0 & !1] 0\nState: 1\n[2 & 0 & 1] 3\n[2 & 0 & !1] 2\n[2 & !0 & 1] 1\n[2 & !0 & !1] 0\nState: 2\n[!2 & 0 & 1] 3\n[!2 & 0 & !1] 3\n[!2 & !0 & 1] 1\n[!2 & !0 & !1] 1\nState: 3\n[2 & 0 & 1] 3\n[2 & 0 & !1] 3\n[2 & !0 & 1] 1\n[2 & !0 & !1] 1\n--END--\n",
+ "aps": {
+  "inputs": [
+   "a",
+   "b"
+  ],
+  "outputs": [
+   "fire"
+  ]
+ },
+ "run": [
+  {
+   "t": 0,
+   "a": 1,
+   "b": 0,
+   "fire": 0
+  },
+  {
+   "t": 1,
+   "a": 0,
+   "b": 1,
+   "fire": 0
+  },
+  {
+   "t": 2,
+   "a": 0,
+   "b": 0,
+   "fire": 1
+  }
+ ],
+ "target": {
+  "output": "fire",
+  "step": 2
+ },
+ "window": [
+  0,
+  2
+ ],
+ "task": {
+  "object": "credit",
+  "variant": "witness",
+  "hp_variant_policy": "either"
+ },
+ "budgets": {
+  "probes": null,
+  "attempts": 2
+ }
+}

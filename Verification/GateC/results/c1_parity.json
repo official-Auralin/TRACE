@@ -1,0 +1,149 @@
+{
+ "status": "PASS",
+ "results": [
+  {
+   "instance": "P1 one pivotal switch (tutorial)",
+   "P_OBS": true,
+   "P_SUB": true,
+   "P_SUB_by_policy": {
+    "original": true,
+    "modified": true,
+    "either": true
+   },
+   "n_submissions_checked": 3,
+   "P_PRB": true,
+   "P_CAND": true,
+   "throwable": 1,
+   "untestable_irrelevant": 1,
+   "pass": true
+  },
+  {
+   "instance": "P2 delayed cause with distractor",
+   "P_OBS": true,
+   "P_SUB": true,
+   "P_SUB_by_policy": {
+    "original": true,
+    "modified": true,
+    "either": true
+   },
+   "n_submissions_checked": 3,
+   "P_PRB": true,
+   "P_CAND": true,
+   "throwable": 1,
+   "untestable_irrelevant": 5,
+   "pass": true
+  },
+  {
+   "instance": "P3 overdetermination",
+   "P_OBS": true,
+   "P_SUB": true,
+   "P_SUB_by_policy": {
+    "original": true,
+    "modified": true,
+    "either": true
+   },
+   "n_submissions_checked": 9,
+   "P_PRB": true,
+   "P_CAND": true,
+   "throwable": 2,
+   "untestable_irrelevant": 2,
+   "pass": true
+  },
+  {
+   "instance": "P4 guard (request/cancel)",
+   "P_OBS": true,
+   "P_SUB": true,
+   "P_SUB_by_policy": {
+    "original": true,
+    "modified": true,
+    "either": true
+   },
+   "n_submissions_checked": 9,
+   "P_PRB": true,
+   "P_CAND": true,
+   "throwable": 2,
+   "untestable_irrelevant": 0,
+   "pass": true
+  },
+  {
+   "instance": "P5 delayed overdetermination",
+   "P_OBS": true,
+   "P_SUB": true,
+   "P_SUB_by_policy": {
+    "original": true,
+    "modified": true,
+    "either": true
+   },
+   "n_submissions_checked": 9,
+   "P_PRB": true,
+   "P_CAND": true,
+   "throwable": 2,
+   "untestable_irrelevant": 4,
+   "pass": true
+  },
+  {
+   "instance": "TempoBench sample",
+   "P_OBS": true,
+   "P_SUB": true,
+   "P_SUB_by_policy": {
+    "original": true,
+    "modified": true,
+    "either": true
+   },
+   "n_submissions_checked": 3,
+   "P_PRB": true,
+   "P_CAND": true,
+   "throwable": 1,
+   "untestable_irrelevant": 3,
+   "pass": true
+  },
+  {
+   "instance": "generated-1",
+   "P_OBS": true,
+   "P_SUB": true,
+   "P_SUB_by_policy": {
+    "original": true,
+    "modified": true,
+    "either": true
+   },
+   "n_submissions_checked": 189,
+   "P_PRB": true,
+   "P_CAND": true,
+   "throwable": 6,
+   "untestable_irrelevant": 0,
+   "pass": true
+  },
+  {
+   "instance": "generated-2",
+   "P_OBS": true,
+   "P_SUB": true,
+   "P_SUB_by_policy": {
+    "original": true,
+    "modified": true,
+    "either": true
+   },
+   "n_submissions_checked": 93,
+   "P_PRB": true,
+   "P_CAND": true,
+   "throwable": 5,
+   "untestable_irrelevant": 1,
+   "pass": true
+  },
+  {
+   "instance": "generated-3",
+   "P_OBS": true,
+   "P_SUB": true,
+   "P_SUB_by_policy": {
+    "original": true,
+    "modified": true,
+    "either": true
+   },
+   "n_submissions_checked": 189,
+   "P_PRB": true,
+   "P_CAND": true,
+   "throwable": 6,
+   "untestable_irrelevant": 0,
+   "pass": true
+  }
+ ]
+}

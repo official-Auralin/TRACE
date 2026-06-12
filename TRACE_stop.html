@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRACE — STOP IT</title>
+<style>
+  :root{--bg:#16151a;--panel:#221f28;--cell:#2e2a36;--edge:#454051;--ink:#efeae0;
+        --dim:#8a8496;--gold:#f4c84a;--blue:#6aa8ff;--bad:#e0705f;--good:#7fd08a}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Avenir Next",system-ui,sans-serif;
+       display:flex;flex-direction:column;align-items:center;min-height:100vh}
+  h1{font-size:19px;letter-spacing:5px;margin:14px 0 2px;color:var(--gold)}
+  .goal{font-size:14px;margin:2px 12px 10px;max-width:680px;text-align:center;line-height:1.45}
+  .goal b{color:var(--gold)}
+  .tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;justify-content:center}
+  .tab{background:var(--panel);border:1px solid var(--edge);color:var(--dim);border-radius:16px;
+       padding:5px 12px;font-size:12px;cursor:pointer}
+  .tab.active{color:var(--gold);border-color:var(--gold)}
+  .tab.done::after{content:" \2714";color:var(--good)}
+  .modebar{display:flex;gap:8px;margin-bottom:10px}
+  .modebar a{font-size:11px;color:var(--dim);text-decoration:none;border:1px solid var(--edge);
+             border-radius:10px;padding:3px 9px}
+  .modebar a.here{color:var(--gold);border-color:var(--gold)}
+  #machine{background:var(--panel);border-radius:18px;padding:12px 16px;box-shadow:0 8px 30px #0008;
+           max-width:880px;width:min(97vw,880px)}
+  .worldlab{font-size:10px;letter-spacing:2px;color:var(--dim);margin:2px 0 2px}
+  #recwrap{border:1px dashed var(--edge);border-radius:12px;padding:4px 6px;margin-bottom:8px;
+           overflow-x:auto;opacity:.92}
+  #svgwrap{overflow-x:auto}
+  svg{display:block;margin:0 auto}
+  .trk{fill:none;stroke:#8d86a0;stroke-width:2.2;pointer-events:none}
+  .trk.idle{stroke:#4a4556;opacity:.45}
+  .trk.live{stroke:var(--gold);stroke-width:3;stroke-dasharray:7 5;animation:flow 1s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-12}}
+  .trkhit{fill:none;stroke:#fff;stroke-width:14;opacity:0;cursor:pointer}
+  .jx{fill:var(--cell);stroke:#6a6378;stroke-width:1.8;cursor:pointer}
+  .jx.cand{stroke:var(--gold);stroke-width:3}
+  .jx.lockd{stroke:var(--blue);stroke-width:3}
+  .jxring{fill:none;stroke:var(--blue);stroke-width:1.6;opacity:.85}
+  .jxhit{fill:#fff;opacity:0;cursor:pointer}
+  .tag{font-size:10px;text-anchor:middle;cursor:pointer}
+  .tag.tried{fill:#56505f}
+  .tag.fresh{fill:var(--gold)}
+  .bulb.lit{fill:#3a3220;stroke:var(--gold);filter:drop-shadow(0 0 10px var(--gold))}
+  .bulb.dark{fill:#1c1a22;stroke:#4a4556}
+  .blab{font-size:13px;text-anchor:middle;pointer-events:none}
+  .blab.lit{fill:var(--gold)}.blab.dark{fill:#4a4556}
+  .gnd{stroke:#4a4556;stroke-width:1.6}
+  .collab{fill:var(--dim);font-size:10px;text-anchor:middle}
+  .collab.k{fill:var(--gold)}
+  .hud{display:flex;justify-content:space-between;align-items:center;margin:6px 2px;font-size:13px}
+  .delta{font-size:11px;color:var(--dim)}
+  button{font-family:inherit;border:none;border-radius:12px;padding:9px 15px;font-size:13px;cursor:pointer}
+  #reset{background:var(--cell);color:var(--ink)}
+  .primary{background:var(--blue);color:#0b1830;font-weight:700}
+  .verdictgold{background:var(--cell);color:var(--gold);border:1px solid var(--gold)}
+  .btnrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  #card{margin-top:8px;border-radius:12px;padding:9px 13px;font-size:13px;display:none;
+        border:1px solid var(--edge);line-height:1.45}
+  #card.show{display:block}
+  #sweepbar{height:7px;background:var(--cell);border-radius:4px;margin:6px 2px;display:none}
+  #sweepfill{height:7px;background:var(--gold);border-radius:4px;width:0%}
+  #overlay{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;
+           flex-direction:column;gap:10px;z-index:9}
+  #overlay.show{display:flex}
+  #overlay .big{font-size:44px}
+  #overlay button{background:var(--gold);color:#241d05;font-weight:700}
+  .foot{font-size:10px;color:#565060;margin:12px 0 18px;text-align:center;max-width:700px;line-height:1.5;padding:0 12px}
+</style>
+</head>
+<body>
+<h1>STOP IT</h1>
+<div class="modebar"><a href="TRACE_stop.html" class="here">STOP IT</a> <a href="TRACE_pin.html" class="">PIN IT</a> <a href="TRACE_credit.html" class="">CREDIT IT</a></div>
+<div class="goal">One throw. <b>Put the light out by flipping a single switch</b> — each tap tests exactly one lone throw against the recording. If you come to believe no single throw can do it, finish the tally: try them all, then say so.</div>
+<div class="tabs" id="tabs"></div>
+<div id="machine">
+  <div class="worldlab">THE RECORDING — what actually happened (frozen)</div>
+  <div id="recwrap"></div>
+  <div class="worldlab">YOUR BENCH — experiment freely</div>
+  <div id="svgwrap"></div>
+  <div id="sweepbar"><div id="sweepfill"></div></div>
+  <div class="hud"><div class="delta" id="delta"></div><div id="hearts"></div></div>
+  <div class="btnrow" id="btnrow"></div>
+  <div id="card"></div>
+</div>
+<div class="foot">This page contains NO answer key: every verdict is computed in front of you by
+running the machine itself (the board is build-verified to behave identically to the source
+automaton on every possible switch setting). The ⊘ verdict is yours to earn: it unlocks only when your own tally has tried every single throw.</div>
+<div id="overlay"><div class="big">✔</div><div id="omsg" style="color:var(--gold);text-align:center;max-width:80vw"></div><button onclick="nextLevel()">▸</button></div>
+<script>
+const LEVELS=[{"inputs":["btn"],"k":1,"meta":{"no_pivot":false,"pivots":1},"name":"P1","nodes":[{"kind":"bulb","x":2,"y":0},{"kind":"gnd","x":2,"y":1.8},{"col":1,"kind":"pass","next":0,"x":1,"y":0},{"col":1,"kind":"pass","next":1,"x":1,"y":1.8},{"cell":[0,0],"col":0,"kind":"test","out0":3,"out1":2,"state":0,"x":0.0,"y":0.0}],"obs":[[1,0]],"prov":"one switch \u2014 find the throw","start":4},{"inputs":["a","b"],"k":2,"meta":{"no_pivot":false,"pivots":1},"name":"P2","nodes":[{"kind":"bulb","x":3,"y":0},{"kind":"gnd","x":3,"y":1.8},{"col":2,"kind":"pass","next":0,"x":2,"y":0},{"col":2,"kind":"pass","next":2,"x":2,"y":0},{"col":1,"kind":"pass","next":3,"x":1,"y":0},{"col":2,"kind":"pass","next":1,"x":2,"y":1.8},{"col":2,"kind":"pass","next":5,"x":2,"y":1.8},{"col":1,"kind":"pass","next":6,"x":1,"y":1.8},{"cell":[0,0],"col":0,"kind":"test","out0":7,"out1":4,"state":0,"x":0.0,"y":0.0}],"obs":[[1,0,0],[0,1,0]],"prov":"a delay and a distractor","start":8},{"inputs":["req","cancel"],"k":0,"meta":{"no_pivot":false,"pivots":2},"name":"P4","nodes":[{"kind":"bulb","x":1,"y":0},{"kind":"gnd","x":1,"y":1.8},{"cell":[1,0],"col":0,"kind":"test","out0":0,"out1":1,"state":0,"x":0.45,"y":0.4},{"cell":[0,0],"col":0,"kind":"test","out0":1,"out1":2,"state":0,"x":0.0,"y":0.0}],"obs":[[1],[0]],"prov":"two different single throws both work","start":3},{"inputs":["a","b"],"k":1,"meta":{"no_pivot":true,"pivots":0},"name":"P3","nodes":[{"kind":"bulb","x":2,"y":0},{"kind":"gnd","x":2,"y":1.8},{"col":1,"kind":"pass","next":0,"x":1,"y":0},{"col":1,"kind":"pass","next":1,"x":1,"y":1.8},{"cell":[1,0],"col":0,"kind":"test","out0":3,"out1":2,"state":0,"x":0.45,"y":0.4},{"cell":[0,0],"col":0,"kind":"test","out0":4,"out1":2,"state":0,"x":0.0,"y":0.0}],"obs":[[1,0],[1,0]],"prov":"can ONE throw do it? finish the tally to be sure","start":5},{"inputs":["r"],"k":3,"meta":{"no_pivot":false,"pivots":1},"name":"TB","nodes":[{"kind":"bulb","x":4,"y":0},{"kind":"gnd","x":4,"y":1.8},{"cell":[0,3],"col":3,"kind":"test","out0":1,"out1":0,"state":3,"x":3.0,"y":0.0},{"col":2,"kind":"pass","next":2,"x":2,"y":0.0},{"col":3,"kind":"pass","next":3,"x":3,"y":0.0},{"col":2,"kind":"pass","next":4,"x":2,"y":0.0},{"col":1,"kind":"pass","next":5,"x":1,"y":0.0},{"col":3,"kind":"pass","next":6,"x":3,"y":0.0},{"col":2,"kind":"pass","next":7,"x":2,"y":0.0},{"col":1,"kind":"pass","next":8,"x":1,"y":0.0},{"col":0,"kind":"pass","next":9,"x":0,"y":0.0}],"obs":[[0,1,0,1]],"prov":"a real synthesized arbiter","start":10}];
+
+let li=0,L,grid,hearts,solved=[];
+const CW=160,X0=70,NY0=40,LH=58,JR=9;
+const px=x=>X0+x*CW, py=y=>NY0+y*LH;
+const clone=g=>g.map(r=>r.slice());
+function walkG(g){const seq=[L.start];let cur=L.start;
+  for(let i=0;i<200;i++){const n=L.nodes[cur];
+    if(n.kind==="pass"){cur=n.next;seq.push(cur);continue;}
+    if(n.kind!=="test")break;
+    cur=g[n.cell[0]][n.cell[1]]?n.out1:n.out0;seq.push(cur);}
+  return seq;}
+const litOf=g=>L.nodes[walkG(g).at(-1)].kind==="bulb";
+const allCells=()=>{const c=[];for(let r=0;r<L.inputs.length;r++)for(let t=0;t<=L.k;t++)c.push([r,t]);return c;};
+const testable=()=>{const s=new Set();L.nodes.forEach(n=>{if(n.kind==="test")s.add(n.cell.join(","));});
+  return allCells().filter(c=>s.has(c.join(",")));};
+function ends(n,to){const r1=n.kind==="pass"?4:JR+1,r2=to.kind==="test"?JR+1:(to.kind==="pass"?4:18);
+  const x1=px(n.x),y1=py(n.y),x2=px(to.x),y2=py(to.y);
+  const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1;
+  return [x1+dx/len*r1,y1+dy/len*r1,x2-dx/len*r2,y2-dy/len*r2,dx/len,dy/len];}
+function boardSVG(g,opts){
+  // opts: {interactive, scale, markCell:(cell)->cls, tagText:(cell)->str|null}
+  const seq=walkG(g),isLit=L.nodes[seq.at(-1)].kind==="bulb";
+  const onRoute=new Set();for(let i=0;i+1<seq.length;i++)onRoute.add(seq[i]+">"+seq[i+1]);
+  const xs=L.nodes.filter(n=>n.x!==undefined).map(n=>n.x),ys=L.nodes.filter(n=>n.y!==undefined).map(n=>n.y);
+  const W=px(Math.max(...xs))+50,H=py(Math.max(...ys))+34;
+  const sc=opts.scale||1;
+  let s=`<svg width="${W*sc}" height="${H*sc}" viewBox="0 0 ${W} ${H}">`;
+  for(let t=0;t<=L.k;t++)s+=`<text class="collab ${t===L.k?'k':''}" x="${px(t)}" y="14">${t===L.k?"\u25BC ":""}${t}</text>`;
+  s+=`<path class="trk live" d="M${px(L.nodes[L.start].x)-38},${py(L.nodes[L.start].y)} L${px(L.nodes[L.start].x)-JR-2},${py(L.nodes[L.start].y)}"/>`;
+  L.nodes.forEach((n,i)=>{
+    if(n.kind==="pass"){const to=L.nodes[n.next];const[a,b,c,d2]=ends(n,to);
+      s+=`<path class="trk ${onRoute.has(i+">"+n.next)?'live':''}" d="M${a},${b} L${c},${d2}"/>`;return;}
+    if(n.kind!=="test")return;
+    const v=g[n.cell[0]][n.cell[1]];
+    [["out1",1],["out0",0]].forEach(([f,val])=>{
+      const to=L.nodes[n[f]];const[x1,y1,x2,y2,ux,uy]=ends(n,to);
+      const al=v===val,live=al&&onRoute.has(i+">"+n[f]);
+      const gx=al?x1:x1+ux*12,gy=al?y1:y1+uy*12;
+      const mx=(gx+x2)/2,my=(gy+y2)/2-Math.min(13,Math.abs(x2-gx)*.06);
+      const d=`M${gx},${gy} Q${mx},${my} ${x2},${y2}`;
+      s+=`<path class="trk ${al?(live?'live':''):'idle'}" d="${d}"/>`;
+      if(opts.interactive)s+=`<path class="trkhit" data-r="${n.cell[0]}" data-t="${n.cell[1]}" data-v="${val}" d="${d}"/>`;
+    });});
+  L.nodes.forEach((n,i)=>{
+    if(n.x===undefined)return;const x=px(n.x),y=py(n.y);
+    if(n.kind==="bulb"){
+      s+=`<circle class="bulb ${isLit?'lit':'dark'}" cx="${x}" cy="${y}" r="15" stroke-width="2"/>
+          <text class="blab ${isLit?'lit':'dark'}" x="${x}" y="${y+4.5}">\u229B</text>`;}
+    else if(n.kind==="gnd"){
+      s+=`<line class="gnd" x1="${x-8}" y1="${y}" x2="${x+8}" y2="${y}"/>
+          <line class="gnd" x1="${x-5}" y1="${y+4}" x2="${x+5}" y2="${y+4}"/>
+          <line class="gnd" x1="${x-2}" y1="${y+8}" x2="${x+2}" y2="${y+8}"/>`;}
+    else if(n.kind==="pass"){
+      s+=`<circle cx="${x}" cy="${y}" r="3.5" fill="#56505f"/>`;}
+    else if(n.kind==="test"){
+      const key=n.cell.join(",");
+      const extra=opts.markCell?opts.markCell(n.cell):"";
+      const thrown=g[n.cell[0]][n.cell[1]]!==L.obs[n.cell[0]][n.cell[1]];
+      if(thrown&&opts.interactive)s+=`<circle class="jxring" cx="${x}" cy="${y}" r="${JR+5}"/>`;
+      s+=`<circle class="jx ${extra}" data-r="${n.cell[0]}" data-t="${n.cell[1]}" cx="${x}" cy="${y}" r="${JR}"/>`;
+      if(opts.interactive)s+=`<circle class="jxhit" data-r="${n.cell[0]}" data-t="${n.cell[1]}" cx="${x}" cy="${y}" r="${JR+7}"/>`;
+      const tg=opts.tagText?opts.tagText(n.cell):null;
+      if(tg)s+=`<text class="tag ${tg.cls}" data-r="${n.cell[0]}" data-t="${n.cell[1]}" x="${x}" y="${y-JR-5}">${tg.txt}</text>`;
+    }});
+  s+="</svg>";return s;}
+function card(msg,col){const c=document.getElementById("card");c.className="show";
+  c.style.borderColor=col||"var(--edge)";c.innerHTML=msg;}
+function hideCard(){document.getElementById("card").className="";}
+function win(msg){solved[li]=true;tabs();
+  document.getElementById("omsg").innerHTML=msg+`<div style="font-size:11px;color:var(--dim);margin-top:6px">${L.prov}</div>`;
+  document.getElementById("overlay").classList.add("show");}
+function tabs(){document.getElementById("tabs").innerHTML=LEVELS.map((l,i)=>
+  `<div class="tab ${i===li?'active':''} ${solved[i]?'done':''}" onclick="load(${i})">${l.name}</div>`).join("");}
+function nextLevel(){document.getElementById("overlay").classList.remove("show");
+  load(Math.min(li+1,LEVELS.length-1));}
+function renderRecording(){
+  const save=grid;grid=null;
+  document.getElementById("recwrap").innerHTML=boardSVG(L.obs,{interactive:false,scale:0.55});
+  grid=save;}
+
+
+let tried;
+function load(i){li=i;L=LEVELS[i];grid=clone(L.obs);tried=new Set();hideCard();tabs();render();}
+function render(){
+  renderRecording();
+  const tcells=testable();
+  document.getElementById("svgwrap").innerHTML=boardSVG(grid,{interactive:true,
+    tagText:c=>({txt:"\u2702",cls:tried.has(c.join(","))?"tried":"fresh"})});
+  document.getElementById("delta").textContent=
+    `single throws tried: ${tried.size} / ${tcells.length}`;
+  document.getElementById("hearts").textContent="";
+  document.getElementById("btnrow").innerHTML=
+    `<button id="reset">\u21BA</button>
+     <button id="noway" class="verdictgold" ${tried.size===tcells.length?"":"disabled style='opacity:.4'"}>
+       \u2298 nothing alone stops it (${tried.size}/${tcells.length})</button>`;
+  document.getElementById("reset").onclick=()=>{grid=clone(L.obs);hideCard();render();};
+  document.getElementById("noway").onclick=()=>{
+    if(tried.size!==testable().length)return;
+    win("Verified by YOUR tally: every single throw was tried on the bench and the light survived each one. Nothing alone stops it.");};
+  document.querySelectorAll(".jxhit").forEach(h=>h.onclick=()=>singleThrow(+h.dataset.r,+h.dataset.t));
+  document.querySelectorAll(".trkhit").forEach(h=>h.onclick=()=>singleThrow(+h.dataset.r,+h.dataset.t));
+}
+function singleThrow(r,t){
+  // STOP gesture: each tap IS the experiment 'this one throw, alone'.
+  grid=clone(L.obs);grid[r][t]^=1;render();
+  const dark=!litOf(grid);
+  if(dark){win("ONE throw, light out — there is the stopper.");}
+  else{tried.add([r,t].join(","));
+       card("Light survived that lone throw — tallied. ("+(testable().length-tried.size)+" left)");
+       render();}
+}
+
+load(0);
+</script>
+</body>
+</html>

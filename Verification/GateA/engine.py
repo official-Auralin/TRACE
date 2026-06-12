@@ -47,9 +47,17 @@ def pivots(inst):
 def flip_kills(inst, S):
     return inst.fires(inst.with_cells({c: 1 - inst.obs[c[0]][c[1]] for c in S})) is False
 
-def minimal_flip_sets(inst, max_size=4):
+def _search_bound(inst, max_size):
+    """Search-depth policy: None (the default) means EXHAUSTIVE over the whole
+    window. A finite cap is permitted only as an explicit, caller-certified
+    bound: GateB measured that an uncertified size-3 cap silently censors keys
+    (49 phantom Credit-vs-Pin divergences vs 0 at full depth — see
+    GateB/results/REPORT.md). Callers passing a cap own its certificate."""
+    return len(inst.cells()) if max_size is None else max_size
+
+def minimal_flip_sets(inst, max_size=None):
     found = []
-    for size in range(1, max_size + 1):
+    for size in range(1, _search_bound(inst, max_size) + 1):
         for S in combinations(inst.cells(), size):
             if any(set(m) <= set(S) for m in found): continue
             if flip_kills(inst, S): found.append(S)
@@ -80,9 +88,9 @@ def satisfies_ac2(inst, S):
         if robust: return True
     return False
 
-def minimal_actual_causes(inst, max_size=3):
+def minimal_actual_causes(inst, max_size=None):
     found = []
-    for size in range(1, max_size + 1):
+    for size in range(1, _search_bound(inst, max_size) + 1):
         for S in combinations(inst.cells(), size):
             if any(set(m) <= set(S) for m in found): continue
             if satisfies_ac2(inst, S): found.append(S)
@@ -98,9 +106,9 @@ def sufficient(inst, S):
         if f is not True: return False
     return True
 
-def determining_sets(inst, max_size=4):
+def determining_sets(inst, max_size=None):
     found = []
-    for size in range(1, max_size + 1):
+    for size in range(1, _search_bound(inst, max_size) + 1):
         for S in combinations(inst.cells(), size):
             if any(set(m) <= set(S) for m in found): continue
             if sufficient(inst, S): found.append(S)
@@ -108,6 +116,8 @@ def determining_sets(inst, max_size=4):
             if not any(set(m2) < set(m) for m2 in found)]
 
 def full_report(inst):
+    """All four certified keys at EXHAUSTIVE search depth (the only depth at
+    which the report is a certificate; see _search_bound)."""
     pv = pivots(inst)
     co = minimal_actual_causes(inst)
     cm = minimal_flip_sets(inst)

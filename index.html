@@ -3,28 +3,36 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="refresh" content="0; url=TRACE_play.html">
 <title>TRACE</title>
-<link rel="canonical" href="TRACE_play.html">
 <style>
-  body {
-    margin: 0;
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    background: #16151a;
-    color: #efeae0;
-    font-family: system-ui, sans-serif;
-  }
-
-  a {
-    color: #f4c84a;
-  }
+  :root{--bg:#16151a;--panel:#221f28;--edge:#454051;--ink:#efeae0;--dim:#8a8496;--gold:#f4c84a}
+  body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);
+       color:var(--ink);font-family:"Avenir Next",system-ui,sans-serif}
+  main{max-width:560px;padding:24px;text-align:center}
+  h1{font-size:22px;letter-spacing:6px;color:var(--gold);margin:0 0 4px}
+  p{font-size:13px;color:var(--dim);line-height:1.5}
+  .modes{display:flex;flex-direction:column;gap:10px;margin:18px 0}
+  .modes a{display:block;background:var(--panel);border:1px solid var(--edge);border-radius:14px;
+           padding:14px 18px;color:var(--ink);text-decoration:none;text-align:left}
+  .modes a:hover{border-color:var(--gold)}
+  .modes b{color:var(--gold);letter-spacing:2px}
+  .modes span{display:block;font-size:12px;color:var(--dim);margin-top:3px}
+  .legacy{font-size:11px;color:var(--dim)}
+  .legacy a{color:var(--gold)}
 </style>
 </head>
 <body>
 <main>
-  <p>Opening TRACE. <a href="TRACE_play.html">Open TRACE manually</a>.</p>
+  <h1>TRACE</h1>
+  <p>One machine, one recorded run, one flash of the target light.
+     Three precise questions about which switches mattered — every verdict is
+     computed in front of you by running the machine itself; no page holds an answer key.</p>
+  <div class="modes">
+    <a href="TRACE_stop.html"><b>STOP IT</b><span>Put the light out with ONE throw — or finish the tally and prove nothing alone can. (count-only necessity / Prevent)</span></a>
+    <a href="TRACE_pin.html"><b>PIN IT</b><span>Lock switches so the light cannot go out — the sweep runs every completion before your eyes. (sufficiency / determining sets)</span></a>
+    <a href="TRACE_credit.html"><b>CREDIT IT</b><span>Make the light obey one switch: build the bench, make it blink. (Halpern–Pearl actual causation — the core)</span></a>
+  </div>
+  <p class="legacy">Also available: the <a href="TRACE_play.html">single-board sandbox</a> (archive build, dual-acceptance key).</p>
 </main>
 </body>
 </html>
