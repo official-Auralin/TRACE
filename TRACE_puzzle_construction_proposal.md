@@ -122,7 +122,11 @@ check with counterexample verdicts:
   exhibited contingency). The checker's only silent work, AC2(b) robustness, is
   verdict-visible: rejection replays the subset-reset run that kills the
   effect (R3). Minimality (AC3): rejection replays the sub-candidate's own
-  demonstration (R4).
+  demonstration (R4). *Remark (atomization):* by mainTB Prop. `atomize`
+  (SMT-proven for every window ≤ 8 cells), under the original/updated variant the
+  demonstrated decider is **always a single switch** on (F2)–(F3) instances — the
+  candidate is a singleton by theorem, so the single-candidate gesture is exact,
+  not a simplification.
 - **Verdict grammar (all modes):** ACCEPT = "checks complete" with the
   enumeration/progress shown; REJECT = a single concrete run, on the board,
   that defeats the claim. No bare "not quite" anywhere.
@@ -134,10 +138,13 @@ from the excluded live adversary; nothing strategic is added. (ii) The three
 modes are the paper's own benchmark configurations, restored to the surface
 instead of collapsed. (iii) The HP-variant question dissolves at the surface:
 Credit puzzles ask for a *demonstrated* decider (the original-variant object,
-now with a visible win); extinguishing sets are not a Credit answer and never
-collide with it — they are simply how multi-throw STOP-style play would be
-posed if a corpus wants it (a fourth, optional type: "darken with the fewest
-throws," graded modified, fully visible). (iv) Agent protocol unchanged (R5);
+now with a visible win — and by Prop. `atomize` that object is always a single
+switch, so the surface is complete); extinguishing sets are not a Credit answer
+and never collide with it — they are the **modified** object. That fourth type is
+now **built** as the explicitly-declared CREDIT·JOINT surface
+(`TRACE_credit_joint.html`, `build_joint.py`): "name the smallest group whose
+joint flip darkens it," graded modified, fully visible — the only surface where a
+genuine multi-cell cause can win. (iv) Agent protocol unchanged (R5);
 the agent's Credit submission may carry its contingency, which the schema
 already supports as probe pairs.
 

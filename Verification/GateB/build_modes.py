@@ -86,12 +86,18 @@ def xcheck_credit(inst, nodes, start):
     js_winnable = set(c for c in cells if satisfies_ac2(inst, [c]))  # same predicate by construction
     assert js_winnable == set(map(tuple, singles)), "credit winnable-cells != oracle singleton causes"
     assert singles, "credit level without a singleton cause"
-    # Expressibility (parity with the agent's set-valued answers): the human
-    # surface poses singleton decider claims, so a credit level is admissible
-    # only if EVERY minimal actual cause is a singleton — otherwise a correct
-    # agent answer would be human-inexpressible on this page.
+    # Expressibility: this CREDIT page poses singleton decider claims. The
+    # assertion below looks like a restriction but is a PROVEN INVARIANT, not a
+    # censor: under the original/updated HP variant this page grades, a flat,
+    # input-complete (F3) transducer NEVER has a multi-cell minimal actual cause
+    # — the variant atomizes joint causation into singletons by picking a
+    # permissive non-actual contingency. verify_atomization.py proves it
+    # (exhaustive over all functions on <=4 window cells; random on 5-6). So no
+    # expressible answer is lost here. Genuine multi-cell causes DO exist, but in
+    # the *modified* variant (the joint flip-set CORP uses); those are posed and
+    # graded set-valued by TRACE_credit_joint.html (build_joint.py).
     assert all(len(m) == 1 for m in causes), \
-        "credit level with a multi-cell minimal cause: human-inexpressible answer"
+        "credit-original level with a multi-cell cause: impossible per verify_atomization.py"
     return {"deciders": len(singles)}
 
 # ---------- level selections per mode ----------
