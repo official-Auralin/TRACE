@@ -1,0 +1,99 @@
+{
+ "VERDICT": {
+  "modified_variant_has_multicell": true,
+  "original_variant_atomizes_enum_corroborated": true,
+  "original_variant_atomizes_smt_proven_to_n": 8
+ },
+ "modified_multicell_examples": {
+  "HET_singleton_plus_pair": [
+   [
+    [
+     0,
+     0
+    ]
+   ],
+   [
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ]
+   ]
+  ],
+  "OR3_triple": [
+   [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ]
+   ]
+  ]
+ },
+ "original_multicell_enum": {
+  "n3_exhaustive": 0,
+  "n4_exhaustive": 0,
+  "n5_random_200k": 0,
+  "n6_random_120k": 0
+ },
+ "selftest_trials": 300,
+ "smt_atomization": {
+  "all_unsat": true,
+  "available": true,
+  "max_n": 8,
+  "per_n": {
+   "2": {
+    "2": true
+   },
+   "3": {
+    "2": true,
+    "3": true
+   },
+   "4": {
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "5": {
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true
+   },
+   "6": {
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "7": {
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "8": {
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   }
+  }
+ }
+}

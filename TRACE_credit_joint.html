@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRACE — CREDIT IT · JOINT</title>
+<style>
+  :root{--bg:#16151a;--panel:#221f28;--cell:#2e2a36;--edge:#454051;--ink:#efeae0;
+        --dim:#8a8496;--gold:#f4c84a;--blue:#6aa8ff;--bad:#e0705f;--good:#7fd08a}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Avenir Next",system-ui,sans-serif;
+       display:flex;flex-direction:column;align-items:center;min-height:100vh}
+  h1{font-size:19px;letter-spacing:5px;margin:14px 0 2px;color:var(--gold)}
+  .goal{font-size:14px;margin:2px 12px 10px;max-width:680px;text-align:center;line-height:1.45}
+  .goal b{color:var(--gold)}
+  .tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;justify-content:center}
+  .tab{background:var(--panel);border:1px solid var(--edge);color:var(--dim);border-radius:16px;
+       padding:5px 12px;font-size:12px;cursor:pointer}
+  .tab.active{color:var(--gold);border-color:var(--gold)}
+  .tab.done::after{content:" \2714";color:var(--good)}
+  .modebar{display:flex;gap:8px;margin-bottom:10px}
+  .modebar a{font-size:11px;color:var(--dim);text-decoration:none;border:1px solid var(--edge);
+             border-radius:10px;padding:3px 9px}
+  .modebar a.here{color:var(--gold);border-color:var(--gold)}
+  #machine{background:var(--panel);border-radius:18px;padding:12px 16px;box-shadow:0 8px 30px #0008;
+           max-width:880px;width:min(97vw,880px)}
+  .worldlab{font-size:10px;letter-spacing:2px;color:var(--dim);margin:2px 0 2px}
+  #recwrap{border:1px dashed var(--edge);border-radius:12px;padding:4px 6px;margin-bottom:8px;
+           overflow-x:auto;opacity:.92}
+  #svgwrap{overflow-x:auto}
+  svg{display:block;margin:0 auto}
+  .trk{fill:none;stroke:#8d86a0;stroke-width:2.2;pointer-events:none}
+  .trk.idle{stroke:#4a4556;opacity:.45}
+  .trk.live{stroke:var(--gold);stroke-width:3;stroke-dasharray:7 5;animation:flow 1s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-12}}
+  .trkhit{fill:none;stroke:#fff;stroke-width:14;opacity:0;cursor:pointer}
+  .jx{fill:var(--cell);stroke:#6a6378;stroke-width:1.8;cursor:pointer}
+  .jx.cand{stroke:var(--gold);stroke-width:3}
+  .jx.lockd{stroke:var(--blue);stroke-width:3}
+  .jxring{fill:none;stroke:var(--blue);stroke-width:1.6;opacity:.85}
+  .jxhit{fill:#fff;opacity:0;cursor:pointer}
+  .tag{font-size:10px;text-anchor:middle;cursor:pointer}
+  .tag.tried{fill:#56505f}
+  .tag.fresh{fill:var(--gold)}
+  .bulb.lit{fill:#3a3220;stroke:var(--gold);filter:drop-shadow(0 0 10px var(--gold))}
+  .bulb.dark{fill:#1c1a22;stroke:#4a4556}
+  .blab{font-size:13px;text-anchor:middle;pointer-events:none}
+  .blab.lit{fill:var(--gold)}.blab.dark{fill:#4a4556}
+  .gnd{stroke:#4a4556;stroke-width:1.6}
+  .collab{fill:var(--dim);font-size:10px;text-anchor:middle}
+  .collab.k{fill:var(--gold)}
+  .hud{display:flex;justify-content:space-between;align-items:center;margin:6px 2px;font-size:13px}
+  .delta{font-size:11px;color:var(--dim)}
+  button{font-family:inherit;border:none;border-radius:12px;padding:9px 15px;font-size:13px;cursor:pointer}
+  #reset{background:var(--cell);color:var(--ink)}
+  .primary{background:var(--blue);color:#0b1830;font-weight:700}
+  .verdictgold{background:var(--cell);color:var(--gold);border:1px solid var(--gold)}
+  .btnrow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  #card{margin-top:8px;border-radius:12px;padding:9px 13px;font-size:13px;display:none;
+        border:1px solid var(--edge);line-height:1.45}
+  #card.show{display:block}
+  #sweepbar{height:7px;background:var(--cell);border-radius:4px;margin:6px 2px;display:none}
+  #sweepfill{height:7px;background:var(--gold);border-radius:4px;width:0%}
+  #overlay{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;
+           flex-direction:column;gap:10px;z-index:9}
+  #overlay.show{display:flex}
+  #overlay .big{font-size:44px}
+  #overlay button{background:var(--gold);color:#241d05;font-weight:700}
+  .foot{font-size:10px;color:#565060;margin:12px 0 18px;text-align:center;max-width:700px;line-height:1.5;padding:0 12px}
+</style>
+</head>
+<body>
+<h1>CREDIT IT · JOINT</h1>
+<div class="modebar"><a href="TRACE_stop.html" class="">STOP IT</a> <a href="TRACE_pin.html" class="">PIN IT</a> <a href="TRACE_credit.html" class="">CREDIT IT</a> <a href="TRACE_credit_joint.html" class="here">CREDIT · JOINT</a></div>
+<div class="goal"><b>Find the smallest GROUP of switches that decided the flash together.</b> Some lights have no single culprit (you met the ⊘ verdict in STOP IT) — but they still have a cause: a group that conspired. Accuse a group, then <b>flip them all together</b> (every other switch stays exactly as recorded). You win when the light goes out AND no smaller group inside your accusation could have done it.</div>
+<div class="tabs" id="tabs"></div>
+<div id="machine">
+  <div class="worldlab">THE RECORDING — what actually happened (frozen)</div>
+  <div id="recwrap"></div>
+  <div class="worldlab">YOUR BENCH — accuse a group, then flip it</div>
+  <div id="svgwrap"></div>
+  <div id="sweepbar"><div id="sweepfill"></div></div>
+  <div class="hud"><div class="delta" id="delta"></div><div id="hearts"></div></div>
+  <div class="btnrow" id="btnrow"></div>
+  <div id="card"></div>
+</div>
+<div class="foot">This page contains NO answer key: every verdict is computed in front of you by
+running the machine itself (the board is build-verified to behave identically to the source
+automaton on every possible switch setting). This is the <b>modified</b> Halpern reading of an actual cause (the subset-minimal joint flip), the discipline the CORP synthesis tool — source of the TempoBench keys — actually implements (see GateA/A2_definitional_note.md). It is the variant where genuine multi-cell causes live: the original/updated reading provably atomizes every cause into singletons on input-complete transducers, so the singleton CREDIT IT page loses no expressible answer — but it also cannot pose the overdetermined joint puzzles below. Every verdict here is computed in front of you by flipping switches on the build-verified board; minimality is shown by replaying the offending subgroup’s own kill.</div>
+<div id="overlay"><div class="big">✔</div><div id="omsg" style="color:var(--gold);text-align:center;max-width:80vw"></div><button onclick="nextLevel()">▸</button></div>
+<script>
+const LEVELS=[{"inputs":["btn"],"k":1,"meta":{"causes":1,"has_multicell":false,"max_group":1},"name":"P1","nodes":[{"kind":"bulb","x":2,"y":0},{"kind":"gnd","x":2,"y":1.8},{"col":1,"kind":"pass","next":0,"x":1,"y":0},{"col":1,"kind":"pass","next":1,"x":1,"y":1.8},{"cell":[0,0],"col":0,"kind":"test","out0":3,"out1":2,"state":0,"x":0.0,"y":0.0}],"obs":[[1,0]],"prov":"one switch decided it \u2014 the warm-up: a group of one","start":4},{"inputs":["a","b"],"k":1,"meta":{"causes":1,"has_multicell":true,"max_group":2},"name":"P3","nodes":[{"kind":"bulb","x":2,"y":0},{"kind":"gnd","x":2,"y":1.8},{"col":1,"kind":"pass","next":0,"x":1,"y":0},{"col":1,"kind":"pass","next":1,"x":1,"y":1.8},{"cell":[1,0],"col":0,"kind":"test","out0":3,"out1":2,"state":0,"x":0.45,"y":0.4},{"cell":[0,0],"col":0,"kind":"test","out0":4,"out1":2,"state":0,"x":0.0,"y":0.0}],"obs":[[1,0],[1,0]],"prov":"two wires, same moment, each a backup for the other","start":5},{"inputs":["a","b"],"k":2,"meta":{"causes":1,"has_multicell":true,"max_group":2},"name":"P5","nodes":[{"kind":"bulb","x":3,"y":0},{"kind":"gnd","x":3,"y":1.8},{"col":2,"kind":"pass","next":0,"x":2,"y":0},{"col":2,"kind":"pass","next":2,"x":2,"y":0},{"col":1,"kind":"pass","next":3,"x":1,"y":0},{"col":2,"kind":"pass","next":1,"x":2,"y":1.8},{"cell":[1,1],"col":1,"kind":"test","out0":5,"out1":2,"state":1,"x":1.45,"y":0.4},{"cell":[0,0],"col":0,"kind":"test","out0":6,"out1":4,"state":0,"x":0.0,"y":0.0}],"obs":[[1,0,0],[0,1,0]],"prov":"the backups hide at different moments \u2014 a cause across time","start":7},{"inputs":["a"],"k":2,"meta":{"causes":1,"has_multicell":true,"max_group":3},"name":"LATCH","nodes":[{"kind":"bulb","x":3,"y":0},{"kind":"gnd","x":3,"y":1.8},{"col":2,"kind":"pass","next":0,"x":2,"y":0},{"col":2,"kind":"pass","next":2,"x":2,"y":0},{"col":1,"kind":"pass","next":3,"x":1,"y":0},{"cell":[0,2],"col":2,"kind":"test","out0":1,"out1":0,"state":0,"x":2.0,"y":0.0},{"cell":[0,1],"col":1,"kind":"test","out0":5,"out1":2,"state":0,"x":1.0,"y":0.0},{"cell":[0,0],"col":0,"kind":"test","out0":6,"out1":4,"state":0,"x":0.0,"y":0.0}],"obs":[[1,1,1]],"prov":"a sticky latch \u2014 the pulse fired once and stuck; name every moment it was high","start":7},{"inputs":["a","b","c"],"k":0,"meta":{"causes":2,"has_multicell":true,"max_group":2},"name":"HET","nodes":[{"kind":"bulb","x":1,"y":0},{"kind":"gnd","x":1,"y":1.8},{"cell":[2,0],"col":0,"kind":"test","out0":1,"out1":0,"state":0,"x":0.9,"y":0.8},{"cell":[1,0],"col":0,"kind":"test","out0":2,"out1":0,"state":0,"x":0.45,"y":0.4},{"cell":[0,0],"col":0,"kind":"test","out0":1,"out1":3,"state":0,"x":0.0,"y":0.0}],"obs":[[1],[1],[1]],"prov":"one lone culprit OR a guilty pair \u2014 two different minimal answers both win","start":4}];
+
+let li=0,L,grid,hearts,solved=[];
+const CW=160,X0=70,NY0=40,LH=58,JR=9;
+const px=x=>X0+x*CW, py=y=>NY0+y*LH;
+const clone=g=>g.map(r=>r.slice());
+function walkG(g){const seq=[L.start];let cur=L.start;
+  for(let i=0;i<200;i++){const n=L.nodes[cur];
+    if(n.kind==="pass"){cur=n.next;seq.push(cur);continue;}
+    if(n.kind!=="test")break;
+    cur=g[n.cell[0]][n.cell[1]]?n.out1:n.out0;seq.push(cur);}
+  return seq;}
+const litOf=g=>L.nodes[walkG(g).at(-1)].kind==="bulb";
+const allCells=()=>{const c=[];for(let r=0;r<L.inputs.length;r++)for(let t=0;t<=L.k;t++)c.push([r,t]);return c;};
+const testable=()=>{const s=new Set();L.nodes.forEach(n=>{if(n.kind==="test")s.add(n.cell.join(","));});
+  return allCells().filter(c=>s.has(c.join(",")));};
+function ends(n,to){const r1=n.kind==="pass"?4:JR+1,r2=to.kind==="test"?JR+1:(to.kind==="pass"?4:18);
+  const x1=px(n.x),y1=py(n.y),x2=px(to.x),y2=py(to.y);
+  const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1;
+  return [x1+dx/len*r1,y1+dy/len*r1,x2-dx/len*r2,y2-dy/len*r2,dx/len,dy/len];}
+function boardSVG(g,opts){
+  // opts: {interactive, scale, markCell:(cell)->cls, tagText:(cell)->str|null}
+  const seq=walkG(g),isLit=L.nodes[seq.at(-1)].kind==="bulb";
+  const onRoute=new Set();for(let i=0;i+1<seq.length;i++)onRoute.add(seq[i]+">"+seq[i+1]);
+  const xs=L.nodes.filter(n=>n.x!==undefined).map(n=>n.x),ys=L.nodes.filter(n=>n.y!==undefined).map(n=>n.y);
+  const W=px(Math.max(...xs))+50,H=py(Math.max(...ys))+34;
+  const sc=opts.scale||1;
+  let s=`<svg width="${W*sc}" height="${H*sc}" viewBox="0 0 ${W} ${H}">`;
+  for(let t=0;t<=L.k;t++)s+=`<text class="collab ${t===L.k?'k':''}" x="${px(t)}" y="14">${t===L.k?"\u25BC ":""}${t}</text>`;
+  s+=`<path class="trk live" d="M${px(L.nodes[L.start].x)-38},${py(L.nodes[L.start].y)} L${px(L.nodes[L.start].x)-JR-2},${py(L.nodes[L.start].y)}"/>`;
+  L.nodes.forEach((n,i)=>{
+    if(n.kind==="pass"){const to=L.nodes[n.next];const[a,b,c,d2]=ends(n,to);
+      s+=`<path class="trk ${onRoute.has(i+">"+n.next)?'live':''}" d="M${a},${b} L${c},${d2}"/>`;return;}
+    if(n.kind!=="test")return;
+    const v=g[n.cell[0]][n.cell[1]];
+    [["out1",1],["out0",0]].forEach(([f,val])=>{
+      const to=L.nodes[n[f]];const[x1,y1,x2,y2,ux,uy]=ends(n,to);
+      const al=v===val,live=al&&onRoute.has(i+">"+n[f]);
+      const gx=al?x1:x1+ux*12,gy=al?y1:y1+uy*12;
+      const mx=(gx+x2)/2,my=(gy+y2)/2-Math.min(13,Math.abs(x2-gx)*.06);
+      const d=`M${gx},${gy} Q${mx},${my} ${x2},${y2}`;
+      s+=`<path class="trk ${al?(live?'live':''):'idle'}" d="${d}"/>`;
+      if(opts.interactive)s+=`<path class="trkhit" data-r="${n.cell[0]}" data-t="${n.cell[1]}" data-v="${val}" d="${d}"/>`;
+    });});
+  L.nodes.forEach((n,i)=>{
+    if(n.x===undefined)return;const x=px(n.x),y=py(n.y);
+    if(n.kind==="bulb"){
+      s+=`<circle class="bulb ${isLit?'lit':'dark'}" cx="${x}" cy="${y}" r="15" stroke-width="2"/>
+          <text class="blab ${isLit?'lit':'dark'}" x="${x}" y="${y+4.5}">\u229B</text>`;}
+    else if(n.kind==="gnd"){
+      s+=`<line class="gnd" x1="${x-8}" y1="${y}" x2="${x+8}" y2="${y}"/>
+          <line class="gnd" x1="${x-5}" y1="${y+4}" x2="${x+5}" y2="${y+4}"/>
+          <line class="gnd" x1="${x-2}" y1="${y+8}" x2="${x+2}" y2="${y+8}"/>`;}
+    else if(n.kind==="pass"){
+      s+=`<circle cx="${x}" cy="${y}" r="3.5" fill="#56505f"/>`;}
+    else if(n.kind==="test"){
+      const key=n.cell.join(",");
+      const extra=opts.markCell?opts.markCell(n.cell):"";
+      const thrown=g[n.cell[0]][n.cell[1]]!==L.obs[n.cell[0]][n.cell[1]];
+      if(thrown&&opts.interactive)s+=`<circle class="jxring" cx="${x}" cy="${y}" r="${JR+5}"/>`;
+      s+=`<circle class="jx ${extra}" data-r="${n.cell[0]}" data-t="${n.cell[1]}" cx="${x}" cy="${y}" r="${JR}"/>`;
+      if(opts.interactive)s+=`<circle class="jxhit" data-r="${n.cell[0]}" data-t="${n.cell[1]}" cx="${x}" cy="${y}" r="${JR+7}"/>`;
+      const tg=opts.tagText?opts.tagText(n.cell):null;
+      if(tg)s+=`<text class="tag ${tg.cls}" data-r="${n.cell[0]}" data-t="${n.cell[1]}" x="${x}" y="${y-JR-5}">${tg.txt}</text>`;
+    }});
+  s+="</svg>";return s;}
+function card(msg,col){const c=document.getElementById("card");c.className="show";
+  c.style.borderColor=col||"var(--edge)";c.innerHTML=msg;}
+function hideCard(){document.getElementById("card").className="";}
+function win(msg){solved[li]=true;tabs();
+  document.getElementById("omsg").innerHTML=msg+`<div style="font-size:11px;color:var(--dim);margin-top:6px">${L.prov}</div>`;
+  document.getElementById("overlay").classList.add("show");}
+function tabs(){document.getElementById("tabs").innerHTML=LEVELS.map((l,i)=>
+  `<div class="tab ${i===li?'active':''} ${solved[i]?'done':''}" onclick="load(${i})">${l.name}</div>`).join("");}
+function nextLevel(){document.getElementById("overlay").classList.remove("show");
+  load(Math.min(li+1,LEVELS.length-1));}
+function renderRecording(){
+  const save=grid;grid=null;
+  document.getElementById("recwrap").innerHTML=boardSVG(L.obs,{interactive:false,scale:0.55});
+  grid=save;}
+
+
+// CREDIT IT — JOINT (modified Halpern variant). Find the SMALLEST GROUP of
+// switches that, flipped TOGETHER while every other switch stays exactly as
+// recorded, puts the light out — and where no smaller group inside it can.
+// Single taps only:
+//   tap a switch (or its flag)  -> add / remove it from your accused GROUP
+//   FLIP THEM TOGETHER          -> flip the whole group at once (rest = recorded)
+let claim, busy;
+const inClaim=c=>claim.some(x=>x[0]===c[0]&&x[1]===c[1]);
+const cellName=c=>L.inputs[c[0]]+"@"+c[1];
+const flipSet=(base,S)=>{const g=clone(base);S.forEach(c=>g[c[0]][c[1]]^=1);return g;};
+const killsWhenFlipped=S=>!litOf(flipSet(L.obs,S));   // others recorded; flip S together
+function combos(arr,r){const out=[];(function rec(s,cur){
+  if(cur.length===r){out.push(cur.slice());return;}
+  for(let i=s;i<arr.length;i++){cur.push(arr[i]);rec(i+1,cur);cur.pop();}})(0,[]);return out;}
+function smallestKillingSubgroup(S){
+  for(let r=1;r<S.length;r++)for(const ix of combos([...S.keys()],r)){
+    const T=ix.map(i=>S[i]); if(killsWhenFlipped(T))return T;}
+  return null;}
+
+function load(i){li=i;L=LEVELS[i];grid=clone(L.obs);claim=[];busy=false;hearts=3;hideCard();tabs();render();}
+function chips(){return claim.length
+  ? claim.map(c=>`<span style="display:inline-block;background:var(--cell);color:var(--gold);border:1px solid var(--gold);border-radius:10px;padding:1px 8px;margin:1px 2px;font-size:12px">${cellName(c)}</span>`).join("")
+  : `<span style="color:var(--dim)">none yet — tap switches to accuse them</span>`;}
+function render(){
+  renderRecording();
+  document.getElementById("svgwrap").innerHTML=boardSVG(grid,{interactive:true,
+    markCell:c=>inClaim(c)?"cand":"",
+    tagText:c=>({txt:"⚑",cls:inClaim(c)?"fresh":"tried"})});
+  document.getElementById("delta").innerHTML=`accused group: ${chips()}`;
+  document.getElementById("hearts").textContent="♥".repeat(hearts)+"♡".repeat(3-hearts);
+  document.getElementById("btnrow").innerHTML=
+    `<button id="reset">↺</button>
+     <button id="flip" class="primary" ${claim.length&&!busy?"":"disabled style='opacity:.4'"}>FLIP THEM TOGETHER</button>`;
+  document.getElementById("reset").onclick=()=>{if(busy)return;claim=[];grid=clone(L.obs);hideCard();render();};
+  document.getElementById("flip").onclick=()=>{if(claim.length&&!busy)flipTest();};
+  const toggle=(r,t)=>{if(busy)return;const c=[r,t];
+    claim=inClaim(c)?claim.filter(x=>!(x[0]===c[0]&&x[1]===c[1])):claim.concat([c]);
+    grid=clone(L.obs);hideCard();render();};
+  document.querySelectorAll(".tag").forEach(h=>h.onclick=()=>toggle(+h.dataset.r,+h.dataset.t));
+  document.querySelectorAll(".jxhit").forEach(h=>h.onclick=()=>toggle(+h.dataset.r,+h.dataset.t));
+}
+function blink(seqs,done){let n=0;const beat=()=>{
+  if(n<seqs.length){grid=clone(seqs[n]);render();n++;setTimeout(beat,430);return;} done();};beat();}
+function loseHeart(){hearts--;if(hearts<=0)hearts=3;}
+function flipTest(){
+  busy=true;
+  const S=claim.map(c=>c.slice());
+  const off=flipSet(L.obs,S);
+  blink([L.obs,off,L.obs,off],()=>{
+    grid=clone(off);render();
+    if(litOf(off)){                      // not sufficient — light survived the joint flip
+      loseHeart();render();
+      card("Flipped together — and the light <b>stays on</b>. Something outside your group is still carrying it. A cause has to actually put it out: widen (or change) the group.","var(--bad)");
+      busy=false;return;}
+    const sub=smallestKillingSubgroup(S);
+    if(sub){                             // sufficient but NOT minimal — replay the subgroup's own kill
+      loseHeart();
+      blink([L.obs,flipSet(L.obs,sub)],()=>{
+        grid=clone(flipSet(L.obs,sub));render();
+        card(`Over-accused. You didn't need the whole group: flipping just <b>{${sub.map(cellName).join(", ")}}</b> (left on your bench) already puts the light out. A cause must be <b>minimal</b> — drop the switches that aren't pulling weight.`,"var(--bad)");
+        busy=false;});
+      return;}
+    busy=false;
+    win(`Minimal joint cause confirmed. Flipping {${S.map(cellName).join(", ")}} <b>together</b> puts the light out — yet no smaller group inside it can. ${S.length===1?"A lone culprit.":"These "+S.length+" switches share the blame for the recorded flash; none of them did it alone."}`);
+  });
+}
+
+load(0);
+</script>
+</body>
+</html>

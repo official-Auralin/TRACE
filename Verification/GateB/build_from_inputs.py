@@ -58,6 +58,12 @@ def quality_gate(inst, mode, nodes):
         if not dets: reasons.append("pin level with no determining set")
         if sufficient(inst, []): reasons.append("empty lock sufficient (unconditional target)")
     elif mode == "credit":
+        # This emits the original/updated CREDIT page (singleton claims). The
+        # multi-cell rejection below is dead in practice — the original/updated
+        # variant provably has no multi-cell minimal cause on input-complete
+        # transducers (verify_atomization.py) — but it is kept as a defensive
+        # invariant check. Genuine multi-cell (modified-variant) puzzles are
+        # built by build_joint.py into TRACE_credit_joint.html instead.
         causes = minimal_actual_causes(inst)
         m["deciders"] = sum(1 for c in causes if len(c) == 1)
         if not causes: reasons.append("no actual causes")

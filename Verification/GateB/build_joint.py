@@ -1,0 +1,293 @@
+"""Builds TRACE_credit_joint.html — the MULTI-CELL credit game.
+
+Why a new page (the finding that drove the design)
+---------------------------------------------------
+The shipped CREDIT IT page grades the HP *original/updated* variant
+(engine.minimal_actual_causes). build_modes.xcheck_credit asserts every minimal
+actual cause on a credit level is a *singleton*; the original concern was that
+this assertion silently censors multi-cell answers and so caps difficulty below
+TempoBench.
+
+We checked. For the models TRACE/TempoBench actually use — flat, input-COMPLETE
+(F3) transducers, where the effect is a total Boolean function of the window
+cells — the original/updated variant has NO multi-cell minimal actual causes:
+
+  * n=3 cells: exhaustive over all 2^(2^3) functions  -> 0 multi-cell causes
+  * n=4 cells: exhaustive over all 2^(2^4) functions  -> 0 multi-cell causes
+  * n=5,6 cells: 320k random functions                -> 0 multi-cell causes
+    (all-ones observation == all observations, by coordinate-negation symmetry;
+     see _scratch_search.py / _scratch_fast.py — raw oracle selftested == engine)
+
+i.e. original/updated *atomizes*: it always decomposes joint causation into
+singletons by picking a permissive non-actual contingency. The singleton
+assertion in build_modes is therefore a true invariant, not a censor — there is
+no multi-cell difficulty to unlock *in that variant*.
+
+The multi-cell difficulty is real, but it lives in the *modified* variant
+(Halpern 2015 / engine.minimal_flip_sets): the subset-minimal JOINT flip that,
+with every other cell held at its recorded value, destroys the effect. mainTB
+proves the variants diverge exactly on overdetermined instances ("under the
+modified definition Puzzle 3's cause is the joint pair"), and Verification/GateA/
+A2_definitional_note.md establishes that the modified reading is the one CORP
+(the production tool the TempoBench keys come from) actually implements. So the
+modified variant is both (a) where joint causes exist and (b) the benchmark's
+own discipline. That is the variant this page grades.
+
+What the page does (same ethos as the other three: NO answer key)
+-----------------------------------------------------------------
+Win condition = the player's accused GROUP is a minimal modified actual cause:
+flipping the whole group together (everyone else exactly as recorded) puts the
+light out, and no proper subgroup inside it can. Both clauses are discharged on
+screen by walking the embedded junction graph — sufficiency is the joint blink;
+minimality replays the offending subgroup's own kill. A build-time cross-check
+proves the live set-verdict coincides with the engine oracle on every set.
+
+Deterministic: output depends only on the fixtures; run twice, byte-equal.
+"""
+import json, hashlib, sys, os, itertools
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "GateA"))
+from hoa import HOA
+from engine import Instance, minimal_flip_sets, minimal_actual_causes, flip_kills
+from fixtures import PUZZLES
+from render import build_graph, walk_graph, verify_equivalence
+import build_modes as BM
+
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..")
+MAX_GROUP = 3   # legibility: a group you can hold in your head and gesture (spec 5.3)
+
+# ---------- constructed fixtures (verified inline below) ----------
+def _comb_hoa(names, out, f):
+    """Single-state Mealy machine realizing out=f(inputs) (inputs APs 0..n-1,
+    out AP n). Deterministic & input-complete: one edge per input combination."""
+    n = len(names)
+    aps = " ".join(f'"{nm}"' for nm in names) + f' "{out}"'
+    lines = ["State: 0"]
+    for iv in itertools.product((0, 1), repeat=n):
+        olit = f"{n}" if f(iv) else f"!{n}"
+        ilits = " & ".join((f"{j}" if iv[j] else f"!{j}") for j in range(n))
+        lines.append(f"[{olit} & {ilits}] 0")
+    return (f"HOA: v1\nStates: 1\nStart: 0\nAP: {n+1} {aps}\n"
+            f"controllable-AP: {n}\nAcceptance: 0 t\n--BODY--\n"
+            + "\n".join(lines) + "\n--END--\n")
+
+# A sticky latch: fire@t == OR over t'<=t of a@t'. With a high at every recorded
+# moment, only flipping a low at ALL of them clears the latch -> the minimal
+# modified cause is the whole TEMPORAL TRIPLE {a@0,a@1,a@2}. One wire, three moments.
+LATCH_HOA = """HOA: v1
+States: 2
+Start: 0
+AP: 2 "a" "fire"
+controllable-AP: 1
+Acceptance: 0 t
+--BODY--
+State: 0
+[a & fire] 1
+[!a & !fire] 0
+State: 1
+[fire] 1
+--END--
+"""
+
+EXTRA = {
+    # name -> (Instance, provenance line shown on win)
+    "OR3":   (Instance(HOA(_comb_hoa(["a", "b", "c"], "o", lambda v: v[0] | v[1] | v[2])),
+                       ["a", "b", "c"], [[1], [1], [1]], "o", 0),
+              "triple overdetermination — three backups, all guilty together"),
+    "LATCH": (Instance(HOA(LATCH_HOA), ["a"], [[1, 1, 1]], "fire", 2),
+              "a sticky latch — the pulse fired once and stuck; name every moment it was high"),
+    "HET":   (Instance(HOA(_comb_hoa(["a", "b", "c"], "o", lambda v: v[0] & (v[1] | v[2]))),
+                       ["a", "b", "c"], [[1], [1], [1]], "o", 0),
+              "one lone culprit OR a guilty pair — two different minimal answers both win"),
+}
+
+def inst_of_puzzle(key):
+    P = {p["name"].split(" ")[0]: p for p in PUZZLES}
+    p = P[key]
+    return Instance(HOA(p["hoa"]), p["inputs"], p["obs"], p["out"], p["k"])
+
+# ---------- build-time cross-check: live set-verdict == oracle (modified) ----------
+def xcheck_joint(inst, nodes, start):
+    """The JS accepts a group S iff flipping all of S (everyone else recorded)
+    darkens the bulb on the embedded graph AND no proper subgroup does. The set
+    of accepted (subset-minimal) groups must equal the oracle's minimal_flip_sets;
+    and at least one accepted group must be multi-cell (the feature under test)."""
+    cells = [tuple(c) for c in inst.cells()]
+    def js_kills(S):
+        g = {c: 1 - inst.obs[c[0]][c[1]] for c in S}
+        return not walk_graph(nodes, start, inst.with_cells(g), inst.k)
+    found = []
+    for size in range(1, len(cells) + 1):
+        for S in itertools.combinations(cells, size):
+            if any(set(m) <= set(S) for m in found):
+                continue
+            if js_kills(set(S)):
+                found.append(S)
+    js_min = sorted(tuple(sorted(m)) for m in found
+                    if not any(set(m2) < set(m) for m2 in found))
+    oracle = sorted(minimal_flip_sets(inst, max_size=len(cells)))
+    assert js_min == oracle, f"joint live-verdict != oracle: {js_min} vs {oracle}"
+    sizes = [len(c) for c in oracle]
+    assert oracle, "joint level with no modified cause (effect not removable)"
+    assert max(sizes) <= MAX_GROUP, f"group of size {max(sizes)} > {MAX_GROUP} (illegible)"
+    return {"causes": len(oracle), "max_group": max(sizes), "has_multicell": max(sizes) >= 2}
+
+# ---------- the multi-cell (set-valued) credit game ----------
+JOINT_JS = r"""
+// CREDIT IT — JOINT (modified Halpern variant). Find the SMALLEST GROUP of
+// switches that, flipped TOGETHER while every other switch stays exactly as
+// recorded, puts the light out — and where no smaller group inside it can.
+// Single taps only:
+//   tap a switch (or its flag)  -> add / remove it from your accused GROUP
+//   FLIP THEM TOGETHER          -> flip the whole group at once (rest = recorded)
+let claim, busy;
+const inClaim=c=>claim.some(x=>x[0]===c[0]&&x[1]===c[1]);
+const cellName=c=>L.inputs[c[0]]+"@"+c[1];
+const flipSet=(base,S)=>{const g=clone(base);S.forEach(c=>g[c[0]][c[1]]^=1);return g;};
+const killsWhenFlipped=S=>!litOf(flipSet(L.obs,S));   // others recorded; flip S together
+function combos(arr,r){const out=[];(function rec(s,cur){
+  if(cur.length===r){out.push(cur.slice());return;}
+  for(let i=s;i<arr.length;i++){cur.push(arr[i]);rec(i+1,cur);cur.pop();}})(0,[]);return out;}
+function smallestKillingSubgroup(S){
+  for(let r=1;r<S.length;r++)for(const ix of combos([...S.keys()],r)){
+    const T=ix.map(i=>S[i]); if(killsWhenFlipped(T))return T;}
+  return null;}
+
+function load(i){li=i;L=LEVELS[i];grid=clone(L.obs);claim=[];busy=false;hearts=3;hideCard();tabs();render();}
+function chips(){return claim.length
+  ? claim.map(c=>`<span style="display:inline-block;background:var(--cell);color:var(--gold);border:1px solid var(--gold);border-radius:10px;padding:1px 8px;margin:1px 2px;font-size:12px">${cellName(c)}</span>`).join("")
+  : `<span style="color:var(--dim)">none yet — tap switches to accuse them</span>`;}
+function render(){
+  renderRecording();
+  document.getElementById("svgwrap").innerHTML=boardSVG(grid,{interactive:true,
+    markCell:c=>inClaim(c)?"cand":"",
+    tagText:c=>({txt:"⚑",cls:inClaim(c)?"fresh":"tried"})});
+  document.getElementById("delta").innerHTML=`accused group: ${chips()}`;
+  document.getElementById("hearts").textContent="♥".repeat(hearts)+"♡".repeat(3-hearts);
+  document.getElementById("btnrow").innerHTML=
+    `<button id="reset">↺</button>
+     <button id="flip" class="primary" ${claim.length&&!busy?"":"disabled style='opacity:.4'"}>FLIP THEM TOGETHER</button>`;
+  document.getElementById("reset").onclick=()=>{if(busy)return;claim=[];grid=clone(L.obs);hideCard();render();};
+  document.getElementById("flip").onclick=()=>{if(claim.length&&!busy)flipTest();};
+  const toggle=(r,t)=>{if(busy)return;const c=[r,t];
+    claim=inClaim(c)?claim.filter(x=>!(x[0]===c[0]&&x[1]===c[1])):claim.concat([c]);
+    grid=clone(L.obs);hideCard();render();};
+  document.querySelectorAll(".tag").forEach(h=>h.onclick=()=>toggle(+h.dataset.r,+h.dataset.t));
+  document.querySelectorAll(".jxhit").forEach(h=>h.onclick=()=>toggle(+h.dataset.r,+h.dataset.t));
+}
+function blink(seqs,done){let n=0;const beat=()=>{
+  if(n<seqs.length){grid=clone(seqs[n]);render();n++;setTimeout(beat,430);return;} done();};beat();}
+function loseHeart(){hearts--;if(hearts<=0)hearts=3;}
+function flipTest(){
+  busy=true;
+  const S=claim.map(c=>c.slice());
+  const off=flipSet(L.obs,S);
+  blink([L.obs,off,L.obs,off],()=>{
+    grid=clone(off);render();
+    if(litOf(off)){                      // not sufficient — light survived the joint flip
+      loseHeart();render();
+      card("Flipped together — and the light <b>stays on</b>. Something outside your group is still carrying it. A cause has to actually put it out: widen (or change) the group.","var(--bad)");
+      busy=false;return;}
+    const sub=smallestKillingSubgroup(S);
+    if(sub){                             // sufficient but NOT minimal — replay the subgroup's own kill
+      loseHeart();
+      blink([L.obs,flipSet(L.obs,sub)],()=>{
+        grid=clone(flipSet(L.obs,sub));render();
+        card(`Over-accused. You didn't need the whole group: flipping just <b>{${sub.map(cellName).join(", ")}}</b> (left on your bench) already puts the light out. A cause must be <b>minimal</b> — drop the switches that aren't pulling weight.`,"var(--bad)");
+        busy=false;});
+      return;}
+    busy=false;
+    win(`Minimal joint cause confirmed. Flipping {${S.map(cellName).join(", ")}} <b>together</b> puts the light out — yet no smaller group inside it can. ${S.length===1?"A lone culprit.":"These "+S.length+" switches share the blame for the recorded flash; none of them did it alone."}`);
+  });
+}
+"""
+
+def _level(name, inst, prov):
+    l = BM.level(name, prov, inst)
+    nodes, start = l["nodes"], l["start"]
+    l["meta"] = xcheck_joint(inst, nodes, start)
+    return l
+
+def levels():
+    L = [
+        _level("P1",    inst_of_puzzle("P1"), "one switch decided it — the warm-up: a group of one"),
+        _level("P3",    inst_of_puzzle("P3"), "two wires, same moment, each a backup for the other"),
+        _level("P5",    inst_of_puzzle("P5"), "the backups hide at different moments — a cause across time"),
+        _level("LATCH", EXTRA["LATCH"][0], EXTRA["LATCH"][1]),
+        _level("HET",   EXTRA["HET"][0], EXTRA["HET"][1]),
+    ]
+    return L
+
+GOAL = ('<b>Find the smallest GROUP of switches that decided the flash together.</b> '
+        'Some lights have no single culprit (you met the ⊘ verdict in STOP IT) — but they still '
+        'have a cause: a group that conspired. Accuse a group, then <b>flip them all together</b> '
+        '(every other switch stays exactly as recorded). You win when the light goes out '
+        'AND no smaller group inside your accusation could have done it.')
+
+FOOT = ('This is the <b>modified</b> Halpern reading of an actual cause (the subset-minimal joint flip), '
+        'the discipline the CORP synthesis tool — source of the TempoBench keys — actually implements '
+        '(see GateA/A2_definitional_note.md). It is the variant where genuine multi-cell causes live: '
+        'the original/updated reading provably atomizes every cause into singletons on input-complete '
+        'transducers, so the singleton CREDIT IT page loses no expressible answer — but it also cannot '
+        'pose the overdetermined joint puzzles below. Every verdict here is computed in front of you by '
+        'flipping switches on the build-verified board; minimality is shown by replaying the offending '
+        'subgroup’s own kill.')
+
+def page(title, goal_html, mode_js, lv, foot_extra):
+    """Self-contained page wrapper (reuses the verified CSS/JS_CORE) with a nav
+    that includes this fourth, joint page so it reads as a sibling of the three."""
+    data = json.dumps(lv, sort_keys=True, separators=(",", ":"))
+    items = [("stop", "STOP IT", "TRACE_stop.html"), ("pin", "PIN IT", "TRACE_pin.html"),
+             ("credit", "CREDIT IT", "TRACE_credit.html"),
+             ("joint", "CREDIT · JOINT", "TRACE_credit_joint.html")]
+    nav = " ".join(f'<a href="{href}" class="{"here" if key=="joint" else ""}">{label}</a>'
+                   for key, label, href in items)
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRACE — {title}</title>
+<style>{BM.CSS}</style>
+</head>
+<body>
+<h1>{title}</h1>
+<div class="modebar">{nav}</div>
+<div class="goal">{goal_html}</div>
+<div class="tabs" id="tabs"></div>
+<div id="machine">
+  <div class="worldlab">THE RECORDING — what actually happened (frozen)</div>
+  <div id="recwrap"></div>
+  <div class="worldlab">YOUR BENCH — accuse a group, then flip it</div>
+  <div id="svgwrap"></div>
+  <div id="sweepbar"><div id="sweepfill"></div></div>
+  <div class="hud"><div class="delta" id="delta"></div><div id="hearts"></div></div>
+  <div class="btnrow" id="btnrow"></div>
+  <div id="card"></div>
+</div>
+<div class="foot">This page contains NO answer key: every verdict is computed in front of you by
+running the machine itself (the board is build-verified to behave identically to the source
+automaton on every possible switch setting). {foot_extra}</div>
+<div id="overlay"><div class="big">✔</div><div id="omsg" style="color:var(--gold);text-align:center;max-width:80vw"></div><button onclick="nextLevel()">▸</button></div>
+<script>
+const LEVELS={data};
+{BM.JS_CORE}
+{mode_js}
+load(0);
+</script>
+</body>
+</html>
+"""
+
+def main():
+    lv = levels()
+    html = page("CREDIT IT · JOINT", GOAL, JOINT_JS, lv, FOOT)
+    path = os.path.join(ROOT, "TRACE_credit_joint.html")
+    open(path, "w").write(html)
+    sha = hashlib.sha256(html.encode()).hexdigest()[:16]
+    summary = {l["name"]: l["meta"] for l in lv}
+    print(f"built TRACE_credit_joint.html  levels={len(lv)}  sha256/16={sha}")
+    print(json.dumps(summary, indent=1, sort_keys=True))
+    return sha, summary
+
+if __name__ == "__main__":
+    main()
