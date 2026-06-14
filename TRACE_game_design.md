@@ -143,7 +143,7 @@ All references are to `tex_files/mainTB.tex` (line numbers from the source file)
 | Probe / run | brass crank button | crank | press | −1 spark; lamps recompute; counter reported | full replay animation, marble runs left→right; result card: ⊛ lit? + "levers changed: m" | deterministic replay; one press = one scenario | β_max = spark meter | "one good run proves it" → result card stamped "THIS TIME"; submit card stamped "ALWAYS?" |
 | Budget β_max | spark meter ⚡⚡⚡ | sparks | spent by crank | decrements | dims one spark | budgeted probes force reasoning | direct knob | — |
 | Count-only distance | "levers changed: m" chip | flip count | — | — | updates live while editing | distance = # changed input cells only | closeness-order knob (hidden in core) | counting lamps → lamps have no counter anywhere |
-| Prevent answer (valid cause, singleton) | one scissors token ✂ on a lever | stop-mark | drag onto exactly one lever | — | second scissors politely refuses | Prop. pivotal: minimal necessity causes are singletons | mode knob | multi-cell necessity answers → UI holds ONE scissors, by theorem |
+| Prevent answer (valid cause, singleton) | one scissors token ✂ on a lever | stop-mark | drag onto exactly one lever | — | second scissors politely refuses | Prop. pivotal: minimal necessity causes are singletons | mode knob | multi-cell necessity answers are *impossible* (Prop. pivotal), not merely disallowed → UI needs only ONE scissors |
 | No-pivotal-cell verdict | round button ⊘ "nothing alone stops it" | the shield | press instead of placing scissors | — | treated as a full answer; victory chime if correct | the verdict of Prop. pivotal | overdetermined instances | "⊘ = give up" → button styled gold, equal weight to scissors |
 | Actual cause (AC1–AC3) | gold star tokens ★ on levers | star-marks | place on cells (at their observed values) | — | submit grades witness or union | Def. actual cause | mode knob; \|Γ*\| | conflating with Pin → contingency rehearsal UI below |
 | Contingency (W,w) | "ghost panel": player sets *other* levers anywhere, then cranks a PAIR (candidate in place / toggled) | the what-if pair | two cranks, auto-paired (costs 2 sparks) | — | side-by-side result cards: in-place ⊛✓ / toggled ⊛✗ | AC2(a)+(b) two arms; pair pricing per spec | budget pressure doubles in Credit | players testing only one arm → the pair button always runs both |
@@ -631,7 +631,7 @@ Verification unchanged and re-run: determinism/totality structural checks pass o
 
 — plus the two-chip fill legend and single-word feedback. Everything else is taught by the board: the tape invites tapping, cuts show ✂, the battery shows ⚡, the bulb glows or doesn't. Tabs carry the mode icon so repeated modes need no text at all.
 
-**The singleton clarification (fidelity, not just framing).** "One cut" is the *Prevent* objective, and its singleton shape is a theorem, not a design choice: under (F2)–(F3) every minimal count-only necessity cause is a singleton or the verdict is ⊘ (Prop. pivotal). But Prevent is the spec's *diagnostic* mode — TCE's core object is Credit (actual causation), which is genuinely multi-cell (the union task; Puzzles 3 and 5 have two-cell answers across switches and across time). The Credit objective line now says so in seven words ("causes can be many"), and the mode ordering — three ✂ levels, then ★ — is the spec's own pedagogy: necessity first because it's the cheapest entry point, actual causation as the destination. A shipped corpus would weight toward Credit, exactly as the paper designates TRACE-Credit the core configuration.
+**The singleton clarification (fidelity, not just framing).** "One cut" is the *Prevent* objective, and its singleton shape is a theorem, not a design choice: under (F2)–(F3) every minimal count-only necessity cause is a singleton or the verdict is ⊘ (Prop. pivotal). But Prevent is the spec's *diagnostic* mode — TCE's core object is Credit (actual causation), whose per-cell *union* Γ^ac is genuinely multi-cell (Puzzles 3 and 5 have two-cell unions across switches and across time). Precisely: by the **atomization theorem** (Prop. atomize in mainTB — the original/updated analog of Prop. pivotal, SMT-verified for every window ≤ 8 cells) each *individual* minimal actual cause under original/updated is itself a **singleton**, so the multi-cell Credit answer is always a *union of single-switch causes*, never an irreducible joint set. A genuinely joint minimal cause (a group no member of which is a cause alone) exists only under the **modified** variant, graded by the separate **Credit·Joint** surface (`TRACE_credit_joint.html`) used for TempoBench-alignment corpora. The Credit objective line now says so in seven words ("causes can be many"), and the mode ordering — three ✂ levels, then ★ — is the spec's own pedagogy: necessity first because it's the cheapest entry point, actual causation as the destination. A shipped corpus would weight toward Credit, exactly as the paper designates TRACE-Credit the core configuration.
 
 Re-verified post-rewrite: structural determinism/totality over all settings; graders match the paper's five answers.
 
@@ -790,8 +790,11 @@ canonical human game:
   verification is the explanation.
 - **The variant fork dissolves at the surface**: CREDIT IT's win object is the player's own
   exhibited contingency pair-of-runs — the original/updated HP object only; extinguishing sets
-  are never a Credit answer. Iteration 12's dual acceptance is retired with its build
-  (removed from the repo; git history preserves it). The twelve instances that build shipped
+  are never a Credit answer *on this surface*. Iteration 12's dual acceptance is retired with its build
+  (removed from the repo; git history preserves it). *(Iteration 14 revives the extinguishing-set
+  reading not as dual acceptance but as a **separate, explicitly-declared** surface —
+  `TRACE_credit_joint.html`, the modified variant — for TempoBench-alignment corpora; see §20.18.)*
+  The twelve instances that build shipped
   remain the pipeline's coverage obligation: regenerated deterministically (`gold_inputs.py`)
   and either emitted-and-verified or rejected-with-reason by the quality gate
   (`verify_modes.py` gold-12 section).
@@ -804,6 +807,18 @@ canonical human game:
   "shield" button (the ⊘ verdict is now *earned* by the player's own completed tally); the
   ghost-panel/paired-crank affordance (its AC2 pair-of-runs is now the primary win gesture —
   bench + MAKE IT BLINK — rather than an auxiliary panel).
+
+## 20.18 Iteration 14 — The atomization theorem, and the modified Credit·Joint surface
+
+*Question raised: are all CREDIT levels singleton? If multi-cell actual causes are disallowed, difficulty cannot scale to TempoBench. Is that defensible?*
+
+**The theorem that resolves it (atomization).** We proved — by SMT decision (z3), exhaustively for every window width `n ≤ 8` (the legibility cap `MAX_WINDOW_CELLS`, hence *every* admissible instance), corroborated by exhaustive enumeration of all Boolean window-functions for `n ≤ 4` and 3.2×10⁵ random functions at `n = 5,6` — that under the **original/updated** HP variant on (F2)–(F3) input-complete transducers, **every minimal actual cause is a singleton**. This is the actual-causation analog of `Prop. pivotal` and is now `Prop. atomize` in mainTB. Consequence: the singleton restriction on `TRACE_credit.html` loses **no expressible answer** — multi-cell *original/updated* minimal causes do not exist on this frame. The CREDIT IT core's multi-cell answer (Puzzles 3, 5) is always a *union* of singleton causes, never an irreducible joint cause. Reference: `Verification/GateB/verify_atomization.py`.
+
+**Where the multi-cell difficulty actually lives.** Genuine joint causes — a group of switches none of which is a cause alone — exist only under the **modified** variant (Halpern 2015), which is also CORP's discipline (the TempoBench labeler; see `GateA/A2_definitional_note.md`, `A3_decision_record.md`). This is the same "extinguishing set" reading iteration 12 surfaced as dual acceptance and iteration 13 retired from the single CREDIT surface.
+
+**The surface: CREDIT·JOINT (`TRACE_credit_joint.html`).** Per the variant policy (one declared variant per corpus; TempoBench-alignment corpora grade `modified`), the modified object gets its **own** explicitly-declared play surface rather than being dual-accepted on the original/updated one. Gesture: name a minimal **group** of switches; **FLIP THEM TOGETHER** (every other switch held at its recorded value) must extinguish the bulb, with no proper subgroup sufficing — the modified actual cause, shown not named, exactly as CREDIT IT shows the original/updated object. Built by `build_joint.py` (reusing the verified render core), cross-checked at build time against `engine.minimal_flip_sets`, and re-verified on the emitted file by `verify_joint.py`. Levels escalate: singleton warm-up, joint pair (P3), temporal pair (P5), a constructed sticky-latch temporal **triple**, and a heterogeneous instance (a singleton *and* a pair both correct).
+
+**Net:** the dual-variant story is now consistent end-to-end — original/updated singleton credit (the credit-assignment core, provably singleton) and modified joint credit (the TempoBench-alignment surface, where multi-cell difficulty lives) — across the papers (`mainTB` Prop. atomize + variant policy), the pipeline, and the two Credit surfaces.
 
 ## 21. Next prototype tasks
 
