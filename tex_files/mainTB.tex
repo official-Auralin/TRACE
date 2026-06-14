@@ -641,7 +641,8 @@ candidate the two notions of ``removal'' differ---closest violation vs.\ flippin
 the whole candidate---so we make the special-case claim only for singletons.) The
 \emph{actual-cause set} $\Gamma^{\mathrm{ac}}$ is the union of all (subset-minimal)
 actual causes---a \emph{set of cells}, not itself a single cause; several
-incomparable actual causes may exist.
+incomparable actual causes may exist (and under (F2)--(F3) each is a singleton, so
+$\Gamma^{\mathrm{ac}}$ is exactly the set of single-cell causes---Proposition~\ref{prop:atomize}).
 \end{definition}
 
 \paragraph{Why this is Halpern--Pearl, and which Halpern--Pearl.} The trellis is
@@ -668,13 +669,21 @@ Conjecture~\ref{conj:corp} cannot be discharged definitionally; if it holds
 at all, it holds at the per-cell granularity, and symmetric overdetermination
 is the predicted divergence class (under the modified discipline, Puzzle~3's
 key is the joint pair rather than the two singletons).
-Independent of CORP, the variant choice is deliberate: a credit-assignment
-benchmark should attribute credit under symmetric overdetermination (Puzzle~3's
-``each switch is a cause'' verdict matches the intuitive answer and is the one
-TempoBench-style per-cell keys can express), whereas the modified definition's
-joint answer cannot distinguish two independently sufficient switches from two
-switches that act only jointly (Puzzle~4)---a distinction the game is built to
-probe. Because every candidate cell here is exogenous, the usual HP subtlety
+Independent of CORP, the variant choice is deliberate, and it is the
+original/updated reading we keep as the core: a credit-assignment benchmark
+should attribute credit \emph{cell by cell} under symmetric overdetermination
+(Puzzle~3's ``each switch is a cause'' verdict matches the intuitive answer and is
+the granularity TempoBench-style per-cell keys express). The \emph{modified}
+variant instead collapses Puzzle~3 to the single joint pair $\{(0,a),(0,b)\}$,
+declining to credit either switch on its own---the right object for CORP-alignment,
+the wrong one for per-cell credit. (The two variants \emph{agree} on the
+non-overdetermined guard of Puzzle~4, where each part is independently but-for:
+both return the two singletons $\{(0,req)\}$ and $\{(0,\neg cancel)\}$. It is in
+fact the \emph{original/updated} reading that cannot separate Puzzle~3 from
+Puzzle~4 by cause \emph{shape}---each yields two singletons---whereas the modified
+reading can, returning Puzzle~3's joint pair against Puzzle~4's singletons; what
+marks Puzzle~3 as overdetermined in our core is the \emph{Prevent} mode's
+no-pivotal-cell verdict, not the actual-cause shape.) Because every candidate cell here is exogenous, the usual HP subtlety
 of partitioning endogenous variables into held-fixed ($W$) and floating ($Z$)
 sets largely collapses, and the definition admits a plain restatement:
 \emph{$\Gamma$ is an actual cause iff there is a setting of the other input
@@ -684,6 +693,44 @@ prove that this finite, literal-cell object coincides with CORP's
 $\omega$-regular construction---that is Conjecture~\ref{conj:corp}. Absent it,
 Definition~\ref{def:actual} is best read as \emph{trellis actual causation}:
 HP-style, but defined here.
+
+\begin{proposition}[Original/updated actual causes collapse to singletons]
+\label{prop:atomize}
+Assume $\Frame_{\mathrm{TB}}$, (F2), and (F3). Then every subset-minimal actual
+cause (Definition~\ref{def:actual}, original/updated) of a point effect is a
+\emph{singleton}; equivalently $\Gamma^{\mathrm{ac}}=\{(t,\ell)\mid\{(t,\ell)\}\text{
+is an actual cause}\}$. Overdetermination \emph{multiplies} the singletons (Puzzle~3
+yields two) but never \emph{groups} them: no minimal original/updated cause has size
+$\ge 2$.
+\end{proposition}
+\begin{proof}[Verification]
+We decide the contrary---``there exist a window-function and a set $\Gamma$ with
+$|\Gamma|=s\ge 2$ satisfying AC2 while every nonempty proper subset fails AC2''---by
+SMT for every width $|I|(k{+}1)=n\le 8$ and every $s\le n$ (fixing $\Gamma$ to the
+first $s$ cells is without loss by coordinate symmetry); all instances are
+\textsc{unsat}. The width bound $8$ is the legibility cap of
+Section~\ref{sec:difficulty}, so this covers \emph{every} admissible benchmark
+instance. The result is corroborated by exhaustive enumeration of all $2^{2^n}$
+window-functions for $n\le 4$ (zero multi-cell causes) and by $3.2\times10^5$ random
+functions at $n=5,6$; the reference checker and the SMT encoding agree on a $300$-case
+self-test (\texttt{Verification/GateB/verify\_atomization.py}). Intuitively, the flat
+trellis ($Z=\varnothing$: every cell is exogenous) lets the \emph{non-actual}
+contingency hold all but one candidate cell off its actual value and expose the last
+as but-for-under-contingency, so no $\ge 2$-set is subset-minimal; we rely on the
+decision procedure over the admissible range rather than a closed-form bound for
+unbounded width.
+\end{proof}
+This is the actual-causation analog of Proposition~\ref{prop:pivotal}: under
+(F2)--(F3), count-only necessity \emph{and} original/updated actual causation
+\emph{both} return only singleton minimal causes; they differ only in that actual
+causation is non-empty on overdetermined instances, where necessity collapses to the
+no-pivotal-cell verdict. A genuinely multi-cell \emph{minimal} cause---a set of
+switches none of which is a cause alone---arises only under the \emph{modified}
+variant (e.g.\ Puzzle~3's joint pair $\{(0,a),(0,b)\}$), where contingencies may not
+take non-actual values; that is the variant the TempoBench-alignment surface grades
+(``Variant policy'' below). The multi-cell shape $\Gamma^{\mathrm{ac}}$ of the
+original/updated core is therefore always a \emph{union of singleton causes}, never an
+irreducible joint cause.
 
 \paragraph{How the three relate.}
 \begin{itemize}[nosep]
@@ -769,7 +816,16 @@ Instances on which the two variants disagree carry an \texttt{overdetermined}
 difficulty tag. In the playable \emph{Credit} mode the variant is not named
 but \emph{shown}: the win gesture is the player's own exhibited
 contingency pair of runs, which is precisely the original/updated object, so
-the play surface and the declared-variant grading cannot drift apart.
+the play surface and the declared-variant grading cannot drift apart. The
+modified discipline, required for TempoBench-alignment corpora, is exposed as a
+\emph{separate} playable surface (\emph{Credit$\cdot$Joint}): the player names a
+minimal \emph{group} of switches whose simultaneous flip---every other switch held
+at its recorded value---extinguishes the effect, with no proper subgroup
+sufficing. This is exactly the modified object, and by Proposition~\ref{prop:atomize}
+it is the \emph{only} surface on which a genuinely multi-cell (irreducible joint)
+cause can be a winning answer; the original/updated \emph{Credit} core, by the same
+proposition, only ever asks for a single switch. Each instance file still declares
+one variant, so the two surfaces never mix within a corpus.
 
 \section{A Benchmark Generator for the TCE Setting}
 \label{sec:pipeline}
@@ -1216,13 +1272,19 @@ against the \emph{predicate} for the active mode, in one of three granularities.
         \begin{itemize}[nosep,leftmargin=1.4em]
           \item \emph{Witness:} submit one set; full credit iff it is correct
                 \emph{and subset-minimal}. Minimality is essential---a non-minimal
-                superset scores $0$, so ``spam every cell'' fails.
+                superset scores $0$, so ``spam every cell'' fails. (In the
+                original/updated \emph{Credit} core a witness is always a single
+                cell, by Proposition~\ref{prop:atomize}; in \emph{Pin} and the
+                modified \emph{Credit} variant it may be an irreducible joint set.)
           \item \emph{All-causes:} submit a family; full credit iff it is exactly
                 the set of \emph{all} minimal causes for the mode.
           \item \emph{Per-cell union:} submit the cell set $\Gamma^{\mathrm{ac}}$,
                 the union of all minimal causes, graded per cell. This is the
                 granularity TempoBench reports; note the union need not itself be a
-                single minimal cause, nor decompose into singleton causes.
+                single minimal cause. For \emph{Pin} (determining sets) and the
+                modified \emph{Credit} variant it need not decompose into singleton
+                causes; for the original/updated \emph{Credit} core it always does
+                (Proposition~\ref{prop:atomize}).
         \end{itemize}
         The checker accepts \emph{any} correct witness, not a fixed string. Witness
         or per-cell union is the recommended primary metric, depending on whether
