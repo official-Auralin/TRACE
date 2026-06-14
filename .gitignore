@@ -13,6 +13,8 @@
 !TRACE_stop.html
 !TRACE_pin.html
 !TRACE_credit.html
+# Multi-cell credit game: the modified-variant joint-cause page (build_joint.py).
+!TRACE_credit_joint.html
 # Deterministic auto-built pages from the gold-12 input set (build_from_inputs.py).
 !TRACE_auto_stop.html
 !TRACE_auto_pin.html
