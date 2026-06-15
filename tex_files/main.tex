@@ -3769,15 +3769,18 @@ task. The purpose is not to replace the general construction. The purpose is to
 specialize it so that the solver receives the same kind of information
 TempoBench gives, solves the same kind of finite-horizon causal problem, and
 returns a \emph{necessity}-based answer of the same shape. One caveat throughout:
-TempoBench labels TCE with CORP, a Halpern--Pearl \emph{actual-causation} tool
-(in Halpern's \emph{modified} variant, with contingencies that reset outputs to
-their actual-trace values, verified against the primary sources in the
-companion verification suite),
-whereas this construction computes counterfactual \emph{necessity}; the two differ
-on overdetermined effects (Section~\ref{sec:overdetermination}), so what follows is
-an \emph{alternate}, necessity-based account of the TCE task, not a reproduction of
-CORP's answer key. Any corpus-scale alignment claim must be stated in CORP's own
-(modified) discipline.
+TempoBench labels TCE with CORP, a Halpern--Pearl \emph{actual-causation} tool in
+Halpern's \emph{modified} variant (its contingency mechanism resets outputs to
+their actual-trace values; verified against the primary sources in the companion
+verification suite). The TempoBench authors confirm the shipped keys are generated
+with contingencies \emph{disabled}, so each key is the contingency-free
+counterfactual---the subset-minimal joint input-flip. This construction instead
+computes counterfactual \emph{necessity}, which differs on overdetermined effects
+(Section~\ref{sec:overdetermination}: necessity returns the no-pivotal-cell verdict
+where the keys return the joint flip-set), so what follows is an \emph{alternate},
+necessity-based account of the TCE task, not a reproduction of CORP's answer key
+(the actual-cause object that matches the keys is developed in the companion
+TempoBench paper).
 
 This appendix is based on the TempoBench paper and public implementation.
 TempoBench has two tasks: temporal trace evaluation (TTE), which asks whether a

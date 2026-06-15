@@ -1100,15 +1100,17 @@ We specialize the framework to a TempoBench-style temporal causal evaluation
 not verified against the released artifacts}, the solver receives the same
 information and solves the same finite-horizon problem, returning a
 \emph{necessity}-based answer. Beyond (F1)--(F2) there is a second gap: TempoBench
-labels TCE with CORP, a Halpern--Pearl \emph{actual-causation} tool---in
-Halpern's \emph{modified} variant, with contingencies that reset outputs to
-their actual-trace values (verified against the primary sources in the
-companion verification suite)---whereas we
+labels TCE with CORP, a Halpern--Pearl \emph{actual-causation} tool in Halpern's
+\emph{modified} variant (its contingency mechanism resets outputs to their
+actual-trace values; verified against the primary sources in the companion
+verification suite). The TempoBench authors confirm the shipped keys are
+generated with contingencies \emph{disabled}, so each key is the
+contingency-free counterfactual---the subset-minimal joint input-flip---whereas we
 compute counterfactual \emph{necessity}, and the two differ on overdetermined
-effects (Section~\ref{sec:overdetermination}). So this is a \emph{proposed,
-necessity-based} alignment offering an \emph{alternate} object, not a demonstrated
-reproduction of CORP's key; any corpus-scale alignment claim must be stated in
-CORP's own (modified) discipline. TempoBench has two tasks: temporal trace evaluation (TTE), asking whether a
+effects (Section~\ref{sec:overdetermination}: necessity returns no pivotal cell
+where the key is the joint flip-set). So this is an \emph{alternate},
+necessity-based account, not a reproduction of CORP's key; the actual-cause object
+matching the keys is developed in the companion TempoBench paper. TempoBench has two tasks: temporal trace evaluation (TTE), asking whether a
 finite trace is accepted by a supplied automaton, and TCE, asking for the minimal
 input constraints necessary for a specified output at a specified
 timestep.\footnote{TempoBench: \url{https://arxiv.org/abs/2510.27544};
