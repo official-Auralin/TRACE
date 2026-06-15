@@ -65,6 +65,41 @@ def min_causes_raw(f, n):
             if ac2_raw(f, n, S): found.append(S)
     return [m for m in found if not any(set(m2) < set(m) for m2 in found)]
 
+# ---------- raw MODIFIED object: contingency-free subset-minimal joint flip ----------
+# = CORP with contingencies disabled (TempoBench-key object). obs = all-ones; flip = set to 0.
+def flip_kills_raw(f, n, S):
+    off = ((1 << n) - 1) & ~sum(1 << j for j in S)   # flip S to 0, others at actual 1
+    return f[off] == 0
+
+def min_flips_raw(f, n):
+    found = []
+    for size in range(1, n + 1):
+        for S in itertools.combinations(range(n), size):
+            if any(set(m) <= set(S) for m in found): continue
+            if flip_kills_raw(f, n, S): found.append(S)
+    return [m for m in found if not any(set(m2) < set(m) for m2 in found)]
+
+def union_invariance(maxn_exhaustive=4, random_n=(5, 6), random_samples=4000, seed=5):
+    """Per-cell union is variant-invariant: union(original/updated minimal actual causes)
+    == union(modified contingency-free minimal joint-flip sets). This is why CORP's
+    contingencies-disabled keys equal Gamma^ac at the per-cell granularity TempoBench grades,
+    on EVERY instance (overdetermined or not). Proven two ways in mainTB Prop. union; here
+    decided exhaustively (n<=4) and on random functions (n=5,6)."""
+    def U(sets): return frozenset(c for m in sets for c in m)
+    mismatches = 0
+    for n in range(2, maxn_exhaustive + 1):
+        for mask in range(1 << (1 << n)):
+            bits = [(mask >> i) & 1 for i in range(1 << n)]
+            if not bits[-1]: continue
+            if U(min_causes_raw(bits, n)) != U(min_flips_raw(bits, n)): mismatches += 1
+    rng = random.Random(seed)
+    for n in random_n:
+        for _ in range(random_samples):
+            bits = [rng.getrandbits(1) for _ in range(1 << n)]; bits[-1] = 1
+            if U(min_causes_raw(bits, n)) != U(min_flips_raw(bits, n)): mismatches += 1
+    return {"exhaustive_to_n": maxn_exhaustive, "random_n": list(random_n),
+            "union_mismatches": mismatches, "invariant": mismatches == 0}
+
 def comb_instance(n, bits):
     """Single-state Mealy machine realizing the truth table `bits` (idx = sum x_j<<j)."""
     aps = " ".join(f'"x{i}"' for i in range(n)) + ' "o"'
@@ -169,6 +204,8 @@ def main():
         "OR3_triple": [list(map(list, c)) for c in minimal_flip_sets(or3, max_size=3)],
         "HET_singleton_plus_pair": [list(map(list, c)) for c in minimal_flip_sets(het, max_size=3)],
     }
+    # Per-cell union invariance (the basis for conj:corp surviving the variant choice):
+    rep["union_invariance"] = union_invariance()
     enum_total = sum(rep["original_multicell_enum"].values())
     smt = rep["smt_atomization"]
     smt_ok = smt.get("available") and smt.get("all_unsat")

@@ -12,9 +12,11 @@ Schema (validated against the cloned tempobench repo, dataset.py + causality_sam
 For each row we compute the per-cell key under BOTH HP variants:
   ORIGINAL/UPDATED: union of minimal actual causes (mainTB Def. actual);
   MODIFIED:         union of minimal joint-flip (extinguishing) sets
-                    (= Halpern-2015 discipline on exogenous cells; per
-                    A2_definitional_note.md this is CORP's discipline).
-and report per-cell precision/recall/F1 vs gold, plus an actuality-consistency
+                    (= the contingency-free object CORP uses with contingencies
+                    DISABLED, author-confirmed; A2_definitional_note.md).
+By mainTB Prop. union the two per-cell unions coincide, so either column equals
+the gold per-cell key; we report both to exhibit the (witness-level) divergence.
+We report per-cell precision/recall/F1 vs gold, plus an actuality-consistency
 check (gold literal values must equal the observed trace values, as mainTB's
 'cells at actual values' requires).
 
@@ -23,9 +25,10 @@ Status semantics:
   ROW-ERRORS         — some rows failed to parse/audit (listed; fails the gate).
   BLOCKED-EXTERNAL   — no rows found.
 PASS condition for the HARNESS: every available row parses, passes the F2/F3
-artifact pre-audit, and is actuality-consistent. The agreement RATE itself is a
-reported scientific quantity (Conjecture corp is the thing under test, not the
-harness)."""
+artifact pre-audit, and is actuality-consistent. The agreement RATE is the
+reported quantity: CORP's keys use the contingency-disabled (modified) discipline,
+and by Prop. union the per-cell agreement is variant-invariant; the only residual
+the rate probes is CORP's omega-regular flattening on real keys."""
 import json, os, sys, glob, re
 from hoa import HOA
 from engine import Instance, minimal_actual_causes, minimal_flip_sets
@@ -140,7 +143,9 @@ def main():
     print(json.dumps({"status": status, "rows_compared": n, "row_errors": errs,
         "per_variant_agreement_with_tempobench_gold": summary,
         "caveat": ("n is small; full datasets at huggingface.co/datasets/nikolausholzer/tempobench. "
-                   "Conjecture-corp discrimination requires overdetermined rows, where the variants diverge."),
+                   "CORP's keys use the contingency-disabled (modified) discipline; original and "
+                   "modified per-cell unions coincide (Prop. union), so per-cell agreement is "
+                   "variant-invariant. Witness-granularity divergence appears only on overdetermined rows."),
         "rows": out}, indent=1, default=str))
     return 1 if errs else 0
 
