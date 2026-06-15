@@ -12,7 +12,7 @@
    "perfect_agreement_rate": 1.0
   }
  },
- "caveat": "n is small; full datasets at huggingface.co/datasets/nikolausholzer/tempobench. Conjecture-corp discrimination requires overdetermined rows, where the variants diverge.",
+ "caveat": "n is small; full datasets at huggingface.co/datasets/nikolausholzer/tempobench. CORP's keys use the contingency-disabled (modified) discipline; original and modified per-cell unions coincide (Prop. union), so per-cell agreement is variant-invariant. Witness-granularity divergence appears only on overdetermined rows.",
  "rows": [
   {
    "effect": "XXX g",
