@@ -1,0 +1,37 @@
+{
+  "axiom_dependencies": [
+    "Classical.choice",
+    "Quot.sound",
+    "propext"
+  ],
+  "axiom_report_sha256": "35ec2fcb5a81091539ca88b8d7c98b0d7213160bfe0843102d98baf6acd3e688",
+  "clean_build": true,
+  "compiler_sha256": "9544be237d91099efe1db8cb97d0c359fa13aa94f565e9972bfb8b63abbcb437",
+  "elapsed_seconds": 22.29926300048828,
+  "executable_sha256": {
+    "trace-check": "347c0b3f96ac3be79461add0b12c50e6d96cd55dc0854e173fb408ce4ccab25d",
+    "trace-compile": "901de982715c21f1bd3bc34c7594a76ee7a3fe4cdefb43cbca99c200abe1c453"
+  },
+  "lean_version": "Lean (version 4.24.0, arm64-apple-darwin23.6.0, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+  "modules": 12,
+  "named_theorems": 126,
+  "new_trace2_theorems": 88,
+  "scope": "Finite G/P semantics, inclusion-minimal deletion, complete Boolean alphabet, local recurrence checking, sparse checked-query binding and coverage, finite verification game, general executable Mealy-to-switch-tree construction and equality reduction, all-round output and semantic-state preservation, output-only terminal display projection and target/minimal-explanation preservation. JSON decoding/serialization, executable runtime, Python, browser, and full synthesis-strategy N2 remain outside the kernel proof.",
+  "source_sha256": {
+    "CheckCertificates.lean": "0fd4d019d75648be1f4ebc74f1ac90d8cadfc7b9b3c9eb3be279d8e2801a3b38",
+    "CompileLevel.lean": "ed967dff583460957bac93d3ff92f1a45abc2d4679a9cf1142d5022395cdc8cd",
+    "Trace2/Binding.lean": "f639994b80ecd2655260fbb830bca7b3f0146d86c73115f234cff9f730f00fc4",
+    "Trace2/Certificates.lean": "972beb76a1ca47727c952c46c172b16f65056b3651d89d8c37f4fda64d2982b3",
+    "Trace2/Compiler.lean": "229fdd62cba04c8abce2f1805099450650917cfbea2754c669b1e836d16f7be5",
+    "Trace2/CompilerRuntime.lean": "356d55ac7f509a8690d5e34a1ebba69fbe7be61ee64708caa4fdfa83b017ed7e",
+    "Trace2/Deletion.lean": "4a4bd911d914e84227c45f936db52665b40c708caf104e44a33b850032b1ef5d",
+    "Trace2/Game.lean": "6480e6f681a0219fb63ad3143accbd718b176b9041bf5bf46c29e67c37b54b62",
+    "Trace2/Layered.lean": "3df03306d42ce1015d853934c42f0461432b56f872f5f2b6744761cefea0968e",
+    "Trace2/QueryLookup.lean": "86c22f2cfdf2fa145b368675abfde4ee0219c3a812a90e265da1ec8d621be0a7",
+    "Trace2/Runtime.lean": "d1a469a260cf2f093b699006ec687e5248b530c7638f5400e89a7361536d61bf",
+    "Trace2/Semantics.lean": "b79b81dc1d4ebb7a3af4418c718f0fb040b79ce10f01122c71c119f2c9f5fb89",
+    "vendor/Mealy.lean": "cf7406f12444d7137935102be7e3c389a84dc24ca2105654ff953c641e2106e6",
+    "vendor/TraceReview.lean": "d74cde40a03fcb9c43687ec8b15ee22a989f32749c005f86807207864b7f9c8a"
+  },
+  "status": "PASS"
+}

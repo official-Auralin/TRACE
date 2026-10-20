@@ -1,0 +1,144 @@
+{
+  "browser_interpreter": {
+    "exhaustive_words": 514144,
+    "items": 1328,
+    "sampled_words": 1280,
+    "scope": "Actual browser semantic interpreter and terminal display interpreter vs independent table execution: exhaustive through 12 cells; four stated probes above 12. Rendering tested separately.",
+    "status": "PASS"
+  },
+  "dataset_sha256": "77d46037ce07703f82db9a5076c7e493313e4742eefa4571859c17ae3ac605bb",
+  "deep": true,
+  "elapsed_seconds": 67.29600310325623,
+  "formal_report_sha256": "c63ba3a4ba03ec8b190612e3576bc72c98011630e8ccd48802d9c9ac8722cfd2",
+  "package": {
+    "canonical_certificates_checked": 1328,
+    "complete_input_sequences_checked": 22624,
+    "counts_by_split": {
+      "development": 256,
+      "pilot": 32,
+      "test": 1024,
+      "tutorial": 16
+    },
+    "dataset_sha256": "77d46037ce07703f82db9a5076c7e493313e4742eefa4571859c17ae3ac605bb",
+    "dimensions": [
+      {
+        "horizon": 2,
+        "inputs": 1,
+        "items": 8,
+        "states": 2
+      },
+      {
+        "horizon": 3,
+        "inputs": 1,
+        "items": 8,
+        "states": 2
+      },
+      {
+        "horizon": 3,
+        "inputs": 2,
+        "items": 192,
+        "states": 2
+      },
+      {
+        "horizon": 5,
+        "inputs": 2,
+        "items": 160,
+        "states": 2
+      },
+      {
+        "horizon": 3,
+        "inputs": 3,
+        "items": 160,
+        "states": 2
+      },
+      {
+        "horizon": 5,
+        "inputs": 3,
+        "items": 160,
+        "states": 2
+      },
+      {
+        "horizon": 3,
+        "inputs": 2,
+        "items": 160,
+        "states": 4
+      },
+      {
+        "horizon": 5,
+        "inputs": 2,
+        "items": 160,
+        "states": 4
+      },
+      {
+        "horizon": 3,
+        "inputs": 3,
+        "items": 160,
+        "states": 4
+      },
+      {
+        "horizon": 5,
+        "inputs": 3,
+        "items": 160,
+        "states": 4
+      }
+    ],
+    "exhaustive_answer_families_checked": 368,
+    "exhaustive_max_cells": 8,
+    "forms_partition_items": true,
+    "human_panel_items": 64,
+    "items": 1328,
+    "repeated_exact_source_machines": 0,
+    "scope": "All compiled transition trees locally bound to source tables; canonical answer certificates checked in Python and Lean. Exhaustive counts apply only to stated small windows. No human/model findings or empirical difficulty calibration.",
+    "scored_subsets_checked": 22624,
+    "source_machine_uniqueness": "reported for exact labeled transition tables only; multiple traces of one machine are permitted",
+    "status": "PASS",
+    "terminal_display": "Canonical output-only projection checked for every state and input, including unobserved alternatives.",
+    "terminal_state_input_outputs_checked": 23360
+  },
+  "python_tests": 88,
+  "scope": "Computational/formal/synthetic checks only; visual usability, human difficulty and live-model performance remain empirical gates.",
+  "source_sha256": {
+    "adapters/chat_completions.py": "505bb04d965a54026ae2797d1e111a1649fad8da285be3e0d35e1ef60b150a7b",
+    "benchmark/__init__.py": "52c61d58ffacaea3486e39f046d70e6db0f31f7bf79e8152c9f9dcc7619f9ead",
+    "benchmark/allocate.py": "8135020523e21d43df6b3aa1c8dbebd8947762f319857805d3ac7d9cf0b6c7e1",
+    "benchmark/analyze.py": "29a23b141e5ce5e9d28377d69abd1f7b3b2d533b9ad295f6221b5f7c251ed944",
+    "benchmark/boards.py": "590149e1f8e4c667d6851ee10812bc3c530d09afef43199f7b216c38e8c5c9df",
+    "benchmark/compile.py": "29e9f11f7cdac1cd4d3020d8db4d1a85f56c5583144c9b2bdf4c763d12ef89ef",
+    "benchmark/construct.py": "ebff6595f4d16c962ea02b126d58033385bffe1c7a4a8484a62559f1b2c74015",
+    "benchmark/core.py": "98ff7dea1132ce73e259f07394f433d477b2ae0c843bda59d37f7e60d43712dc",
+    "benchmark/evaluate.py": "216f24b5b058e9fa42f8ae53fe7ef28e1b1acaaf9fad9b72c0f83a9a17af8633",
+    "benchmark/game.py": "0d54207734910a884bd421fa16ccb4572c5ab682e3a660ac78120a15efda37ea",
+    "benchmark/instructions.py": "87637c1b9d6e95439cded21f1a5737c51ebfacba5665281910d70ed014e3dcb7",
+    "benchmark/level.py": "e55f5220aebf60dd25fa298e3e6ce5ec7892ba9707a5415454485f416f7fcd35",
+    "benchmark/paths.py": "a094dc67dd80c56132f75ee263459176277d4b0f9e928befa986c9503f88a3ff",
+    "benchmark/plan_sample.py": "f1f5be8d568d2e06f2f2ccd58cb2d0d68bd981e58d34b1cfefead9d56dd4604f",
+    "benchmark/reference.py": "f90270e507dd7e084284175dc0d9965bff88252cec993a128e01ec8712030af6",
+    "benchmark/runtime.py": "5f9f0c06809987de89cba31e4f446ff065a7d912a87282d17cce1804f6859fc9",
+    "benchmark/server.py": "9da6f2e19d07e422a4a123ec1148ab8d3b5515bee0c05ffadcb63f8f5a7d08a3",
+    "benchmark/session.py": "12de8fe359b33d49e22e39b35e7d7acf737604bbb2a764cde61be0d12f6723e0",
+    "benchmark/teaching.py": "62815ba1b28aa388ea666e9eb08b20e4d608e46a9130c295b637538d864e4040",
+    "benchmark/validate.py": "a8c7d8ed2b528be1d389133e299c51e1400b81888ebf0aca447c6a9f276cf245",
+    "benchmark/verify.py": "7f8a1a152f1e149ee74b1397b624d7f15e139b187673d1f317d19d5f514624e3",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/browser_smoke.mjs": "a6a43a5efb592377d2d52d3586422836dde8738189c344dd25353acee8887e91",
+    "tests/general_board_paths.mjs": "a83c24609884d4272f022875acf9b6c722f08c61f84be6410396328e8d7dd428",
+    "tests/general_browser_smoke.mjs": "74bc4e81b10fe4f40cf9cc50cbac6a764beb415f7d54128dd94494a35ef83e68",
+    "tests/terminal_display_browser.mjs": "c88d5515bf55a32478feda47bd4049a3c6347831fbe5782ee91fa41e671e705b",
+    "tests/test_adapter.py": "47ca835c5fe65b610a436e28501d3842a2727af23abbc3cde57e8a0be2a3ef6f",
+    "tests/test_analysis.py": "5b2734f48a6b027e399093d304196e525c189b6aaeb6a1d95ae637d7f5c79321",
+    "tests/test_benchmark.py": "da76cd475e1a77ac7324dce042452bf774ae7ddf51219b54e444180be94c2780",
+    "tests/test_boards.py": "c6cb4741405c196610fb788c352e5251eec42f74e366441527536363c53799bb",
+    "tests/test_compiler.py": "1833a9fa5f8bccdbff9c8cc9a4984c27d10b1ed44fcf81cfc12bfe9c11765968",
+    "tests/test_game.py": "4c37025f8bf9617e5b91dc86250872969434a43e26b6aa563b3ef93149ee09e5",
+    "tests/test_general_audit.py": "f700828a30e29624b3e4fcb8ccac7a74be8f48363dd6156454ae18a371c3d912",
+    "tests/test_package_runtime.py": "2688f2ca9786635d93b973283170ca3fcee055700a0c1009ee0962bc13e3fa8e",
+    "tests/test_runtime_v2.py": "831a190e46023bc84082d52c927158d21b175ab160fc58153f0d4c8bed9b1238",
+    "tests/test_terminal_display.py": "524eb3f3a331ea8529183aa31251d8cc7619bfa74fffd7dfc96fc9b19b90e106",
+    "tests/test_visual_runtime.py": "099d1a24b82f14ba5f4bbfd7408dcb65971f963d961762bedec925d327ec5a1c",
+    "web/app.js": "d3f1cb6ea63b450771d7ab07a1a69165f320db18d34e02a1b39b390b67d1fe7b",
+    "web/board.js": "3e4ea90b3e0528b877fb9232abdb88b8bb0e4df6f9c0d2dd5d11f2cc3318303c",
+    "web/index.html": "e10d677ce3816e3491739abc236c13f78ae6ba26b7a5a25cb390d6c9898c2d28",
+    "web/style.css": "88768deaeefb0fcaacbce401d08bd86dfc222f87c10be78232746cb58ad08c04"
+  },
+  "status": "PASS"
+}

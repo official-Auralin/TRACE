@@ -1,0 +1,2 @@
+# Runtime and tests: Python >=3.10 standard library; Node >=18 for independent JS verification.
+# Paper: latexmk + pdflatex + bibtex; optional Poppler for PDF inspection.

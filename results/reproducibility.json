@@ -1,0 +1,96 @@
+{
+  "compilation": {
+    "compiled_package_bytes_reproduced": true,
+    "compiler_version": "trace.mealy-compiler.v2",
+    "current_data_matches_both_packages": true,
+    "package_paths": [
+      "artifacts/terminal-display-v5/package-a",
+      "artifacts/terminal-display-v5/package-b"
+    ],
+    "package_sha256": {
+      "dataset.json": "f4efe81615dd93171b6e9fc8f0f4e1014b4477720ab16e592d6c1dc472d03a4b",
+      "forms.json": "4bbab833a040d49b644a97de3a7141fa6face9ae0212e088e35e2d2a1f112b29",
+      "items.jsonl": "ae92a63250f0f4ed2798533e6498b6040822edb84bae6f56b0aeeb141d53fc31",
+      "manifest.json": "8bf27d1679b5a23723438dc6435637a549227d796800674f8fdde2b3ba737e06"
+    },
+    "runs": 2,
+    "scope": "Two current complete compilations and current data match byte-for-byte in all four package files."
+  },
+  "compiler_formal": {
+    "lean_version": "Lean (version 4.24.0, arm64-apple-darwin23.6.0, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)",
+    "source_sha256": {
+      "CheckCertificates.lean": "0fd4d019d75648be1f4ebc74f1ac90d8cadfc7b9b3c9eb3be279d8e2801a3b38",
+      "CompileLevel.lean": "ed967dff583460957bac93d3ff92f1a45abc2d4679a9cf1142d5022395cdc8cd",
+      "Trace2/Binding.lean": "f639994b80ecd2655260fbb830bca7b3f0146d86c73115f234cff9f730f00fc4",
+      "Trace2/Certificates.lean": "972beb76a1ca47727c952c46c172b16f65056b3651d89d8c37f4fda64d2982b3",
+      "Trace2/Compiler.lean": "229fdd62cba04c8abce2f1805099450650917cfbea2754c669b1e836d16f7be5",
+      "Trace2/CompilerRuntime.lean": "356d55ac7f509a8690d5e34a1ebba69fbe7be61ee64708caa4fdfa83b017ed7e",
+      "Trace2/Deletion.lean": "4a4bd911d914e84227c45f936db52665b40c708caf104e44a33b850032b1ef5d",
+      "Trace2/Game.lean": "6480e6f681a0219fb63ad3143accbd718b176b9041bf5bf46c29e67c37b54b62",
+      "Trace2/Layered.lean": "3df03306d42ce1015d853934c42f0461432b56f872f5f2b6744761cefea0968e",
+      "Trace2/QueryLookup.lean": "86c22f2cfdf2fa145b368675abfde4ee0219c3a812a90e265da1ec8d621be0a7",
+      "Trace2/Runtime.lean": "d1a469a260cf2f093b699006ec687e5248b530c7638f5400e89a7361536d61bf",
+      "Trace2/Semantics.lean": "b79b81dc1d4ebb7a3af4418c718f0fb040b79ce10f01122c71c119f2c9f5fb89",
+      "vendor/Mealy.lean": "cf7406f12444d7137935102be7e3c389a84dc24ca2105654ff953c641e2106e6",
+      "vendor/TraceReview.lean": "d74cde40a03fcb9c43687ec8b15ee22a989f32749c005f86807207864b7f9c8a"
+    }
+  },
+  "constructor_reproducibility": {
+    "constructor_implementation_unchanged": true,
+    "historical_evidence": "archive/v4-multiple-targets/results/reproducibility.json",
+    "historical_evidence_sha256": "a6f6c1c5e37dbad3b90eb2a8c6272f63d9248f9a89667a7c2f63a99c11c98e59",
+    "historical_reported_constructor_bytes_reproduced": true,
+    "historical_seed": 20261019,
+    "rerun_for_v5": false,
+    "scope": "Current checks establish identity with the preserved v4 source and constructor implementation. The two constructor-run reproduction claim belongs to the archived v4 verification; no constructor execution is claimed here."
+  },
+  "dataset_sha256": "77d46037ce07703f82db9a5076c7e493313e4742eefa4571859c17ae3ac605bb",
+  "human_panel_items": 64,
+  "implementation_sha256": {
+    "benchmark/compile.py": "29e9f11f7cdac1cd4d3020d8db4d1a85f56c5583144c9b2bdf4c763d12ef89ef",
+    "benchmark/construct.py": "ebff6595f4d16c962ea02b126d58033385bffe1c7a4a8484a62559f1b2c74015",
+    "benchmark/core.py": "98ff7dea1132ce73e259f07394f433d477b2ae0c843bda59d37f7e60d43712dc",
+    "benchmark/game.py": "0d54207734910a884bd421fa16ccb4572c5ab682e3a660ac78120a15efda37ea",
+    "benchmark/level.py": "e55f5220aebf60dd25fa298e3e6ce5ec7892ba9707a5415454485f416f7fcd35",
+    "formal/CompileLevel.lean": "ed967dff583460957bac93d3ff92f1a45abc2d4679a9cf1142d5022395cdc8cd",
+    "formal/Trace2/Compiler.lean": "229fdd62cba04c8abce2f1805099450650917cfbea2754c669b1e836d16f7be5",
+    "formal/Trace2/CompilerRuntime.lean": "356d55ac7f509a8690d5e34a1ebba69fbe7be61ee64708caa4fdfa83b017ed7e"
+  },
+  "scope": "Current deterministic compilation, exact preserved source/task identity, exhaustive local terminal-valuation checks, and exact backward temporal-filter checks. This does not establish perceptual clarity, human ease, or invariance under renaming/isomorphism.",
+  "source_preservation": {
+    "archived_dataset_sha256": "6ad9a09efcdfa48aaad223597146c219f152c243dec861451efaa1a436640a68",
+    "archived_release": "trace-mealy-v4",
+    "entire_preexisting_board_unchanged": true,
+    "fields_unchanged": [
+      "machine",
+      "observed",
+      "target_step",
+      "id",
+      "split",
+      "family",
+      "semantics",
+      "observed_states",
+      "observed_outputs"
+    ],
+    "forms_bytes_unchanged": true,
+    "items_checked": 1328,
+    "scope": "The new display field is the only board addition. Full semantic layers, recorded paths and switch metadata are unchanged. No machine, trace, target, original item identity or assignment form was regenerated.",
+    "source_bytes_unchanged": true
+  },
+  "source_sha256": "f8b5edbdf56e8c330ccb5743ae0b85dd8d5dc65e00149c1d3d16d761411ae776",
+  "status": "PASS",
+  "temporal_filter": "For every item, fixing only final-round cells still permits a target-defeating completion. Upward closure implies every valid explanation includes an earlier cell; this is not an empirical difficulty measurement.",
+  "terminal_projection": {
+    "earlier_round_dependence_items_checked": 1328,
+    "items_with_fewer_terminal_switches": 1248,
+    "items_with_reachable_constant_on_route_previously_with_switches": 129,
+    "items_with_reachable_constant_terminal_route_previously_with_switches": 225,
+    "reachable_constant_roots_previously_with_switches": 253,
+    "state_roots_with_fewer_switches": 3065,
+    "switches_after": 11098,
+    "switches_before": 17194,
+    "terminal_state_input_valuations_checked": 23360,
+    "terminal_state_roots": 3936,
+    "terminal_switches_removed": 6096
+  }
+}

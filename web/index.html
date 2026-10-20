@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TRACE · Follow the light</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<header><a class="brand" href="#" id="brand" aria-label="TRACE"><span class="brand-spark">✳</span> TRACE</a><span class="edition">FOLLOW THE LIGHT</span><div class="session-tools"><span id="progress"></span><span id="timer" hidden></span><button id="withdraw" class="text-button">Leave</button></div></header>
+<main>
+<div id="error" role="alert" hidden></div>
+<section id="intro" class="intro">
+ <div class="intro-heading"><p class="eyebrow">A little machine. A trail of decisions.</p><h1>Keep the light.<br>Find what matters.</h1><p class="lede">Follow the golden trail. Mark the switches that make the difference.</p></div>
+ <div id="lesson" class="lesson" hidden>
+  <div class="lesson-top"><span class="eyebrow">WATCH HOW IT WORKS</span><div id="demoTabs" class="pill-tabs"></div></div>
+  <div id="demoBoard" class="board-host lesson-board"></div>
+  <div class="demo-controls"><div id="demoCases" class="pill-tabs"></div><div class="demo-phases"><button id="demoHold" class="phase active">① Hold the marks</button><button id="demoChange" class="phase">② Change the marks</button></div></div>
+  <div class="demo-caption"><span id="demoBadge" class="test-badge"></span><p id="demoCaption"></p><span id="demoCount"></span></div>
+ </div>
+ <div class="intro-bottom"><p><span class="pin-key">◆</span> A mark holds a switch in its recorded direction.<br>Use only the marks you need. Different answers can work.</p><button id="next" class="primary">Try a puzzle <span>→</span></button></div>
+ <p id="welcome" class="quiet-copy">Watch the examples, then play. Eight minutes and one answer per puzzle. Practice puzzles give feedback.</p>
+</section>
+<section id="task" hidden>
+ <div class="puzzle-heading"><div><p id="itemlabel" class="eyebrow"></p><h1>Which switches matter?</h1></div><button id="replay" class="replay-button" type="button"><span>▷</span> Follow the light</button></div>
+ <div class="workbench">
+  <div class="bench-caption"><span><i class="gold-dot"></i> THE RECORDED TRAIL</span><span id="condition"></span></div>
+  <div id="board" class="board-host"></div>
+  <div class="board-legend"><span>Click a switch to mark it <i class="legend-pin">◆</i></span><span>Time moves →</span></div>
+ </div>
+ <div class="answer-row"><div><span class="eyebrow">YOUR MARKS</span><strong id="selected">Choose switches on the board</strong></div><button id="clear" class="text-button">Clear</button><button id="submit" class="primary">Check my marks <span>→</span></button></div>
+ <div class="goal-strip"><div><span class="goal-number">1</span><p><b>Hold these.</b> The target light must be on however the others move.</p></div><div><span class="goal-number">2</span><p><b>Change only these.</b> There must be a way to turn the target light off.</p></div><div><span class="goal-number">3</span><p><b>No spare marks.</b> Every mark must be needed for those two tests.</p></div></div>
+ <details id="probePanel" class="experiment" hidden><summary>Try a counterfactual <span id="probeCount"></span></summary><p class="quiet-copy">Set different switch directions, then run. Each run uses one experiment.</p><div id="probeInputs" class="probe-inputs"></div><button id="probe" class="secondary">Run this route</button><div id="probeBoard" class="board-host compact-board" hidden></div><p id="probeResult" aria-live="polite"></p></details>
+ <div class="help-row"><button id="showLesson" class="text-button">Watch the examples</button><details class="technical"><summary>Details &amp; accessibility</summary><p id="rules" class="fullrules"></p><div id="switchList"></div><label class="none-option"><input type="checkbox" id="noExplanation"> The light cannot be turned off by any switches.</label><details><summary>Equivalent machine representation</summary><pre id="machine"></pre></details></details></div>
+</section>
+<section id="receipt" hidden>
+ <div class="receipt-heading"><span id="receiptIcon" class="result-icon">✓</span><p class="eyebrow" id="receiptKicker">WARM-UP</p><h1 id="receiptTitle"></h1><p id="receiptText" class="lede"></p></div>
+ <div id="feedback" hidden><div id="feedbackTests" class="feedback-tests"></div><div id="feedbackBoard" class="board-host workbench"></div><div id="feedbackRuns" class="feedback-runs"></div><p id="feedbackCaption" class="feedback-caption"></p><div id="feedbackChoices" class="pill-tabs"></div></div>
+ <div class="receipt-actions"><button id="continue" class="primary">Next puzzle <span>→</span></button></div>
+</section>
+<dialog id="lessonDialog"><button id="closeLesson" class="dialog-close" aria-label="Close examples">×</button><h2>Two tests. No spare marks.</h2><p>Hold the marked switches: the light survives all other settings. Change only the marked switches: at least one setting turns it off.</p><div id="lessonDialogContent"></div></dialog>
+<footer><span>A puzzle about what happened—and what could have happened.</span><span id="footerMode">TRACE · SWITCH &amp; LIGHT</span></footer>
+</main><script src="/board.js"></script><script src="/app.js"></script>
+</body></html>

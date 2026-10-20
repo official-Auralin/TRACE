@@ -1,0 +1,9 @@
+# Current TRACE manuscript
+
+`mainTB.tex` describes the v5 external Mealy-to-game compiler and target-display correction, unchanged finite guarantee/prevention predicate, executable Lean construction and bounded reverse verification game. V5 recompiles the same source machines, traces and targets as v4, preserving the split and panel assignments. It projects only terminal display leaves to their outputs so every successful route leads to one shared target lamp; the full semantic state replay remains intact. Superseded manuscripts and evidence remain with their source under `archive/`; they must not be pooled with v5 outcomes.
+
+Build from TRACE with `latexmk -pdf -interaction=nonstopmode -halt-on-error -cd tex_files/mainTB.tex` after current benchmark verification. `generated_validation.tex` binds the current dataset and measured computational evidence. The bibliography pins TempoBench v3 as the conceptual reference; TRACE does not claim file-format, label or score equivalence.
+
+The nine orange TRIAL-* fields remain for actual pilot, sample, primary/secondary, modality, error, limitation and conclusion evidence. Software checks do not supply participant or live-model findings.
+
+`formal/PROOF_COVERAGE.md` and `formal/TRUST_BOUNDARY.md` distinguish the general construction, terminal display projection and finite-game theorems from tested JSON adapters, execution, drawing and interaction. The native CLI uses the proved Lean definitions for both semantic boards and the terminal display. Theorem-level output preservation does not establish that the browser depicts an unmistakable shared goal or that participants understand it. Structured agent access and human visual play share the semantic graph and display projection, but this does not establish perceptual equivalence or empirical ease. Practice comparisons illustrate the checker's conclusions; they do not by themselves prove a universal guarantee.

@@ -1,0 +1,32 @@
+{
+  "dataset_sha256": "6ad9a09efcdfa48aaad223597146c219f152c243dec861451efaa1a436640a68",
+  "entries_checked": 106,
+  "methods": {
+    "byte_copy": 103,
+    "consistent_sqlite_backup": 2,
+    "user_screenshot_byte_copy": 1
+  },
+  "mismatches": [],
+  "scope": "All 106 frozen v4 entries match recorded SHA-256 identities. SQLite integrity was checked only on immutable read-only archived backups; live/raw log databases were not opened or modified. This preserves evidence of the earlier display, not evidence of its usability.",
+  "snapshot": "archive/v4-multiple-targets/SNAPSHOT.json",
+  "snapshot_sha256": "23d05cd013ecdda36d2090731dfe428307a59b8159b331f1e2721638acb83e24",
+  "sqlite_backups": [
+    {
+      "integrity_check": [
+        "ok"
+      ],
+      "mode": "read-only immutable snapshot",
+      "path": "runs/play-v4-release.sqlite3",
+      "sha256": "4e7995277b1459a9e76cffae5b330a7628857257057c11b6033031a120e2bcc1"
+    },
+    {
+      "integrity_check": [
+        "ok"
+      ],
+      "mode": "read-only immutable snapshot",
+      "path": "runs/play-v4-external-release.sqlite3",
+      "sha256": "7663d16e46a81faa37386f40d1e564895e533fd823974ce18960e8ec11be30ce"
+    }
+  ],
+  "status": "PASS"
+}

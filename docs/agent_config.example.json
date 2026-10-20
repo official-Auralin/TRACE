@@ -1,0 +1,8 @@
+{
+  "provider": "REPLACE_WITH_PROVIDER",
+  "model_snapshot": "REPLACE_WITH_EXACT_PROVIDER_MODEL_ID",
+  "generation": {
+    "max_completion_tokens": 4096
+  },
+  "registration_id": "REPLACE_WITH_REGISTRATION_OR_DEVELOPMENT_RUN_ID"
+}

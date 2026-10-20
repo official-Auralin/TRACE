@@ -1,0 +1,118 @@
+{
+  "status": "PASS",
+  "protocol_version": "trace-study-v5",
+  "display_version": "trace.display.v1",
+  "dataset_sha256": "77d46037ce07703f82db9a5076c7e493313e4742eefa4571859c17ae3ac605bb",
+  "source_sha256": "239a9d90ff9939fa1f51a414851b8f0d540304452ce6097c532e0a33b2c1ebf8",
+  "browser": "155.0.8059.80",
+  "session": {
+    "checks": 24,
+    "evidence": {
+      "path": "artifacts/terminal-display-v5/session/report.json",
+      "sha256": "85f363668f2940a70218e94768e29a09ac8c1edcf9b52a95fa922f18d29fa191"
+    },
+    "raw_database": {
+      "path": "artifacts/terminal-display-v5/session/synthetic-1792446354023.sqlite3",
+      "sha256": "89b39033bf86c4bd8c96b0563136cd6dc92932a0c160aa90a42fc4c379a4ea8c"
+    }
+  },
+  "target_regression": {
+    "settings": 4,
+    "checks": 10,
+    "evidence": {
+      "path": "artifacts/terminal-display-v5/target-regression/report.json",
+      "sha256": "cb2df05e8696d16b12d9beb3ce17b737c0e01c4d3a71e50ed52843b1eff6a1a5"
+    }
+  },
+  "renderer_fixtures": [
+    {
+      "item": "terminal-screenshot-regression",
+      "applicable_checks": 16,
+      "not_applicable": [],
+      "evidence": {
+        "path": "artifacts/terminal-display-v5/screenshot-renderer/report.json",
+        "sha256": "36be01d27d55ca9554d00fa4641e0e95531371d68f42d951da1a03257f789193"
+      },
+      "fixture": {
+        "path": "artifacts/terminal-display-v5/screenshot-fixture.json",
+        "sha256": "4d05a52958983f8559856d452a600921999cb8d6d32cf6ae7c12ca1eef3adbcf"
+      }
+    },
+    {
+      "item": "external-memory-loop",
+      "applicable_checks": 16,
+      "not_applicable": [],
+      "evidence": {
+        "path": "artifacts/terminal-display-v5/external-renderer/report.json",
+        "sha256": "048b288c67ef57aafce2a39ba49e8cf2f5809f336ff42de420aed5feb46b58ec"
+      },
+      "fixture": {
+        "path": "artifacts/terminal-display-v5/external-fixture.json",
+        "sha256": "eb933d4a97b47c1911c654bb60b32590ac1c06600ab257b91a15be22783b8852"
+      }
+    },
+    {
+      "item": "large-finite-fixture",
+      "applicable_checks": 16,
+      "not_applicable": [],
+      "evidence": {
+        "path": "artifacts/terminal-display-v5/large-renderer/report.json",
+        "sha256": "6f26925e45a46a89cdfa3aa0c8fdcddfb7d7116bb00dc615ba3aa1e45126b928"
+      },
+      "fixture": {
+        "path": "artifacts/terminal-display-v5/large-fixture.json",
+        "sha256": "85dd6069c936d9990340e451ee87035982dd99b8fbf6ed3820a08e0d403a00df"
+      }
+    },
+    {
+      "item": "constant-fixture",
+      "applicable_checks": 13,
+      "not_applicable": [
+        "keyboard switch-node selection: constant fixture has no switch nodes"
+      ],
+      "evidence": {
+        "path": "artifacts/terminal-display-v5/constant-renderer/report.json",
+        "sha256": "b5a68fd6ba96df73e98af6514b580b8be67df68806b8379c9511df87a20c5d18"
+      },
+      "fixture": {
+        "path": "artifacts/terminal-display-v5/constant-fixture.json",
+        "sha256": "331b20611aefabd6639e622a42d4fc2d96c02cd2df8e3ee8ee433c8e82cb1e50"
+      }
+    }
+  ],
+  "reviewed_screenshots": [
+    {
+      "path": "artifacts/terminal-display-v5/target-regression/setting-00.png",
+      "sha256": "8297bda9bd6f5ff2d0ec6fe3b175c44b3fd9927d22b847fe1dd076bb3c52e8dc"
+    },
+    {
+      "path": "artifacts/terminal-display-v5/target-regression/setting-10.png",
+      "sha256": "fc03eb6626ed7956f5fbe355c970d35c499be1b2664600abf92698db6485f35c"
+    },
+    {
+      "path": "artifacts/terminal-display-v5/session/redundant-mark-flipped.png",
+      "sha256": "63974220645bb69c34a8b666cc8cd033891cf131ba8cd77340b8ff78ff795f83"
+    },
+    {
+      "path": "artifacts/terminal-display-v5/session/demo-hold.png",
+      "sha256": "5abe58199fef19906f2559a205cd6d214ceb3921e5642e5a3c22f64f8c0d32ae"
+    },
+    {
+      "path": "artifacts/terminal-display-v5/session/browser-mobile-target.png",
+      "sha256": "6c4db2277e9e256925eb70e0f60b53cac2c0abb880f51d39cdec5f88805e9b23"
+    },
+    {
+      "path": "artifacts/terminal-display-v5/external-renderer/general-overview.png",
+      "sha256": "ec94c591ae9832c2c66bad0dc01a9cafd2b5835a7e552512d4b0d893edb0eec7"
+    },
+    {
+      "path": "artifacts/terminal-display-v5/large-renderer/general-target.png",
+      "sha256": "d2184153bf342f1d9a9ca5a2dfc8f22dac827a6993cad94b4cce01d5010aa02c"
+    },
+    {
+      "path": "artifacts/terminal-display-v5/constant-renderer/general-overview.png",
+      "sha256": "066046c680141860e09954d372e69247a7676d2197d77b7645bab1ed779fc4d1"
+    }
+  ],
+  "scope": "Synthetic UI and server checks, with visual inspection. Does not establish participant comprehension, enjoyment, calibrated difficulty or live model performance."
+}

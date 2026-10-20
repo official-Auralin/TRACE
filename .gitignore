@@ -1,54 +1,30 @@
-# Ignore everything by default. Add only files that should be versioned.
-*
+__pycache__/
+*.py[cod]
+.DS_Store
+.venv/
+runs/*
+!runs/.gitkeep
+*.sqlite3*
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+tmp/
 
-# Allow traversal into directories so nested allow rules can match.
-!*/
+# Rebuildable formal compiler outputs
+formal/.build/
 
-# GitHub Pages entrypoint
-!.nojekyll
-!index.html
+# Regenerable private audit/build evidence
+artifacts/
+.trace-build-*/
 
-# TRACE playable HTML and docs
-# Canonical human game: the mode-explicit, live-verdict pages (no embedded keys).
-!TRACE_stop.html
-!TRACE_pin.html
-!TRACE_credit.html
-# Multi-cell credit game: the modified-variant joint-cause page (build_joint.py).
-!TRACE_credit_joint.html
-# Deterministic auto-built pages from the gold-12 input set (build_from_inputs.py).
-!TRACE_auto_stop.html
-!TRACE_auto_pin.html
-!TRACE_auto_credit.html
-!TRACE_game_design.md
-!TRACE_implementation_spec.md
-!TRACE_validation_plan.md
-!TRACE_puzzle_construction_proposal.md
-
-# Verification source, fixtures, and checked result artifacts
-!Verification/GateA/*.py
-!Verification/GateA/*.md
-!Verification/GateA/external/*.json
-!Verification/GateA/external/*.jsonl
-!Verification/GateA/external/*.hoa
-!Verification/GateA/fixtures/*.hoa
-!Verification/GateA/results/*.json
-!Verification/GateA/results/*.md
-!Verification/GateB/*.py
-!Verification/GateB/*.md
-!Verification/GateB/*.js
-!Verification/GateB/results/*.json
-!Verification/GateB/results/*.md
-!Verification/GateB/results/gold12.jsonl
-!Verification/GateC/*.py
-!Verification/GateC/*.md
-!Verification/GateC/materials/*.json
-!Verification/GateC/results/*.json
-!Verification/GateC/results/*.md
-
-# Paper sources and published PDFs
-!tex_files/*.tex
-!tex_files/*.bib
-!tex_files/*.pdf
-
-# Keep this file versioned.
-!.gitignore
+# Preserved local research history and machine-specific configuration.
+# These are not the public release or the GitHub Pages artifact.
+archive/
+.claude/
+venv/

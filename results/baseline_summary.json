@@ -1,0 +1,74 @@
+{
+  "dataset_sha256": "77d46037ce07703f82db9a5076c7e493313e4742eefa4571859c17ae3ac605bb",
+  "split": "test",
+  "systems": {
+    "random": {
+      "accuracy": 0.008984375,
+      "guarantee_rate": 0.0953125,
+      "prevention_rate": 0.8923828125,
+      "minimality_rate": 0.008984375,
+      "trials": 5120,
+      "items": 1024,
+      "median_seconds": 2.082961145788431e-06
+    },
+    "all": {
+      "accuracy": 0.0078125,
+      "guarantee_rate": 1.0,
+      "prevention_rate": 1.0,
+      "minimality_rate": 0.0078125,
+      "trials": 1024,
+      "items": 1024,
+      "median_seconds": 1.3750395737588406e-06
+    },
+    "none": {
+      "accuracy": 0.0,
+      "guarantee_rate": 0.0,
+      "prevention_rate": 0.0,
+      "minimality_rate": 0.0,
+      "trials": 1024,
+      "items": 1024,
+      "median_seconds": 1.4170072972774506e-06
+    },
+    "latest": {
+      "accuracy": 0.0,
+      "guarantee_rate": 0.0,
+      "prevention_rate": 0.93359375,
+      "minimality_rate": 0.0,
+      "trials": 1024,
+      "items": 1024,
+      "median_seconds": 2.04198295250535e-06
+    },
+    "pivots": {
+      "accuracy": 0.2666015625,
+      "guarantee_rate": 0.2666015625,
+      "prevention_rate": 0.9755859375,
+      "minimality_rate": 0.2666015625,
+      "trials": 1024,
+      "items": 1024,
+      "median_seconds": 3.3624470233917236e-05
+    },
+    "solver": {
+      "accuracy": 1.0,
+      "guarantee_rate": 1.0,
+      "prevention_rate": 1.0,
+      "minimality_rate": 1.0,
+      "trials": 1024,
+      "items": 1024,
+      "median_seconds": 0.00048158300342038274
+    }
+  },
+  "seed": 1729,
+  "random_expected_exact_accuracy": null,
+  "analytic_chance_status": "Not computed by the production runner; exact answer-family counting is an optional exhaustive audit.",
+  "selection_domain": "Uniform-subset and all-switch baselines select the public board.switches controls. Grading quantifies over the full input domain.",
+  "raw_sha256": "01f8c8b2abeffc83f5ec4df0b71ad66f43dfabe63d026e81a387d33eef24573c",
+  "scope": "Measured non-learning finite G/P baselines; no human or language-model trials.",
+  "source_sha256": {
+    "benchmark/core.py": "98ff7dea1132ce73e259f07394f433d477b2ae0c843bda59d37f7e60d43712dc",
+    "benchmark/game.py": "0d54207734910a884bd421fa16ccb4572c5ab682e3a660ac78120a15efda37ea",
+    "benchmark/boards.py": "590149e1f8e4c667d6851ee10812bc3c530d09afef43199f7b216c38e8c5c9df",
+    "benchmark/evaluate.py": "216f24b5b058e9fa42f8ae53fe7ef28e1b1acaaf9fad9b72c0f83a9a17af8633"
+  },
+  "status": "PASS",
+  "raw_path": "artifacts/terminal-display-v5/baseline_trials.jsonl"
+}

@@ -1,0 +1,18 @@
+{
+  "foundation": "review_reverse_parity Lean semantic core",
+  "files": [
+    {
+      "source": "/Users/bobby/Documents/Academics/CU-Classes/PL Lab/Fall26/review_reverse_parity/lean/TraceReview.lean",
+      "vendored": "vendor/TraceReview.lean",
+      "sha256": "d74cde40a03fcb9c43687ec8b15ee22a989f32749c005f86807207864b7f9c8a",
+      "modifications": "none"
+    },
+    {
+      "source": "/Users/bobby/Documents/Academics/CU-Classes/PL Lab/Fall26/review_reverse_parity/lean/Mealy.lean",
+      "vendored": "vendor/Mealy.lean",
+      "sha256": "cf7406f12444d7137935102be7e3c389a84dc24ca2105654ff953c641e2106e6",
+      "modifications": "none"
+    }
+  ],
+  "original_workspace_policy": "Source files were read only; all new sources and build products are in TRACE2/formal."
+}

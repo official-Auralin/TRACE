@@ -1,0 +1,37 @@
+{
+  "schema_version": "trace.analysis-registration.v2",
+  "status": "draft",
+  "registration_id": "",
+  "registry_url": "",
+  "registered_at": "",
+  "reviewed_by": "",
+  "dataset_sha256": "",
+  "forms_sha256": "",
+  "protocol_version": "trace-study-v5",
+  "source_sha256": "",
+  "analysis_source_sha256": "",
+  "split": "test",
+  "scope": "panel",
+  "condition": "reasoning",
+  "limits": {
+    "attempts": 1,
+    "seconds": 480,
+    "probes": 0
+  },
+  "agent_system": "",
+  "agent_config_sha256": "",
+  "primary_measure": "equal_item_accuracy",
+  "direction": "agent minus human",
+  "method": "cluster_hoeffding",
+  "alpha": 0.05,
+  "human_clusters_per_form": null,
+  "agent_run_clusters": null,
+  "assumptions": {
+    "independent_clusters": false,
+    "independent_populations": false,
+    "fixed_assignment_sample_and_stopping": false,
+    "noninformative_missingness": false,
+    "complete_raw_export": false,
+    "registration_record_verified": false
+  }
+}
