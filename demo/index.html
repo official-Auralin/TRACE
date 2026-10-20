@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="TRACE: follow a signal through time and find the switches that explain the light. A public lab puzzle demo.">
+  <title>TRACE · Follow the cause</title>
+  <link rel="stylesheet" href="board-base.css">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="board.js"></script>
+  <script defer src="engine.js"></script>
+  <script defer src="session.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header>
+    <a class="brand" href="#" id="home"><span class="brand-spark" aria-hidden="true">✧</span>TRACE</a>
+    <span class="edition">FOLLOW THE CAUSE</span>
+    <nav class="session-tools" aria-label="Game tools">
+      <button class="text-button" id="learn">How to play</button>
+      <button class="text-button" id="levels">Puzzles</button>
+      <button class="text-button" id="scores">Your progress</button>
+    </nav>
+  </header>
+  <main>
+    <div id="error" role="alert" hidden></div>
+    <p id="storageNotice" class="notice" role="status" hidden></p>
+    <p id="loading" class="loading" role="status">Preparing the lights…</p>
+
+    <section id="welcome" hidden>
+      <div class="intro-heading">
+        <p class="eyebrow">A PUZZLE ABOUT WHAT MATTERS</p>
+        <h1>One light.<br>Find its explanation.</h1>
+        <p class="lede">The signal has already travelled. Which switches made the difference?</p>
+      </div>
+      <div class="welcome-graphic" aria-hidden="true"><span class="mini-switch">╱</span><span class="mini-wire"></span><span class="mini-switch marked">╲</span><span class="mini-wire"></span><span class="mini-light">✧</span></div>
+      <div class="welcome-actions">
+        <button class="primary" id="startLearning">Learn by playing <span aria-hidden="true">→</span></button>
+        <button class="secondary" id="startPlay">Start puzzles</button>
+        <button class="secondary" id="resume" hidden>Resume your puzzle</button>
+      </div>
+      <p class="quiet-copy" id="welcomeProgress"></p>
+      <p class="quiet-copy demo-disclosure">A lab demo with instant feedback and progress saved in this browser.<br>No scores or answers are sent to the lab. These are personal practice scores.</p>
+    </section>
+
+    <section id="play" hidden>
+      <div class="puzzle-heading">
+        <div><p class="eyebrow" id="itemKicker"></p><h1 id="itemTitle" tabindex="-1">Mark what matters.</h1></div>
+        <button class="replay-button" id="replaySignal"><span aria-hidden="true">↻</span>Replay signal</button>
+      </div>
+      <p class="lede task-intro" id="taskIntro">Keep the light on with your marks. Make it possible to turn it off by changing only those marks.</p>
+      <div class="workbench">
+        <div class="bench-caption"><span id="itemDimensions"></span><span id="visitLabel"></span></div>
+        <div id="board" class="board-host"></div>
+        <div class="board-legend"><span><i class="wire-key gold"></i>Shown signal <i class="wire-key"></i>Other wires</span><span><i class="mark-key">◆</i> Your marks</span></div>
+      </div>
+      <p class="lesson-note" id="lessonNote" hidden></p>
+      <div class="answer-row">
+        <div><span class="eyebrow">YOUR MARKS</span><strong id="selected" aria-live="polite"></strong></div>
+        <button class="text-button" id="clear">Clear marks</button>
+        <button class="primary" id="submit">Check my marks <span aria-hidden="true">→</span></button>
+      </div>
+      <div class="goal-strip">
+        <div><span class="goal-number">1</span><p><b>Hold.</b> Fix your marked switches. The light must stay on however the others are set.</p></div>
+        <div><span class="goal-number">2</span><p><b>Change.</b> Keep the others recorded. Some change to your marks must turn the light off.</p></div>
+        <div><span class="goal-number">3</span><p><b>No extras.</b> Removing any mark must break at least one test.</p></div>
+      </div>
+      <details class="technical" id="allSwitches"><summary>Every switch · including switches outside the current view</summary><div id="switchList" class="all-switches"></div></details>
+      <details class="technical"><summary>What if the light cannot be turned off?</summary><label class="none-option"><input id="noExplanation" type="checkbox"> No setting of any switches can turn this target light off.</label><p class="quiet-copy">This is a separate answer. Leaving all switches unmarked does not mean the same thing.</p></details>
+      <details class="technical"><summary>Read the board</summary><div class="fullrules"><p>Follow the signal from START, across moments, to the one lamp labelled TARGET. Earlier ON/OFF boxes show what happened along the way; they are not extra goals. Routes are different machine states, not different positions of the same switch.</p><p>Copies with exactly the same full label are one switch and change together. The same letter at a different moment is a different switch. A mark selects its recorded position; clicking does not flip it. CHANGE may change some or all marked switches. Any set passing the three tests is accepted, even if another answer uses fewer marks.</p><p>Use drag, scroll, zoom, or the Moment/Route controls to explore. Arrow keys pan when the board is focused. Every input remains available in the switch list.</p></div></details>
+      <details class="technical" id="technicalEncoding"><summary>Equivalent machine and recording</summary><pre id="machine"></pre></details>
+      <div class="skip-row"><button class="text-button" id="skip">Leave this puzzle for later</button><span class="quiet-copy" id="playScore"></span></div>
+    </section>
+
+    <section id="receipt" hidden>
+      <div class="receipt-heading"><span class="result-icon" id="resultIcon" aria-hidden="true"></span><p class="eyebrow" id="receiptKicker"></p><h1 id="resultTitle" tabindex="-1"></h1><p class="lede" id="resultText"></p></div>
+      <div id="feedbackTests" class="feedback-tests" aria-label="Answer checks"></div>
+      <p id="feedbackCaption" class="feedback-caption" aria-live="polite"></p>
+      <div class="workbench"><div id="feedbackBoard" class="board-host"></div><div class="board-legend"><span><i class="wire-key gold"></i>Shown signal <i class="wire-key"></i>Other wires</span><span><i class="mark-key">◆</i> Shown marks</span></div></div>
+      <div id="feedbackRuns" class="feedback-runs"></div>
+      <p id="scoreNote" class="quiet-copy centered"></p>
+      <div class="receipt-actions"><button id="retry" class="secondary">Try again</button><button id="next" class="primary">Next puzzle <span aria-hidden="true">→</span></button></div>
+      <div class="centered"><button id="reveal" class="text-button">Show one solution</button><p id="revealNote" class="quiet-copy" hidden></p></div>
+    </section>
+
+    <section id="exhausted" class="end-panel" hidden><p class="eyebrow">ROOM TO KEEP EXPLORING</p><h1 id="exhaustedTitle">You have explored this set.</h1><p class="lede" id="exhaustedText"></p><button class="primary" id="chooseMore">Choose more puzzles <span aria-hidden="true">→</span></button></section>
+
+    <footer><span>Lab demo · progress stays in this browser · no research collection</span><span id="version"></span></footer>
+  </main>
+
+  <dialog id="catalogDialog" aria-labelledby="catalogTitle"><button class="dialog-close" data-close="catalogDialog" aria-label="Close puzzles">×</button><p class="eyebrow">KEEP EXPLORING</p><h2 id="catalogTitle">Choose a puzzle set</h2><p>Start small or jump to a larger board. These groups describe board size; they are not a measured difficulty scale.</p><label class="catalog-filter">Board size <select id="bandSelect"></select></label><button id="nextInBand" class="primary">Play next unseen <span aria-hidden="true">→</span></button><p class="quiet-copy" id="catalogSummary"></p><div id="catalogItems" class="catalog-items"></div><div class="catalog-pages"><button class="secondary" id="previousPage">Previous</button><span id="pageLabel" class="quiet-copy"></span><button class="secondary" id="nextPage">Next</button></div></dialog>
+
+  <dialog id="scoresDialog" aria-labelledby="scoresTitle"><button class="dialog-close" data-close="scoresDialog" aria-label="Close progress">×</button><p class="eyebrow">YOUR PRACTICE</p><h2 id="scoresTitle">Learning counts.</h2><div id="scoreCards" class="score-cards"></div><p>First answers stay as submitted. Solving a puzzle later is counted separately. Replays and revealed solutions never turn an earlier answer into a first-try success.</p><p id="lessonProgress"></p><p class="quiet-copy">These scores belong to this browser. They are editable local practice records, not verified benchmark results. Clearing browser storage removes them.</p><button id="downloadProgress" class="secondary">Download my progress</button></dialog>
+  <noscript><p class="notice">TRACE needs JavaScript to draw the puzzle and check your answers in this browser.</p></noscript>
+</body>
+</html>

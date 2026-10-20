@@ -4,7 +4,20 @@ TRACE turns a finite Mealy machine, an observed input trace, and a target output
 
 Mark one inclusion-minimal explanation: fixing its recorded values guarantees the target light; changing only marked values can prevent it. Any valid minimal alternative is accepted. This is temporal causal explanation, not minimum-cardinality optimization. Visual examples teach the two conditions. There is one target lamp: every successful final route reaches it, and every failed final route reaches the dark exit. Earlier outputs appear as status indicators.
 
-## Play
+## Play the public lab demo
+
+The [GitHub Pages demo](https://official-auralin.github.io/TRACE/) is the public, learning-enabled mode. It gives immediate feedback, supports retries and explicit solution reveals, and continues through the available public puzzle pool. Progress is saved on the current browser; TRACE does not upload demo scores. First submissions, eventual completion and assistance are separate. Structural bands describe machine size, not a measured difficulty scale.
+
+Build and serve only the public artifact locally:
+
+```sh
+python3 -m benchmark.demo --output artifacts/pages-demo
+python3 -m http.server 8890 --directory artifacts/pages-demo
+```
+
+Open `http://localhost:8890`. Use a new output directory that does not already exist for each build. The export imports the existing certified package; it neither constructs new machines nor ships stored answer keys. The browser's exact grader is a tested implementation of the same G/P recurrence, not a new Lean proof. The public code and editable local records make this a lab demonstration, not a secure research collection system. See [the demo protocol](docs/DEMO_PROTOCOL.md) and [deployment instructions](docs/DEPLOYMENT.md).
+
+## Run the separate server study mode
 
 ```sh
 python3 -m benchmark.server --port 8877 --db runs/play-v5.sqlite3
@@ -18,7 +31,7 @@ python3 -m benchmark.session create --db runs/play-v5.sqlite3 --cohort baseline 
 
 Open the returned private participant link. Use a new database/session for the new release; v3 and v4 playtest records are preserved. The default reasoning condition has no experiments. The optional probe condition is a separate study condition. Timers and probe budgets are configurable operator choices, not mathematical size limits.
 
-Only `benchmark.server` should serve participants. Never serve the repository as a static directory: researcher artifacts and raw records are private.
+Only `benchmark.server` should serve research participants. The explicitly exported Pages demo is a separate mode. Never serve the repository as a static directory: researcher artifacts and raw records are private. The server's v5 study mode retains its original single-response, receipt-only scored trials; the demo's continuous feedback is not silently substituted into that protocol.
 
 ## Import a machine and make a game
 
@@ -67,11 +80,14 @@ The default corpus has 1,024 agent-test items and a distinct 64-item matched pan
 | `benchmark/compile.py`, `formal/Trace2/Compiler.lean` | Import orchestration and the proved executable semantic constructor |
 | `benchmark/construct.py` | Optional standalone source-dataset construction |
 | `benchmark/runtime.py`, `server.py`, `session.py`, `web/`, `adapters/` | Common task service, human puzzle and agent transport |
+| `benchmark/demo.py`, `demo/` | Curated Pages export, exact local grading, continuing play and local agent session transport |
 | `formal/`, `tests/`, `benchmark/reference.py`, `verify.py` | Formal proof, independent oracle and verification |
 | `data/` | Current task package; generated details are kept elsewhere |
 | `docs/`, `tex_files/`, analysis commands | Research protocols, manuscript and analysis |
 | `results/` | Compact current evidence and links to detailed artifacts |
 | `artifacts/`, `runs/` | Ignored generated artifacts and private operator records |
-| `archive/` | Frozen superseded releases, including v3 and v4 source/data/evidence |
+| `archive/` | Locally preserved superseded releases and private evidence; excluded from public Git and Pages |
 
 Start with [the algorithm](docs/ALGORITHM_SPEC.md), [claim-to-evidence map](docs/EVIDENCE_MAP.md), [dataset card](docs/DATASET_CARD.md), and [formal trust boundary](formal/TRUST_BOUNDARY.md). The [research roadmap](RESEARCH_ROADMAP.md) keeps institutional, pilot, registration and collection gates explicit.
+
+GitHub updates use small validated commits; Pages deploys only the curated artifact after verification. The published corpus is public benchmark material. Future concealed-item or mechanism-generalization claims need separately reserved data. Original repository history and local archives are preserved. Attribution is recorded in `formal/PROVENANCE.json`; a software/data reuse license has not yet been selected.

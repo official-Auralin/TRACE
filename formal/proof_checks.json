@@ -7,7 +7,7 @@
   "axiom_report_sha256": "35ec2fcb5a81091539ca88b8d7c98b0d7213160bfe0843102d98baf6acd3e688",
   "clean_build": true,
   "compiler_sha256": "9544be237d91099efe1db8cb97d0c359fa13aa94f565e9972bfb8b63abbcb437",
-  "elapsed_seconds": 22.29926300048828,
+  "elapsed_seconds": 22.3144850730896,
   "executable_sha256": {
     "trace-check": "347c0b3f96ac3be79461add0b12c50e6d96cd55dc0854e173fb408ce4ccab25d",
     "trace-compile": "901de982715c21f1bd3bc34c7594a76ee7a3fe4cdefb43cbca99c200abe1c453"

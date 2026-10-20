@@ -2,6 +2,8 @@
 
 The current package is `trace-mealy-v5`, using unchanged `trace.gp.v2` explanation semantics and `trace-study-v5` sessions. It is a pre-trial research instrument, not a validated human difficulty scale.
 
+Publication status: the v5 package is now public source material and can be exported to the `trace.demo.v1` lab demo. Tutorial/pilot/development/test labels retain their original construction assignments; they no longer imply concealed evaluation data. Demo users may access the full exported pool. Future controlled studies must record prior exposure and use separately reserved material when claiming evaluation on unseen tasks. The 64-item panel and 1,024-item full pool remain distinct statistical scopes, not independent secret sets.
+
 ## Composition and provenance
 
 The standalone `benchmark.construct --release` producer uses seed 20261019 and emits 1,328 machine/trace/target records: 16 tutorial, 32 pilot, 256 development, and 1,024 test. The first 64 interleaved test items form the matched human–AI panel; full-test agent accuracy and matched-panel comparison have distinct estimands. Every item then passes through the same general Lean compiler used for external imports. No source board recipe is required.

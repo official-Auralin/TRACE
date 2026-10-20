@@ -2,6 +2,8 @@
 
 Status: prepared instrument and analysis plan, not an institutional approval, completed pilot, preregistration, or finding. Use dataset trace-mealy-v5 and protocol trace-study-v5. The validated G/P semantics remain trace.gp.v2.
 
+Scope: this is the preserved server-based v5 study, not the public Pages demo. `trace.demo.v1` permits continuous feedback, retries and locally saved progress under `DEMO_PROTOCOL.md`; its records are not eligible for this protocol's confirmatory analysis. A hosted collection service and versioned learning-enabled study are milestone two. The published v5 items are public exposures; their split labels do not establish secrecy or prior nonexposure.
+
 ## Question and population
 
 The primary question is how accurately humans and specified AI systems identify one inclusion-minimal temporal explanation that guarantees a recorded outcome when fixed and permits prevention by changes confined to that explanation. The hypothesis that the task is easy for humans, or that agents perform worse, is untested.

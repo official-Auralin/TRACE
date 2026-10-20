@@ -1,5 +1,7 @@
 # Pilot checklist and disposition record
 
+Scope: the checklist below preserves the `trace-study-v5` fixed-form study. The public `trace.demo.v1` is a lab demonstration, not this recruited pilot. Before milestone-two collection, revise and register the checklist for continuous feedback, immutable first submissions, retries/reveals, retained human/agent exposure, dropout and the intended fixed or adaptive assignment. Observe target identity, both quantifiers and unnecessary marks separately; do not infer comprehension from a single correct answer or silently exclude low scorers. Record prior public-demo exposure and keep demo records outside confirmatory study exports.
+
 **Purpose:** validate readability, instructions, timing and operation before the main study. **Target:** 6–10 adults, pilot split only. **Not a purpose:** demonstrating a human–agent gap or selecting favorable test items.
 
 ## Before first pilot

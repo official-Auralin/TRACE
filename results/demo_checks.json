@@ -1,0 +1,100 @@
+{
+  "browser": {
+    "build_id": "74dc5e9cb185d1863ed849b9d6e10c994c5aa848ab54de6d4d330e4bea2a0afe",
+    "checks": [
+      "curated asset paths work under /TRACE/",
+      "current marks and visit restore across refresh",
+      "immediate answer feedback does not reveal a canonical solution",
+      "explicit solution reveal is assistance, not a scored completion",
+      "successful assisted retry preserves failed first answer",
+      "submitted receipt resumes after refresh",
+      "stale or corrupt task is rejected before exposure or progress changes",
+      "continuous play passes four- and six-item boundaries",
+      "all structural bands and all input cells are accessible",
+      "single target and unambiguous solid wire convention",
+      "no-explanation submission is distinct from empty marks",
+      "teaching draft resumes separately from current puzzle",
+      "interactive teaching attempts remain separate from puzzle scores",
+      "local progress can be downloaded",
+      "mobile layout and keyboard switch selection",
+      "no collection API, external network dependency, or browser errors",
+      "second tab cannot overwrite saved first answers",
+      "storage failure is visible and does not prevent in-memory play"
+    ],
+    "package_id": "42de1aac9d9f131ecc9c62252d730344d3fd2376c54d962ef73ce4dc49389b6e",
+    "protocol_version": "trace.demo.v1",
+    "scope": "Public demo UI/software checks in Chromium. No claim of participant comprehension, enjoyment, human difficulty, or research data collection.",
+    "status": "PASS"
+  },
+  "build_id": "74dc5e9cb185d1863ed849b9d6e10c994c5aa848ab54de6d4d330e4bea2a0afe",
+  "dataset_sha256": "77d46037ce07703f82db9a5076c7e493313e4742eefa4571859c17ae3ac605bb",
+  "dataset_version": "trace-mealy-v5",
+  "evidence_locations": {
+    "browser": "artifacts/demo-v1/final-browser/report.json",
+    "repeat_artifact": "artifacts/pages-demo-final-repeat",
+    "static_artifact": "artifacts/pages-demo-final",
+    "verification": "artifacts/demo-v1/final-release-checks.json"
+  },
+  "export": {
+    "artifact_bytes": 10638961,
+    "artifact_files": 1339,
+    "asset_allowlist": {
+      "app.js": "demo/app.js",
+      "board-base.css": "web/style.css",
+      "board.js": "web/board.js",
+      "engine.js": "demo/engine.js",
+      "index.html": "demo/index.html",
+      "session.js": "demo/session.js",
+      "style.css": "demo/style.css"
+    },
+    "catalog_sha256": "9cb21c8a66e6a71ab1a79be6fda2230021384566ec4281cb49680faf394a89f9",
+    "exact_public_item_projection_checked": 1328,
+    "items": 1328,
+    "manifest_sha256": "286f1996f6f1994291a86eee1a2f6c7f5f75bfa816ee5931affa43428c0a215d",
+    "scope": "All source tasks use the common public projection. Only declared browser assets, public task files and narrow catalog/manifest/teaching files are present; no automatic solution tables, operator keys, raw logs, archives or participant tokens.",
+    "status": "PASS",
+    "structural_bands": 10,
+    "teaching_fields": [
+      "id",
+      "title",
+      "caption",
+      "item"
+    ],
+    "teaching_items": 5
+  },
+  "package_id": "42de1aac9d9f131ecc9c62252d730344d3fd2376c54d962ef73ce4dc49389b6e",
+  "protocol_version": "trace.demo.v1",
+  "remote_status_scope": "This report verifies local artifacts. Linux CI completion and GitHub Pages deployment require the actual GitHub Actions run and deployed build ID; neither is asserted by this report.",
+  "repeatability": {
+    "comparison": "Every relative filename and file byte matches across two independent exports of the same frozen inputs.",
+    "files_compared": 1339,
+    "status": "PASS"
+  },
+  "scope": "Computational/formal, deterministic export and real-browser software checks only. All exported test/panel items are public. No research collection, calibrated difficulty, participant comprehension/enjoyment, human or live-model performance is established.",
+  "semantics_version": "trace.gp.v2",
+  "software_verification": {
+    "deep": true,
+    "python_tests": 100,
+    "report": "results/release_checks.json",
+    "report_sha256": "c72d5137584284604e886bbae4c76049deb227008ae93e2778009c966e874a37",
+    "scope": "Includes JS/Python grader correspondence for exhaustive small Boolean/temporal fixtures, every corpus canonical solution and sampled candidates, feedback witnesses, immutable first submissions, replay, restore, reveal eligibility, agent history and package integrity. The JS adapter remains outside the Lean kernel proof."
+  },
+  "source_sha256": {
+    ".github/workflows/pages.yml": "0391cb84754d7bab4c3092b6cc2419ac63ea845c3bc744ebfb8be01e4a4f866a",
+    "benchmark/demo.py": "783bcb31530ff48e5c3004a1ae1e9593aefed2f9f6575182efae1ac573cd92d9",
+    "demo/agent.mjs": "0105461846982861462eaa3370d6abb04f8b5ebf272ff50b400b7bbf9feaa4d5",
+    "demo/app.js": "09e0703ee9af49bfdacb01bd86e55cf47709bcc1c835de031757e99fea88df72",
+    "demo/engine.js": "2fbed7d6e63c0f0d530ce2847babc6d42722ac3f0508085561114c2e41cc2b42",
+    "demo/index.html": "0f0b9dce72a7ceb9cfba2c6250e320cd95f00354d8855281a5c5f679e4a1be03",
+    "demo/session.js": "b4718e2890c1ea3aafc551e5c89fb275ee02df45b93b09991eeb69126946f705",
+    "demo/style.css": "4260f241b24a7b35c2d8e483bc509b97c9a1485bb549a644d5fdd051ce9be26a",
+    "tests/demo_browser.mjs": "e6fa5845cf6593e93e04c59b93c2479351eacf06b449b1d2b2a57f7f8dcbcbae",
+    "tests/demo_engine_checks.mjs": "e1b194bf120c00db7e7c13f810e15f63ff5757b2d2bf20788021a641fae05292",
+    "tests/demo_session_checks.mjs": "f235657ea8f0f594554aa0ba75d93c5829018357396a6af558a88efdccf8cf37",
+    "tests/test_demo_engine.py": "7a0c70d774d3af809602e32d7384c6bb20df731697f4c8f024e69bec3805863f",
+    "tests/test_demo_export.py": "b2a5e8602467ded838c631f3e357ee34b5c8e3a9ab6a2b7fe880e2e9e198a968",
+    "web/board.js": "3e4ea90b3e0528b877fb9232abdb88b8bb0e4df6f9c0d2dd5d11f2cc3318303c",
+    "web/style.css": "88768deaeefb0fcaacbce401d08bd86dfc222f87c10be78232746cb58ad08c04"
+  },
+  "status": "PASS"
+}

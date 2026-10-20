@@ -1,5 +1,7 @@
 # TRACE v5 implementation and acceptance ledger
 
+The public lab demo is separately versioned `trace.demo.v1`. It adds browser-local grading/progress and a continuous feedback loop over the same certified tasks. See `DEMO_PROTOCOL.md` for its scoring/exposure contract and `DEPLOYMENT.md` for Pages. The v5 server study described below remains available unchanged. Public demo records are not authenticated study outcomes; hosted collection, revised learning analysis, empirical difficulty and the recruited comprehension pilot are milestone two. Current demo checks must be read from source-bound demo/release reports, not inferred from the historical v5 browser report.
+
 The production pipeline is now **imported Mealy machine + observed trace + target → deterministic certified task → shared human/agent service**. The optional source-dataset constructor is independent of compilation and play. The exact answer remains any inclusion-minimal set satisfying guarantee AND supported prevention (`trace.gp.v2`).
 
 V5 corrects v4's misleading per-transition terminal bulbs. Semantic machines and answer sets remain unchanged; the proved output-only final projection now feeds one target lamp or the dark exit. Earlier outputs use status indicators. The original screenshot's A · 2 is unnecessary given A · 1 = 0, but remains relevant on another route. The interface must express that conditional distinction.

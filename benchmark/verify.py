@@ -59,7 +59,7 @@ def main():
     report=validate(a.dataset,8 if a.deep else 0,a.emit_certificates,a.verbose)
     browser=verify_browser_paths(a.dataset)
     sources={str(path.relative_to(ROOT)):hashlib.sha256(path.read_bytes()).hexdigest()
-        for folder,pattern in (('benchmark','*.py'),('adapters','*.py'),('web','*'),('tests','*.py'),('tests','*.mjs'))
+        for folder,pattern in (('benchmark','*.py'),('adapters','*.py'),('web','*'),('demo','*'),('tests','*.py'),('tests','*.mjs'))
         for path in sorted((ROOT/folder).glob(pattern)) if path.is_file()}
     final={'status':'PASS','dataset_sha256':report['dataset_sha256'],'python_tests':count,
         'deep':a.deep,'package':report,'browser_interpreter':browser,

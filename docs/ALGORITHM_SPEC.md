@@ -83,3 +83,7 @@ Python checks each compiled decision tree against every source transition, inclu
 Default certification streams canonical answer evidence through both checkers. Detailed tables and witnesses are persisted only on request. This does not weaken universal guarantee checking. The Lean checker uses proved sparse query lookup and complete local recurrence equations; it no longer reruns an exponential recursive oracle. The Python decision path retains two state rows per query and caches Boolean roots, not all recurrence tables.
 
 Practice supplies one valid example plus submitted-answer diagnostics and legal witnesses. It does not enumerate all explanations. Tiny fixed teaching boards can enumerate their few settings. A witness demonstrates an existential statement; universal statements still require the exact backward decision.
+
+## Public demo execution boundary
+
+`trace.demo.v1` uses the same compiled public machine/trace/target and terminal display. Its JavaScript grader implements the Bad(F) recurrence and deletion test directly; it does not use precomputed answer keys or exhaustive word/answer enumeration. The JavaScript implementation is checked against Python and independent bounded fixtures, but is not itself covered by a new kernel theorem. Normal submission returns obligation diagnostics; a canonical example is computed only on explicit solution disclosure. Browser-local scores and progress are editable and have no claim of research authenticity. None of these presentation/session changes changes G, P, the candidate domain, or minimality.

@@ -10,4 +10,6 @@ The v5 pipeline imports Mealy machine/trace/target records through the proved ge
 
 The release has 1,024 agent-test items and a 64-item matched panel. Keep their estimands separate. Serve participants only with benchmark.server; keep recipes, keys, certificates and prior outcomes private. Researcher coding agents with repository access are not benchmark participants.
 
+The separately versioned public lab demo is explicitly authorized for GitHub Pages. Build only the allowlisted static artifact with benchmark.demo; never publish the repository root or private archives. Its browser-local progress and immediate feedback are not authenticated research outcomes. Central collection and a learning-enabled research protocol are milestone two; retain the existing server study protocol separately. Published tasks are public exposures, not a concealed evaluation set.
+
 Preserve archive/v4-multiple-targets, archive/v3-switchlight, archive/v2-textbook, the separately archived original v1 repository and raw logs. The redundant in-tree v1 archive was removed at the user's request after exact comparison. Version semantic/protocol changes. Keep empirical manuscript slots visible until actual evidence exists; never invent approval, participants, live model results or statistics. Follow RESEARCH_ROADMAP.md for pilot, registration and submission gates.

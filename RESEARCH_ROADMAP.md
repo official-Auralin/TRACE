@@ -1,5 +1,13 @@
 # TRACE completion and study gates
 
+## Current milestones
+
+**Milestone one — public lab demo.** Publish the validated framework, then deploy only the curated Pages artifact. `trace.demo.v1` adds exact local feedback, immutable first submissions within the session record, explicit retries/reveals, browser-local resume, continued access to the finite public pool, structural band selection and a shared local agent transport. Source, browser behavior and cross-language grading require actual checks. Local progress is editable and is not a research export. The existing server study remains `trace-study-v5`.
+
+**Milestone two — collection and learning-enabled comparison.** Host the shared Python service with durable storage and a new exposure-aware protocol; record first submission before feedback, assistance and repeated exposure separately. Define public free-play analysis versus fixed common challenge sequences. Extend agent history/feedback handling under declared budgets, and validate the revised analysis before comparing populations. Complete institutional records, comprehension/accessibility pilot, registration and actual collection as below. Published v5 tasks are public benchmark material; reserve a new pool for any concealed-item claim.
+
+The gates below describe the preserved v5 fixed-form study where their settings differ. Receipt-only scores and isolated agent contexts are not the defaults of the new public demo and must not be silently carried into the future learning-enabled comparison. The demo's structural bands remain uncalibrated until actual evidence exists. A public lab release does not itself complete the empirical gates.
+
 ## Implemented research scope
 
 The primary task is finite event explanation: one inclusion-minimal input-cell set meeting both guarantee and prevention. The underlying method is a bounded two-player verification game solved backward. General policy-changing reverse parity, arbitrary LTL compilation, and infinite liveness experiments are separate extensions, not claims of this release.

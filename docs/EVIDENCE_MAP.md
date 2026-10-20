@@ -13,6 +13,9 @@
 | Repeatable compilation and provenance | Deterministic source/semantic hashes, source-bound manifests, immutable session identities | No graph-isomorphism canonicalization claim |
 | Large finite inputs are supported | No semantic dimension caps; two-row decision computation, indexed JSONL, streaming checker, viewport | Explicit alphabets and complete answer inventories can be exponential; practical resources remain finite |
 | Human ease, enjoyment, difficulty or AI advantage | Actual pilot and registered matched-panel study | Not established by software tests, Lean or synthetic sessions |
+| Public demo grades the same G/P task | `demo/engine.js`, cross-language/independent small-fixture checks | JavaScript implementation is tested trusted code, not kernel-proved extraction |
+| Demo retries, feedback and continued play preserve first answers | Shared `demo/session.js`, persistence and browser checks | Browser/agent-local records remain editable; no collection or unassisted-performance claim |
+| Public site excludes private research artifacts | `benchmark.demo` allowlist, export tests, Pages artifact checks | Published puzzle data are public exposures, not concealed evaluation material |
 
 Fast checks cover implementation contracts and targeted examples. Formal verification proves statements over all compatible finite instances. Deep audits enumerate deliberately small instances and search for mismatches. These are complementary obligations, not interchangeable proof counts.
 

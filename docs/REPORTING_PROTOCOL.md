@@ -2,6 +2,8 @@
 
 No empirical outcomes are asserted here. Synthetic instrument sessions and computational baselines must remain separate from humans and evaluated language models.
 
+The rules below govern `trace-study-v5`. Public `trace.demo.v1` progress is editable browser/agent-local state, not an authenticated raw study export. Do not feed it into this fixed-panel confirmatory procedure, relabel retries as first attempts, or pool it with v5 trials. A learning-enabled collection release requires its own exposure-aware assignment, event schema and analysis. Published v5 test and panel items are public benchmark material, not concealed holdouts.
+
 ## Identity and regrading
 
 Analyze immutable raw exports and retain input byte hashes. Identify each outcome by session and item. Record dataset, forms, semantics, protocol, source identities and actual interaction limits. Use `--dataset PACKAGE_DIR` to select the compiled package matching the logs. Reject incompatible releases, duplicate outcomes, mixed budgets within a system/condition, and scores that disagree with recomputation.

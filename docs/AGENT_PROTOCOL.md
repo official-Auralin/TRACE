@@ -2,6 +2,8 @@
 
 Evaluate the same finite explanation task and public information given to humans. The current package version is `trace-mealy-v5`, the session protocol is `trace-study-v5`, and the G/P semantics remain `trace.gp.v2`. No live model evaluation is asserted by the existence of this adapter.
 
+This document specifies the preserved isolated-item server study. The public learning-enabled demo has a separate `trace.demo.v1` session contract and local JSONL transport in `demo/agent.mjs`; see `DEMO_PROTOCOL.md`. That transport shares teaching, exact feedback, retries and retained exposure with the browser demo. It is not an isolated or authenticated research harness and its output is not a v5 trial export. Actual learning-enabled human–agent collection remains milestone two; do not compare continuous human learning with fresh-context agents as though they had identical histories.
+
 ## Frozen record
 
 Before main evaluation identify system ID, provider, exact expected/returned model identity, generation parameters, output-token cap, inference date, prompt and adapter identities, dataset/protocol/source versions, regime, repetitions and registration. Marketing aliases without a reproducible snapshot must be disclosed as a limitation. Configuration changes require separate analyzed groups.

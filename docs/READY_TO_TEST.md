@@ -1,5 +1,7 @@
 # TRACE v5 testing handoff
 
+For the continuous public lab demonstration, build with `python3 -m benchmark.demo --output artifacts/pages-demo`, then serve only that artifact with `python3 -m http.server 8890 --directory artifacts/pages-demo`. Open `http://localhost:8890`. Feedback, retries, explicit reveals and progress are local to the browser; no scores are uploaded. Use a new/empty output directory when rebuilding. See `DEMO_PROTOCOL.md` and `DEPLOYMENT.md`. The commands below instead rehearse the preserved fixed-form server study; its scored feedback policy is deliberately different and its records must not be pooled with demo progress.
+
 The current game imports finite Mealy-machine/trace/target records into a common human–AI task. Its semantic transformation and executable checks are separate from the still-required usability, human difficulty and live-model studies. Consult the current [acceptance ledger](IMPLEMENTATION_STATUS.md) and source-bound reports for technical status; archived v3/v4 test counts do not describe this release.
 
 ## Play the default tutorial form

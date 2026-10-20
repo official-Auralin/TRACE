@@ -1,8 +1,8 @@
 {
   "status": "PASS",
   "build_command": "latexmk -pdf -interaction=nonstopmode -halt-on-error -cd tex_files/mainTB.tex",
-  "pages": 11,
-  "render_command": "pdftoppm -r 95 -png tex_files/mainTB.pdf artifacts/terminal-display-v5/pdf/page",
+  "pages": 12,
+  "render_command": "pdftoppm -r 95 -png tex_files/mainTB.pdf artifacts/demo-v1/pdf/page",
   "visual_pages_inspected": [
     1,
     2,
@@ -14,9 +14,10 @@
     8,
     9,
     10,
-    11
+    11,
+    12
   ],
-  "layout_findings": "All 11 pages individually inspected; no clipping, overlap, missing glyphs, table overflow or other layout defects observed. Final TeX log has no overfull/underfull boxes or LaTeX warnings.",
+  "layout_findings": "All 12 pages inspected after the demo manuscript revision; changed validation and demo pages re-inspected after the final test-count update. No clipping, overlap, missing glyphs or table overflow observed. Final log has no overfull/underfull boxes or LaTeX warnings.",
   "unfilled_empirical_slots": [
     "TRIAL-PRIMARY-ABSTRACT",
     "TRIAL-PILOT",
@@ -29,26 +30,24 @@
     "TRIAL-CONCLUSION"
   ],
   "file_sha256": {
-    "tex_files/mainTB.tex": "fb33853c7c2adcbbc8101a51f73dee608436e8fbfa0979d6898a3981af208ff5",
-    "tex_files/generated_validation.tex": "d6946d524d03ae7e212e287d1c86dcce3f1455ed2214ce2bdcbfeec6e6fc7559",
+    "tex_files/mainTB.tex": "d4394959a7c10c60024322cbe2d6ec3f1dafc5d99029f1b1305b5fad10edb8b9",
+    "tex_files/generated_validation.tex": "3f9f9295dde23a9cf17418875f642e0fe671e164238d0c7faeca6852c2ef4f03",
     "tex_files/maintb.bib": "37d4cd8ac7b285f5da9206928afbae11be00200c75a53ad386f325c9a53d50dd",
-    "tex_files/mainTB.pdf": "305d823c01cc86304c0ccd40603da98659ab2e1f6f769e60e5a16567bf8e110a",
-    "results/release_checks.json": "86a6de9b06ea30c1eba4fdaa512ca0410b82d2a18a20b4499c45062c81555b58",
-    "results/baseline_summary.json": "490bdadab4b8bd8f222ed034415e895a1a83beb103838870d0e1ab2d90aa5e9c",
-    "results/reproducibility.json": "edbaf6afe4985593724d133fb937c763ae7991397f1442a47dd9d374984dbcaf"
+    "tex_files/mainTB.pdf": "17dd32b531a40c62e8da43589a580c555ba6ad73530c674134a0f5b6e47844d3"
   },
   "rendered_pages_sha256": {
-    "artifacts/terminal-display-v5/pdf/page-01.png": "a2bb177c71fb3a835f5f2c9bb4aecb95fa8dd17509568dd9e5316204f6f1139f",
-    "artifacts/terminal-display-v5/pdf/page-02.png": "0d92b049752a420f82ae9d68a2d15ea85e96fdac166ca04837582fd71129cccd",
-    "artifacts/terminal-display-v5/pdf/page-03.png": "64992248cc61310bf049f6421099ac16031577ae98df87b1a2fbc24c0715b8e4",
-    "artifacts/terminal-display-v5/pdf/page-04.png": "a84ff1aa94bce9b188dad98c1010df9a9fb2a26e68c9dbb0558b2ae4edf4a2ae",
-    "artifacts/terminal-display-v5/pdf/page-05.png": "17988469678ffc4329365b104de967f03b1f262cf888e85d08495d8eb3fbf262",
-    "artifacts/terminal-display-v5/pdf/page-06.png": "5cc2eec8ce4eab9601d14741cfa3203cae812e386615e3fe3b1afde8b494a8d0",
-    "artifacts/terminal-display-v5/pdf/page-07.png": "4d18fca264d8ea6a9d1d10332e81ac25cbcae314d3c262d24a0a1c3805bc280e",
-    "artifacts/terminal-display-v5/pdf/page-08.png": "0c84bc826fd28e45c1152a99de704041817a5540abb1c2a993af8bcf372ccc06",
-    "artifacts/terminal-display-v5/pdf/page-09.png": "8f4e443f73215a1fb962ccd61151f5e013064e42342aa0a4ea3f643c348b9fc0",
-    "artifacts/terminal-display-v5/pdf/page-10.png": "7a53509d808b896b8f33bc40988aeea7ef0d0831eaa800da6cbc4a32cf6a515b",
-    "artifacts/terminal-display-v5/pdf/page-11.png": "43ab9a75e600f74ab94d4f68b3c0487966cd73189994f067ff6b826e072e82b5"
+    "artifacts/demo-v1/pdf/page-01.png": "7d5b3461a388d5703b014d5bfeef016e09ae396cfb9db42ae01a967f968498ce",
+    "artifacts/demo-v1/pdf/page-02.png": "0d92b049752a420f82ae9d68a2d15ea85e96fdac166ca04837582fd71129cccd",
+    "artifacts/demo-v1/pdf/page-03.png": "64992248cc61310bf049f6421099ac16031577ae98df87b1a2fbc24c0715b8e4",
+    "artifacts/demo-v1/pdf/page-04.png": "a84ff1aa94bce9b188dad98c1010df9a9fb2a26e68c9dbb0558b2ae4edf4a2ae",
+    "artifacts/demo-v1/pdf/page-05.png": "17988469678ffc4329365b104de967f03b1f262cf888e85d08495d8eb3fbf262",
+    "artifacts/demo-v1/pdf/page-06.png": "5cc2eec8ce4eab9601d14741cfa3203cae812e386615e3fe3b1afde8b494a8d0",
+    "artifacts/demo-v1/pdf/page-07.png": "3d9bc718c349042b59723a96575c98de2b730605340e1f2e5da2996b97792882",
+    "artifacts/demo-v1/pdf/page-08.png": "0c84bc826fd28e45c1152a99de704041817a5540abb1c2a993af8bcf372ccc06",
+    "artifacts/demo-v1/pdf/page-09.png": "077c354d23e4e6231ddda5ded35dc84851b8313e7f38fdb8337f0932afc96fe1",
+    "artifacts/demo-v1/pdf/page-10.png": "feb9d0edc7897c95d6e99ab4bab3e6ac45c553f098826805eb15105e8dac7d39",
+    "artifacts/demo-v1/pdf/page-11.png": "b7e3a538f8560918cc8d20a5678978736a6075ef3b56ccd66703e75e1ac2790b",
+    "artifacts/demo-v1/pdf/page-12.png": "8d9fbbbc4cdb9434dcd6459a7e6fadb5a655fbcab8fb0fa98e338924a8cb9d81"
   },
   "scope": "Manuscript compilation/render inspection and internal evidence consistency only; no human/live-model findings, approval or registration."
 }
