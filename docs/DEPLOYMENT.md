@@ -83,7 +83,9 @@ The intended remote is `git@github.com:official-Auralin/TRACE.git`; the intended
 project site is <https://official-auralin.github.io/TRACE/>. Repository and
 deployment status must be checked rather than inferred from these addresses.
 
-If GitHub requires an administrator to finish enabling publication:
+If GitHub requires an administrator to finish enabling publication, first set
+**Settings → General → Default branch** to `main`. Changing the default branch
+does not automatically update an existing environment branch allowlist.
 
 1. Open the repository's [Settings → Pages](https://github.com/official-Auralin/TRACE/settings/pages).
 2. Under **Build and deployment**, set **Source** to **GitHub Actions**. Do not
@@ -96,10 +98,15 @@ If GitHub requires an administrator to finish enabling publication:
    pass its verification job before the deployment job becomes eligible. If
    you changed Pages settings after a failed setup attempt, rerun the workflow
    on `main` using **Run workflow**.
-5. If the `github-pages` environment requests an approval, review and approve
-   that deployment. Do not remove an existing review requirement merely to
-   silence the prompt.
-6. Open the URL printed by the completed deployment. Verify the new demo's
+5. Under **Settings → Environments → github-pages → Deployment branches and
+   tags**, ensure `main` is allowed. If using **Selected branches and tags**,
+   add a branch rule for `main`; do not broaden the rule to all branches. A
+   rejected deployment cannot be fixed by rebuilding the same artifact.
+6. If the `github-pages` environment requests an approval, review and approve
+   that deployment. Keep existing reviewer requirements. After correcting the
+   branch rule, use **Re-run failed jobs** on the run, or start a fresh workflow
+   on `main` if its uploaded artifact has expired.
+7. Open the URL printed by the completed deployment. Verify the new demo's
    version, instruction flow, first submission feedback, retry, next puzzle,
    and refresh/resume. A successful source push alone does not establish that
    these actions work on the live site.
